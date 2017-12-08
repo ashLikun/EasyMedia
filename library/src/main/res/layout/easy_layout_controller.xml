@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants">
+
+
+    <ImageView
+        android:id="@+id/thumb"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:scaleType="fitCenter" />
+
+    <com.ashlikun.media.controller.MediaControllerBottom
+        android:id="@+id/controllerBottom"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"></com.ashlikun.media.controller.MediaControllerBottom>
+
+    <com.ashlikun.media.controller.MediaControllerTop
+        android:id="@+id/controllerTop"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"></com.ashlikun.media.controller.MediaControllerTop>
+
+
+    <ImageView
+        android:id="@+id/back_tiny"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/easy_media_click_back_tiny_selector"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/loading"
+        android:layout_width="@dimen/jz_start_button_w_h_normal"
+        android:layout_height="@dimen/jz_start_button_w_h_normal"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:indeterminateDrawable="@drawable/easy_media_loading"
+        android:visibility="invisible" />
+
+
+    <ImageView
+        android:id="@+id/start"
+        android:layout_width="@dimen/jz_start_button_w_h_normal"
+        android:layout_height="@dimen/jz_start_button_w_h_normal"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/easy_media_click_play_selector" />
+
+
+    <TextView
+        android:id="@+id/replay_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/start"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="6dp"
+        android:text="@string/replay"
+        android:textColor="#ffffff"
+        android:textSize="12sp"
+        android:visibility="invisible" />
+
+    <LinearLayout
+        android:id="@+id/retry_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="视频加载失败"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/retry_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="点击重试"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+</RelativeLayout>
