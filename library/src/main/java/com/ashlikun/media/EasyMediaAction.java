@@ -1,10 +1,12 @@
 package com.ashlikun.media;
 
+import com.ashlikun.media.status.MediaScreenStatus;
+
 /**
  * 播放器事件
  */
 public interface EasyMediaAction {
-
+    //播放按钮点击
     int ON_CLICK_START_ICON = 0;
     int ON_CLICK_START_ERROR = 1;
     int ON_CLICK_START_AUTO_COMPLETE = 2;
@@ -22,7 +24,9 @@ public interface EasyMediaAction {
 
     int ON_TOUCH_SCREEN_SEEK_VOLUME = 11;
     int ON_TOUCH_SCREEN_SEEK_POSITION = 12;
+    //继续播放
+    int ON_CLICK_START_NO_WIFI_GOON = 101;
 
-    void onEvent(int type, Object url, int screen, Object... objects);
+    void onEvent(int type, Object url, @MediaScreenStatus.Code int screen, Object... objects);
 
 }

@@ -1,5 +1,10 @@
 package com.ashlikun.media.status;
 
+import android.support.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/11/28　10:17
@@ -8,7 +13,7 @@ package com.ashlikun.media.status;
  * 功能介绍：
  */
 
-public interface EasyMediaStatus {
+public interface MediaStatus {
     //默认状态
     public static final int CURRENT_STATE_NORMAL = 0;
     //准备中
@@ -19,4 +24,12 @@ public interface EasyMediaStatus {
     public static final int CURRENT_STATE_PAUSE = 5;
     public static final int CURRENT_STATE_AUTO_COMPLETE = 6;
     public static final int CURRENT_STATE_ERROR = 7;
+
+    @IntDef(value = {CURRENT_STATE_NORMAL, CURRENT_STATE_PREPARING
+            , CURRENT_STATE_PREPARING_CHANGING_URL, CURRENT_STATE_PLAYING,
+            CURRENT_STATE_PAUSE, CURRENT_STATE_AUTO_COMPLETE, CURRENT_STATE_ERROR})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Code {
+
+    }
 }

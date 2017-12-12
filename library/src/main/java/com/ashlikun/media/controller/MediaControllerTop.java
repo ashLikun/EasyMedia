@@ -6,20 +6,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_LIST;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_TINY;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 
 /**
  * 作者　　: 李坤
@@ -29,7 +31,7 @@ import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_TINY;
  * 功能介绍：控制器顶部
  */
 
-public class MediaControllerTop extends RelativeLayout {
+public class MediaControllerTop extends RelativeLayout implements View.OnClickListener {
     //当前系统时间
     public TextView videoCurrentTime;
     public TextView titleView;
@@ -59,6 +61,8 @@ public class MediaControllerTop extends RelativeLayout {
         titleView = findViewById(R.id.title);
         backButton = findViewById(R.id.back);
         batteryTimeLayout = findViewById(R.id.battery_time_layout);
+
+        backButton.setOnClickListener(this);
     }
 
     public void setInitData(int screen, Object[] objects) {
@@ -76,6 +80,7 @@ public class MediaControllerTop extends RelativeLayout {
             setBackIsShow(true);
             setBatteryIsShow(false);
         }
+
     }
 
     //设置系统的时间和电量
@@ -106,6 +111,7 @@ public class MediaControllerTop extends RelativeLayout {
         batteryTimeLayout.setVisibility(isShow ? VISIBLE : GONE);
     }
 
+    //电量
     private BroadcastReceiver battertReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -134,4 +140,11 @@ public class MediaControllerTop extends RelativeLayout {
     };
 
 
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.back) {
+            MediaUtils.backPress();
+        }
+    }
 }

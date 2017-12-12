@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.TextureView;
 import android.view.View;
 
+import com.ashlikun.media.status.MediaDisplayType;
+
 /**
- *  播放视频的渲染载体
+ * 播放视频的渲染载体
  * 1：参照Android系统的VideoView的onMeasure方法
  * 2：注意!relativelayout中无法全屏，要嵌套一个linearlayout</p>
- *
+ * <p>
  * 因为SurfaceView的内容不在应用窗口上，所以不能使用变换（平移、缩放、旋转等）。
  * 也难以放在ListView或者ScrollView中，不能使用UI控件的一些特性比如View.setAlpha()。
  * 为了解决这个问题 Android 4.0中引入了TextureView。
@@ -51,16 +53,13 @@ public class EasyTextureView extends TextureView {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.i(TAG, "onMeasure " + " [" + this.hashCode() + "] ");
         int viewRotation = (int) getRotation();
         int videoWidth = currentVideoWidth;
         int videoHeight = currentVideoHeight;
-
-
         int parentHeight = ((View) getParent()).getMeasuredHeight();
         int parentWidth = ((View) getParent()).getMeasuredWidth();
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT) {
+            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     int tempSize = parentWidth;
                     parentWidth = parentHeight;
@@ -137,11 +136,11 @@ public class EasyTextureView extends TextureView {
             // no size yet, just adopt the given spec sizes
         }
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL) {
+            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL) {
                 /**原图**/
                 height = videoHeight;
                 width = videoWidth;
-            } else if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP) {
+            } else if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     int tempSize = parentWidth;
                     parentWidth = parentHeight;

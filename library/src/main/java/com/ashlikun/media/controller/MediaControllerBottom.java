@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -18,17 +17,17 @@ import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.EasyMediaStatus;
+import com.ashlikun.media.status.MediaStatus;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.ashlikun.media.status.EasyMediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.EasyMediaStatus.CURRENT_STATE_PLAYING;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_LIST;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.EasyScreenStatus.SCREEN_WINDOW_TINY;
+import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
+import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 
 /**
  * 作者　　: 李坤
@@ -47,7 +46,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     //进度文本
     public TextView currentTimeTextView, totalTimeTextView;
 
-    ProgressBar bottomProgressBar;
+
     //
     public TextView clarity;
     public OnEventListener onEventListener;
@@ -82,7 +81,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         totalTimeTextView = findViewById(R.id.total);
         clarity = findViewById(R.id.clarity);
         progressBar.setOnSeekBarChangeListener(this);
-        bottomProgressBar = findViewById(R.id.bottom_progress);
+
 
         fullscreenButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -179,8 +178,8 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
             vpup.requestDisallowInterceptTouchEvent(false);
             vpup = vpup.getParent();
         }
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != EasyMediaStatus.CURRENT_STATE_PLAYING &&
-                EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != EasyMediaStatus.CURRENT_STATE_PAUSE) {
+        if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != MediaStatus.CURRENT_STATE_PLAYING &&
+                EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != MediaStatus.CURRENT_STATE_PAUSE) {
             return;
         }
         int time = (int) (seekBar.getProgress() * getDuration() / 100.0);
@@ -232,9 +231,11 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
                         }
                         int duration = getDuration();
                         int progress = (int) (position * 100f / (duration == 0 ? 1 : duration));
-                        Log.e("aaaa", "当前播放时间 = " + position + "    播放百分比" + progress);
                         if (progress != 0) {
                             setProgress(progress);
+                            if (onEventListener != null) {
+                                onEventListener.onProgressChang(progress);
+                            }
                         }
                         setTime(position, duration);
                     }
@@ -249,5 +250,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         void onStopTrackingTouch(SeekBar seekBar);
 
         void onFullscreenClick();
+
+        void onProgressChang( int progress);
     }
 }

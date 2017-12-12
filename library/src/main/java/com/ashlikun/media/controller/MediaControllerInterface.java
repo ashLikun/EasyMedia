@@ -1,5 +1,7 @@
 package com.ashlikun.media.controller;
 
+import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.status.MediaScreenStatus;
 import com.ashlikun.media.view.EasyOnControllEvent;
 
 /**
@@ -16,9 +18,9 @@ public interface MediaControllerInterface {
 
     public void setOnControllEvent(EasyOnControllEvent onControllEvent);
 
-    public void setCurrentScreen(int currentScreen);
+    public void setCurrentScreen(@MediaScreenStatus.Code int currentScreen);
 
-    public void setCurrentState(int currentState);
+    public void setCurrentState(@MediaStatus.Code int currentState);
 
 
     //开始显示控制器的定时器
@@ -39,15 +41,7 @@ public interface MediaControllerInterface {
     //获取进度缓存
     public int getBufferProgress();
 
-    //销毁进度对话框
-    public void dismissProgressDialog();
+    //自动播放完成
+    public void onAutoCompletion();
 
-    //销毁声音对话框
-    public void dismissVolumeDialog();
-
-    //销毁亮度对话框
-    public void dismissBrightnessDialog();
-
-    //显示非WiFi提示
-    public void showWifiDialog(int event);
 }

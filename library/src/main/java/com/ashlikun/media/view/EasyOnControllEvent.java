@@ -9,14 +9,30 @@ package com.ashlikun.media.view;
  */
 
 public interface EasyOnControllEvent {
-    //开始播放按钮点击
+    /**
+     * 开始播放按钮点击
+     */
     void onPlayStartClick();
 
-    //全屏点击
+    /**
+     * 播放失败，从新播放
+     */
+    void onRetryClick();
+
+    /**
+     * 全屏点击
+     */
     void onFullscreenClick();
 
-    //当控制器点击的时候
+    /**
+     * 当控制器点击的时候
+     */
     void onControllerClick();
 
+    /**
+     * b
+     *
+     * @param type
+     */
     void onEvent(int type);
 }

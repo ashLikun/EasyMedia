@@ -7,7 +7,7 @@ public class EasyVideoPlayerManager {
 
     //第一个VideoPlay
     public static EasyVideoPlayer FIRST_FLOOR_VIDEO_PLAY;
-    //第二个VideoPlay
+    //第二个VideoPlay,全屏或者小窗口播放的
     public static EasyVideoPlayer SECOND_FLOOR_VIDEO_PLAY;
 
     public static EasyVideoPlayer getFirstFloor() {

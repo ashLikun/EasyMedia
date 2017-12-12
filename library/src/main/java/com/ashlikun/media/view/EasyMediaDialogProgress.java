@@ -67,13 +67,14 @@ public class EasyMediaDialogProgress extends Dialog {
 
     /**
      * 设置箭头方向
+     *
      * @param isOrientationToRight 是否向右
      */
     public void setOrientation(boolean isOrientationToRight) {
         if (isOrientationToRight) {
-            mDialogIcon.setBackgroundResource(R.drawable.easy_media_forward_icon);
+            mDialogIcon.setImageResource(R.drawable.easy_media_forward_icon);
         } else {
-            mDialogIcon.setBackgroundResource(R.drawable.easy_media_backward_icon);
+            mDialogIcon.setImageResource(R.drawable.easy_media_backward_icon);
         }
     }
 }
