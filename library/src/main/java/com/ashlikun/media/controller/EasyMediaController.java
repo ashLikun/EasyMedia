@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 
@@ -16,8 +17,8 @@ import com.ashlikun.media.EasyMediaAction;
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyMediaDialogBright;
 import com.ashlikun.media.view.EasyMediaDialogProgress;
 import com.ashlikun.media.view.EasyMediaDialogVolume;
@@ -40,7 +41,7 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
 
 public class EasyMediaController extends RelativeLayout implements
         MediaControllerInterface, View.OnClickListener
-        , MediaControllerBottom.OnEventListener, View.OnTouchListener {
+        , MediaControllerBottom.OnEventListener {
     public static final int THRESHOLD = 80;
 
     protected ScheduledFuture showControllerFuture;
@@ -58,9 +59,9 @@ public class EasyMediaController extends RelativeLayout implements
     protected float mDownY;//按下的Y坐标
     protected int mScreenWidth;//屏幕宽度
     protected int mScreenHeight;//屏幕高度
-    protected boolean mChangeVolume;//是否改变音量
-    protected boolean mChangePosition;//是否改变进度
-    protected boolean mChangeBrightness;//是否改变亮度
+    protected boolean mChangeVolume = false;//是否改变音量
+    protected boolean mChangePosition = false;//是否改变进度
+    protected boolean mChangeBrightness = false;//是否改变亮度
     protected int mGestureDownPosition;
     protected int mGestureDownVolume;
     protected float mGestureDownBrightness;
@@ -94,8 +95,8 @@ public class EasyMediaController extends RelativeLayout implements
     }
 
     @Override
-    public void setDataSource(Object[] dataSourceObjects, int defaultUrlMapIndex, int screen, Object... objects) {
-        viewHolder.setDataSource(dataSourceObjects, screen, objects);
+    public void setDataSource(Object[] dataSource, int defaultIndex, Object... objects) {
+        viewHolder.setDataSource(dataSource, currentScreen, objects);
     }
 
     public int getLayoutId() {
@@ -103,13 +104,12 @@ public class EasyMediaController extends RelativeLayout implements
     }
 
     private void initView() {
+        setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
         mScreenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         View.inflate(getContext(), getLayoutId(), this);
-        setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
         viewHolder = new EasyControllerViewHolder(this, this, this);
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-        setOnTouchListener(this);
         setOnClickListener(this);
     }
 
@@ -135,7 +135,11 @@ public class EasyMediaController extends RelativeLayout implements
         }
         int time = seekBar.getProgress() * getDuration() / 100;
         EasyMediaManager.seekTo(time);
-        startDismissControlViewSchedule();
+        cancelDismissControlViewSchedule();
+        if (viewHolder.containerIsShow()) {
+            viewHolder.showControllerViewAnim(currentState, currentScreen, true);
+            showControllerFuture = MediaUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
+        }
     }
 
     @Override
@@ -153,16 +157,30 @@ public class EasyMediaController extends RelativeLayout implements
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.start) {
+            cancelDismissControlViewSchedule();
             onControllEvent.onPlayStartClick();
         } else if (i == R.id.retry_btn) {
             onControllEvent.onRetryClick();
         } else if (v == this) {
-            onControllEvent.onControllerClick();
+            //保证滑动事件后不调用点击事件
+            if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
+                onControllEvent.onControllerClick();
+            } else {
+                mChangePosition = false;
+                mChangeVolume = false;
+                mChangeVolume = false;
+            }
         }
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    protected void dispatchSetPressed(boolean pressed) {
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
@@ -268,7 +286,7 @@ public class EasyMediaController extends RelativeLayout implements
                 viewHolder.bottomContainer.startProgressSchedule();
                 break;
         }
-        return false;
+        return true;
     }
 
     public void setProgress() {
@@ -289,7 +307,7 @@ public class EasyMediaController extends RelativeLayout implements
         mProgressDialog.setTime(seekTime, totalTime);
         mProgressDialog.setProgress(seekTimePosition, totalTimeDuration);
         mProgressDialog.setOrientation(deltaX > 0);
-        viewHolder.onShowDialogToClear(currentState, currentScreen);
+        viewHolder.changeUiToClean();
     }
 
     //显示音量对话框
@@ -299,8 +317,7 @@ public class EasyMediaController extends RelativeLayout implements
         }
         mVolumeDialog.show();
         mVolumeDialog.setVolumePercent(volumePercent);
-
-        viewHolder.onShowDialogToClear(currentState, currentScreen);
+        viewHolder.changeUiToClean();
     }
 
     //显示亮度对话框
@@ -310,7 +327,7 @@ public class EasyMediaController extends RelativeLayout implements
         }
         mBrightDialog.show();
         mBrightDialog.setBrightPercent(brightnessPercent);
-        viewHolder.onShowDialogToClear(currentState, currentScreen);
+        viewHolder.changeUiToClean();
     }
 
 
@@ -373,15 +390,16 @@ public class EasyMediaController extends RelativeLayout implements
     @Override
     public void startDismissControlViewSchedule() {
         cancelDismissControlViewSchedule();
-        if (viewHolder.bottomContainerIsShow()) {
+        if (viewHolder.containerIsShow()) {
             //隐藏
-            viewHolder.showControllerViewAnim(currentState, false);
+            viewHolder.showControllerViewAnim(currentState, currentScreen, false);
         } else {
             //显示
-            viewHolder.showControllerViewAnim(currentState, true);
-            showControllerFuture = MediaUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3000, TimeUnit.MILLISECONDS);
+            viewHolder.showControllerViewAnim(currentState, currentScreen, true);
+            showControllerFuture = MediaUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
         }
     }
+
 
     @Override
     public void cancelDismissControlViewSchedule() {
@@ -396,7 +414,7 @@ public class EasyMediaController extends RelativeLayout implements
 
         @Override
         public void run() {
-            viewHolder.showControllerViewAnim(currentState, false);
+            viewHolder.showControllerViewAnim(currentState, currentScreen, false);
         }
     }
 
@@ -439,6 +457,11 @@ public class EasyMediaController extends RelativeLayout implements
         dismissVolumeDialog();
         dismissProgressDialog();
         dismissBrightnessDialog();
+    }
+
+    @Override
+    public ImageView getThumbImageView() {
+        return viewHolder.thumbImageView;
     }
 
 }

@@ -24,7 +24,7 @@ ext {
     v4Version = "com.android.support:support-v4:25.3.1"
     frameVersion = "1.4.0"
     targetSdkVersion = 25
-    minSdkVersion = 14
+    minSdkVersion = 16
     versionCode = 1
     versionName = "0.0.1"
 }

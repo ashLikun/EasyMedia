@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:descendantFocusability="blocksDescendants">
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/thumb"
@@ -53,6 +52,7 @@
         android:layout_centerVertical="true"
         android:minHeight="@dimen/media_start_button_w_h_normal"
         android:minWidth="@dimen/media_start_button_w_h_normal"
+        android:padding="6dp"
         android:src="@drawable/easy_media_click_play_selector" />
 
 

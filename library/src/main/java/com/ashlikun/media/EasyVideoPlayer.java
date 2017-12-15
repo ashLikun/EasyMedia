@@ -4,28 +4,30 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
-import android.support.v7.app.AppCompatActivity;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ashlikun.media.controller.EasyMediaController;
 import com.ashlikun.media.controller.MediaControllerInterface;
-import com.ashlikun.media.status.MediaStatus;
-import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.play.EasyMediaSystem;
 import com.ashlikun.media.status.MediaDisplayType;
+import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyOnControllEvent;
 
 import java.lang.reflect.Constructor;
-import java.util.LinkedHashMap;
 
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
@@ -33,8 +35,6 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHANGING_URL;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 
 /**
  * 作者　　: 李坤
@@ -45,14 +45,15 @@ import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
  */
 public class EasyVideoPlayer extends FrameLayout
         implements EasyOnControllEvent {
-    public static final String URL_KEY_DEFAULT = "URL_KEY_DEFAULT";//当播放的地址只有一个的时候的key
-    public static int FULLSCREEN_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-    public static int NORMAL_ORIENTATION = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    public static int ORIENTATION_FULLSCREEN_SENSOR = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+    public static int ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    public static int ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+    //是否保存进度
     public static boolean SAVE_PROGRESS = true;
-    public static boolean WIFI_TIP_DIALOG_SHOWED = false;
+    //是否允许过非wifi播放视频
+    public static boolean WIFI_ALLOW_PLAY = true;
     @MediaDisplayType.Code
     public static int VIDEO_IMAGE_DISPLAY_TYPE = 0;
-
     public static long lastAutoFullscreenTime = 0;
 
     protected static EasyMediaAction MEDIA_EVENT;
@@ -64,27 +65,32 @@ public class EasyVideoPlayer extends FrameLayout
     public int seekToInAdvance = 0;
     public int widthRatio = 0;
     public int heightRatio = 0;
-    public Object[] dataSourceObjects;//这个参数原封不动直接 传给 MediaInterface。
-    public int currentUrlMapIndex = 0;
-    public int positionInList = -1;
+    //数据源，列表
+    public Object[] dataSource;
+    public int currentUrlIndex = 0;
     public int videoRotation = 0;
     public ViewGroup textureViewContainer;
+    //全屏后是否可以竖屏
+    protected boolean mFullscreenPortrait = true;
 
     //播放器控制器
     MediaControllerInterface mediaController;
 
     public EasyVideoPlayer(Context context) {
-        super(context);
-        init(context);
+        this(context, null);
     }
 
     public EasyVideoPlayer(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        init(context, attrs);
     }
 
-    public void init(Context context) {
-        setBackgroundColor(0xff000000);
+    public void init(Context context, AttributeSet attrs) {
+        TypedArray a = context.obtainStyledAttributes(attrs, new int[]{android.R.attr.background});
+        if (!a.hasValue(0)) {
+            setBackgroundColor(0xff000000);
+        }
+        a.recycle();
         textureViewContainer = new FrameLayout(getContext());
         addView(textureViewContainer, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         mediaController = new EasyMediaController(getContext());
@@ -92,7 +98,7 @@ public class EasyVideoPlayer extends FrameLayout
         mediaController.setOnControllEvent(this);
         try {
             if (isCurrentPlay()) {
-                NORMAL_ORIENTATION = ((AppCompatActivity) context).getRequestedOrientation();
+                ORIENTATION_NORMAL = MediaUtils.getActivity(context).getRequestedOrientation();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,38 +106,44 @@ public class EasyVideoPlayer extends FrameLayout
     }
 
     /**
-     * 设置数据源
+     * 设置当前屏幕，默认的和列表或者小窗口
+     * 请在setDataSource之前设置
      *
-     * @param url     视频ur
-     * @param screen  屏幕方向，只能是 默认的和列表,全屏请调用MediaUtils的静态方法
-     * @param objects 标题
+     * @param currentScreen
      */
-    public void setDataSource(String url, int screen, Object... objects) {
-        LinkedHashMap map = new LinkedHashMap();
-        map.put(URL_KEY_DEFAULT, url);
-        Object[] dataSourceObjects = new Object[1];
-        dataSourceObjects[0] = map;
-        setDataSource(dataSourceObjects, 0, screen, objects);
+    public void setCurrentScreen(int currentScreen) {
+        this.currentScreen = currentScreen;
     }
 
     /**
      * 设置数据源
      *
-     * @param dataSourceObjects  视频url，数组
-     * @param defaultUrlMapIndex 播放的url 位置
-     * @param screen             屏幕方向，只能是 默认的和列表,全屏请调用MediaUtils的静态方法
-     * @param objects            标题
+     * @param url     视频ur
+     * @param objects 标题
      */
-    public void setDataSource(Object[] dataSourceObjects, int defaultUrlMapIndex, int screen, Object... objects) {
+    public void setDataSource(String url, Object... objects) {
+        Object[] dataSource = new Object[1];
+        dataSource[0] = url;
+        setDataSource(dataSource, 0, objects);
+    }
+
+    /**
+     * 设置数据源
+     *
+     * @param dataSource   视频url，数组
+     * @param defaultIndex 播放的url 位置 0 开始
+     * @param objects      标题
+     */
+    public void setDataSource(Object[] dataSource, int defaultIndex, Object... objects) {
         //是否有播放器，没用就用系统的
         if (EasyMediaManager.instance().mMediaPlay == null) {
             EasyMediaManager.instance().mMediaPlay = new EasyMediaSystem();
         }
-        if (this.dataSourceObjects != null && MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex) != null &&
-                MediaUtils.getCurrentFromDataSource(this.dataSourceObjects, currentUrlMapIndex).equals(MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex))) {
+        if (this.dataSource != null && dataSource.length > defaultIndex &&
+                MediaUtils.getCurrentFromDataSource(this.dataSource, currentUrlIndex).equals(MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex))) {
             return;
         }
-        if (isCurrentVideoPlay() && MediaUtils.dataSourceObjectsContainsUri(dataSourceObjects, EasyMediaManager.getCurrentDataSource())) {
+        if (isCurrentVideoPlay() && MediaUtils.dataSourceContainsUri(dataSource, EasyMediaManager.getCurrentDataSource())) {
             int position = 0;
             try {
                 position = EasyMediaManager.getCurrentPosition();
@@ -142,21 +154,19 @@ public class EasyVideoPlayer extends FrameLayout
                 MediaUtils.saveProgress(getContext(), EasyMediaManager.getCurrentDataSource(), position);
             }
             EasyMediaManager.instance().releaseMediaPlayer();
-        } else if (isCurrentVideoPlay() && !MediaUtils.dataSourceObjectsContainsUri(dataSourceObjects, EasyMediaManager.getCurrentDataSource())) {
+        } else if (isCurrentVideoPlay() && !MediaUtils.dataSourceContainsUri(dataSource, EasyMediaManager.getCurrentDataSource())) {
             startWindowTiny();
-        } else if (!isCurrentVideoPlay() && MediaUtils.dataSourceObjectsContainsUri(dataSourceObjects, EasyMediaManager.getCurrentDataSource())) {
+        } else if (!isCurrentVideoPlay() && MediaUtils.dataSourceContainsUri(dataSource, EasyMediaManager.getCurrentDataSource())) {
             if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
                     EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
                 //需要退出小窗退到我这里，我这里是第一层级
             }
-        } else if (!isCurrentVideoPlay() && !MediaUtils.dataSourceObjectsContainsUri(dataSourceObjects, EasyMediaManager.getCurrentDataSource())) {
         }
-        this.dataSourceObjects = dataSourceObjects;
-        this.currentUrlMapIndex = defaultUrlMapIndex;
-        currentScreen = screen;
-        mediaController.setCurrentScreen(currentScreen);
+        this.dataSource = dataSource;
+        this.currentUrlIndex = defaultIndex;
         this.objects = objects;
-        mediaController.setDataSource(dataSourceObjects, defaultUrlMapIndex, screen, objects);
+        mediaController.setCurrentScreen(currentScreen);
+        mediaController.setDataSource(dataSource, defaultIndex, objects);
         onStateNormal();
     }
 
@@ -164,14 +174,12 @@ public class EasyVideoPlayer extends FrameLayout
      * 开始播放
      */
     public void startVideo() {
-        EasyVideoPlayerManager.completeAll();
+        MediaUtils.releaseAllVideos();
         initTextureView();
         addTextureView();
         MediaUtils.setAudioFocus(getContext(), true);
-        MediaUtils.scanForActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        EasyMediaManager.setDataSource(dataSourceObjects);
-        EasyMediaManager.setCurrentDataSource(MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex));
-        EasyMediaManager.instance().positionInList = positionInList;
+        MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        EasyMediaManager.setCurrentDataSource(MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex));
         onStatePreparing();
         EasyVideoPlayerManager.setFirstFloor(this);
     }
@@ -181,14 +189,14 @@ public class EasyVideoPlayer extends FrameLayout
      */
     @Override
     public void onPlayStartClick() {
-        if (dataSourceObjects == null || MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex) == null) {
+        if (dataSource == null || MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex) == null) {
             Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT).show();
             return;
         }
         if (currentState == CURRENT_STATE_NORMAL) {
-            if (!MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex).toString().startsWith("file") && !
-                    MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex).toString().startsWith("/") &&
-                    !MediaUtils.isWifiConnected(getContext()) && !WIFI_TIP_DIALOG_SHOWED) {
+            if (!MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex).toString().startsWith("file") && !
+                    MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex).toString().startsWith("/") &&
+                    !MediaUtils.isWifiConnected(getContext()) && !WIFI_ALLOW_PLAY) {
                 showWifiDialog();
                 return;
             }
@@ -213,9 +221,9 @@ public class EasyVideoPlayer extends FrameLayout
      */
     @Override
     public void onRetryClick() {
-        if (!MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex).toString().startsWith("file") && !
-                MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex).toString().startsWith("/") &&
-                !MediaUtils.isWifiConnected(getContext()) && !WIFI_TIP_DIALOG_SHOWED) {
+        if (!MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex).toString().startsWith("file") && !
+                MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex).toString().startsWith("/") &&
+                !MediaUtils.isWifiConnected(getContext()) && !WIFI_ALLOW_PLAY) {
             showWifiDialog();
             onEvent(EasyMediaAction.ON_CLICK_START_ICON);
             return;
@@ -298,10 +306,9 @@ public class EasyVideoPlayer extends FrameLayout
     public void onStatePreparingChangingUrl(int urlMapIndex, int seekToInAdvance) {
         currentState = CURRENT_STATE_PREPARING_CHANGING_URL;
         mediaController.setCurrentState(currentState);
-        this.currentUrlMapIndex = urlMapIndex;
+        this.currentUrlIndex = urlMapIndex;
         this.seekToInAdvance = seekToInAdvance;
-        EasyMediaManager.setDataSource(dataSourceObjects);
-        EasyMediaManager.setCurrentDataSource(MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex));
+        EasyMediaManager.setCurrentDataSource(MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex));
         EasyMediaManager.instance().prepare();
     }
 
@@ -310,7 +317,7 @@ public class EasyVideoPlayer extends FrameLayout
             EasyMediaManager.seekTo(seekToInAdvance);
             seekToInAdvance = 0;
         } else {
-            int position = MediaUtils.getSavedProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex));
+            int position = MediaUtils.getSavedProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex));
             if (position != 0) {
                 EasyMediaManager.seekTo(position);
             }
@@ -345,18 +352,26 @@ public class EasyVideoPlayer extends FrameLayout
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (currentScreen == SCREEN_WINDOW_FULLSCREEN || currentScreen == SCREEN_WINDOW_TINY) {
+        if (currentScreen == SCREEN_WINDOW_FULLSCREEN) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
         if (widthRatio != 0 && heightRatio != 0) {
             int specWidth = MeasureSpec.getSize(widthMeasureSpec);
             int specHeight = (int) ((specWidth * (float) heightRatio) / widthRatio);
+            if (specHeight > specWidth / 5 * 4) {
+                //高度最大值限制
+                specHeight = specWidth / 5 * 4;
+            }
             setMeasuredDimension(specWidth, specHeight);
 
             int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(specWidth, MeasureSpec.EXACTLY);
             int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(specHeight, MeasureSpec.EXACTLY);
-            getChildAt(0).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+            textureViewContainer.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+            ((View) mediaController).measure(childWidthMeasureSpec, childHeightMeasureSpec);
+            if (getThumbImageView() != null) {
+                getThumbImageView().measure(childWidthMeasureSpec, childHeightMeasureSpec);
+            }
         } else {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
@@ -399,14 +414,14 @@ public class EasyVideoPlayer extends FrameLayout
             MediaUtils.backPress();
         }
         EasyMediaManager.instance().releaseMediaPlayer();
-        MediaUtils.saveProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex), 0);
+        MediaUtils.saveProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex), 0);
     }
 
     //播放器生命周期
     public void onCompletion() {
         if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
             int position = mediaController.getCurrentPositionWhenPlaying();
-            MediaUtils.saveProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex), position);
+            MediaUtils.saveProgress(getContext(), MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex), position);
         }
         onStateNormal();
         textureViewContainer.removeView(EasyMediaManager.textureView);
@@ -414,9 +429,9 @@ public class EasyVideoPlayer extends FrameLayout
         EasyMediaManager.instance().currentVideoHeight = 0;
 
         MediaUtils.setAudioFocus(getContext(), false);
-        MediaUtils.scanForActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        clearFullscreenLayout();
-        MediaUtils.setRequestedOrientation(getContext(), NORMAL_ORIENTATION);
+//        MediaUtils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+//        clearFullscreenLayout();
+//        MediaUtils.setRequestedOrientation(getContext(), ORIENTATION_NORMAL);
 
         if (EasyMediaManager.surface != null) {
             EasyMediaManager.surface.release();
@@ -432,7 +447,7 @@ public class EasyVideoPlayer extends FrameLayout
      * 释放播放器,全屏下不能释放,先退出全屏再释放
      */
     public void release() {
-        if (MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex).equals(EasyMediaManager.getCurrentDataSource()) &&
+        if (MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex).equals(EasyMediaManager.getCurrentDataSource()) &&
                 (System.currentTimeMillis() - MediaUtils.CLICK_QUIT_FULLSCREEN_TIME) > MediaUtils.FULL_SCREEN_NORMAL_DELAY) {
             //在非全屏的情况下只能backPress()
             if (EasyVideoPlayerManager.getSecondFloor() != null &&
@@ -470,19 +485,20 @@ public class EasyVideoPlayer extends FrameLayout
      * 移除TextureView
      */
     public void removeTextureView() {
-        EasyMediaManager.savedSurfaceTexture = null;
         if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.getParent() != null) {
+            EasyMediaManager.textureView.setSurfaceTexture(null);
+            EasyMediaManager.textureView.setSurfaceTextureListener(null);
             ((ViewGroup) EasyMediaManager.textureView.getParent()).removeView(EasyMediaManager.textureView);
         }
+        EasyMediaManager.savedSurfaceTexture = null;
+        EasyMediaManager.textureView = null;
     }
 
     /**
      * 清楚全屏和小窗口布局的布局
      */
     public void clearFullscreenLayout() {
-        //.getWindow().getDecorView();
-        ViewGroup vp = (MediaUtils.scanForActivity(getContext()))
-                .findViewById(Window.ID_ANDROID_CONTENT);
+        ViewGroup vp = MediaUtils.getDecorView(getContext());
         View oldF = vp.findViewById(R.id.easy_media_fullscreen_id);
         View oldT = vp.findViewById(R.id.easy_media_tiny_id);
         if (oldF != null) {
@@ -491,7 +507,7 @@ public class EasyVideoPlayer extends FrameLayout
         if (oldT != null) {
             vp.removeView(oldT);
         }
-        MediaUtils.showSupportActionBar(getContext());
+        MediaUtils.setActivityFullscreen(getContext(), false);
     }
 
     public void onVideoSizeChanged() {
@@ -510,10 +526,9 @@ public class EasyVideoPlayer extends FrameLayout
      * 再把activity设置成全屏，
      */
     public void startWindowFullscreen() {
-        MediaUtils.hideSupportActionBar(getContext());
-        MediaUtils.setRequestedOrientation(getContext(), FULLSCREEN_ORIENTATION);
-        ViewGroup vp = (MediaUtils.scanForActivity(getContext()))
-                .findViewById(Window.ID_ANDROID_CONTENT);
+        MediaUtils.setActivityFullscreen(getContext(), true);
+        MediaUtils.setRequestedOrientation(getContext(), mFullscreenPortrait ? ORIENTATION_FULLSCREEN_SENSOR : ORIENTATION_FULLSCREEN_LANDSCAPE);
+        ViewGroup vp = MediaUtils.getDecorView(getContext());
         View old = vp.findViewById(R.id.easy_media_fullscreen_id);
         if (old != null) {
             vp.removeView(old);
@@ -523,12 +538,16 @@ public class EasyVideoPlayer extends FrameLayout
             Constructor<EasyVideoPlayer> constructor = (Constructor<EasyVideoPlayer>) EasyVideoPlayer.this.getClass().getConstructor(Context.class);
             EasyVideoPlayer easyVideoPlayer = constructor.newInstance(getContext());
             easyVideoPlayer.setId(R.id.easy_media_fullscreen_id);
+            easyVideoPlayer.setFullscreenPortrait(mFullscreenPortrait);
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             vp.addView(easyVideoPlayer, lp);
+            //View.SYSTEM_UI_FLAG_HIDE_NAVIGATION：隐藏虚拟按键(导航栏)。有些手机会用虚拟按键来代替物理按键。
+            //View.SYSTEM_UI_FLAG_FULLSCREEN：Activity全屏显示，且状态栏被隐藏覆盖掉。
             easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            easyVideoPlayer.setDataSource(dataSourceObjects, currentUrlMapIndex, SCREEN_WINDOW_FULLSCREEN, objects);
+            easyVideoPlayer.setCurrentScreen(MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN);
+            easyVideoPlayer.setDataSource(dataSource, currentUrlIndex, objects);
             easyVideoPlayer.addTextureView();
             EasyVideoPlayerManager.setSecondFloor(easyVideoPlayer);
             easyVideoPlayer.setState(currentState);
@@ -538,6 +557,8 @@ public class EasyVideoPlayer extends FrameLayout
             MediaUtils.CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
             //还原默认的view
             onStateNormal();
+            //取消定时器
+            mediaController.cancelDismissControlViewSchedule();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -551,25 +572,27 @@ public class EasyVideoPlayer extends FrameLayout
         if (currentState == CURRENT_STATE_NORMAL || currentState == CURRENT_STATE_ERROR || currentState == CURRENT_STATE_AUTO_COMPLETE) {
             return;
         }
-        ViewGroup vp = (MediaUtils.scanForActivity(getContext()))//.getWindow().getDecorView();
-                .findViewById(Window.ID_ANDROID_CONTENT);
+        ViewGroup vp = MediaUtils.getDecorView(getContext());
         View old = vp.findViewById(R.id.easy_media_tiny_id);
         if (old != null) {
             vp.removeView(old);
         }
         textureViewContainer.removeView(EasyMediaManager.textureView);
-
         try {
             Constructor<EasyVideoPlayer> constructor = (Constructor<EasyVideoPlayer>) EasyVideoPlayer.this.getClass().getConstructor(Context.class);
-            EasyVideoPlayer EasyVideoPlayer = constructor.newInstance(getContext());
-            EasyVideoPlayer.setId(R.id.easy_media_tiny_id);
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(400, 400);
+            EasyVideoPlayer videoPlayer = constructor.newInstance(getContext());
+            videoPlayer.setId(R.id.easy_media_tiny_id);
+            int width = getResources().getDisplayMetrics().widthPixels / 5 * 2;
+            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width, width);
             lp.gravity = Gravity.RIGHT | Gravity.BOTTOM;
-            vp.addView(EasyVideoPlayer, lp);
-            EasyVideoPlayer.setDataSource(dataSourceObjects, currentUrlMapIndex, SCREEN_WINDOW_TINY, objects);
-            EasyVideoPlayer.setState(currentState);
-            EasyVideoPlayer.addTextureView();
-            EasyVideoPlayerManager.setSecondFloor(EasyVideoPlayer);
+            videoPlayer.setTranslationY(-10);
+            vp.addView(videoPlayer, lp);
+            videoPlayer.setCurrentScreen(SCREEN_WINDOW_TINY);
+            videoPlayer.setDataSource(dataSource, currentUrlIndex, objects);
+            videoPlayer.setState(currentState);
+            videoPlayer.setVideoRatio(widthRatio, heightRatio);
+            videoPlayer.addTextureView();
+            EasyVideoPlayerManager.setSecondFloor(videoPlayer);
             onStateNormal();
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -584,7 +607,7 @@ public class EasyVideoPlayer extends FrameLayout
     public boolean isCurrentPlay() {
         //不仅正在播放的url不能一样，并且各个清晰度也不能一样
         return isCurrentVideoPlay()
-                && MediaUtils.dataSourceObjectsContainsUri(dataSourceObjects, EasyMediaManager.getCurrentDataSource());
+                && MediaUtils.dataSourceContainsUri(dataSource, EasyMediaManager.getCurrentDataSource());
     }
 
     /**
@@ -604,7 +627,7 @@ public class EasyVideoPlayer extends FrameLayout
 
     //获取当前播放uil
     public Object getCurrentUrl() {
-        return MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex);
+        return MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex);
     }
 
     //设置TextureView旋转
@@ -629,7 +652,7 @@ public class EasyVideoPlayer extends FrameLayout
         //1.清空全屏和小窗的播放器
         currentState = EasyVideoPlayerManager.getSecondFloor().currentState;
         mediaController.setCurrentState(currentState);
-        currentUrlMapIndex = EasyVideoPlayerManager.getSecondFloor().currentUrlMapIndex;
+        currentUrlIndex = EasyVideoPlayerManager.getSecondFloor().currentUrlIndex;
         clearFloatScreen();
         //2.在本Video上播放
         setState(currentState);
@@ -640,13 +663,12 @@ public class EasyVideoPlayer extends FrameLayout
      * 清空全屏
      */
     public void clearFloatScreen() {
-        MediaUtils.setRequestedOrientation(getContext(), NORMAL_ORIENTATION);
-        MediaUtils.showSupportActionBar(getContext());
+        MediaUtils.setRequestedOrientation(getContext(), ORIENTATION_NORMAL);
+        MediaUtils.setActivityFullscreen(getContext(), false);
         EasyVideoPlayer currentPlay = EasyVideoPlayerManager.getCurrentVideoPlayer();
         currentPlay.textureViewContainer.removeView(EasyMediaManager.textureView);
-        ViewGroup vp = (MediaUtils.scanForActivity(getContext()))
-                .findViewById(Window.ID_ANDROID_CONTENT);
-        vp.removeView(currentPlay);
+
+        MediaUtils.getDecorView(getContext()).removeView(currentPlay);
         EasyVideoPlayerManager.setSecondFloor(null);
     }
 
@@ -671,30 +693,16 @@ public class EasyVideoPlayer extends FrameLayout
     }
 
     /**
-     * 自动退出全屏
-     */
-    public void autoQuitFullscreen() {
-        if ((System.currentTimeMillis() - lastAutoFullscreenTime) > 2000
-                && isCurrentPlay()
-                && currentState == CURRENT_STATE_PLAYING
-                && currentScreen == SCREEN_WINDOW_FULLSCREEN) {
-            lastAutoFullscreenTime = System.currentTimeMillis();
-            MediaUtils.backPress();
-        }
-    }
-
-    /**
      * 实现播放事件的回掉
      *
      * @param type 事件类型
      */
     @Override
     public void onEvent(int type) {
-        if (MEDIA_EVENT != null && isCurrentPlay() && dataSourceObjects != null) {
-            MEDIA_EVENT.onEvent(type, MediaUtils.getCurrentFromDataSource(dataSourceObjects, currentUrlMapIndex), currentScreen, objects);
+        if (MEDIA_EVENT != null && isCurrentPlay() && dataSource != null) {
+            MEDIA_EVENT.onEvent(type, MediaUtils.getCurrentFromDataSource(dataSource, currentUrlIndex), currentScreen, objects);
         }
     }
-
 
     //显示非wifi播放提示
     public void showWifiDialog() {
@@ -706,7 +714,7 @@ public class EasyVideoPlayer extends FrameLayout
                 dialog.dismiss();
                 onEvent(EasyMediaAction.ON_CLICK_START_NO_WIFI_GOON);
                 startVideo();
-                WIFI_TIP_DIALOG_SHOWED = true;
+                WIFI_ALLOW_PLAY = true;
             }
         });
         builder.setNegativeButton(getResources().getString(R.string.tips_not_wifi_cancel), new DialogInterface.OnClickListener() {
@@ -731,4 +739,53 @@ public class EasyVideoPlayer extends FrameLayout
         });
         builder.create().show();
     }
+
+    /**
+     * 自动退出全屏
+     */
+    public void autoQuitFullscreen() {
+        if ((System.currentTimeMillis() - lastAutoFullscreenTime) > 2000
+                && isCurrentPlay()
+                && currentState == CURRENT_STATE_PLAYING
+                && currentScreen == SCREEN_WINDOW_FULLSCREEN) {
+            lastAutoFullscreenTime = System.currentTimeMillis();
+            MediaUtils.backPress();
+        }
+    }
+
+    /**
+     * 设置是列表播放的
+     * 请在setData之前设置
+     */
+    public void setCurrentPlayList() {
+        this.currentScreen = MediaScreenStatus.SCREEN_WINDOW_LIST;
+    }
+
+    /**
+     * 全屏后是否可以竖屏
+     */
+    public void setFullscreenPortrait(boolean mFullscreenPortrait) {
+        this.mFullscreenPortrait = mFullscreenPortrait;
+    }
+
+    public boolean isFullscreenPortrait() {
+        return mFullscreenPortrait;
+    }
+
+    /**
+     * 设置宽高比例
+     *
+     * @param widthRatio
+     * @param heightRatio
+     */
+    public void setVideoRatio(int widthRatio, int heightRatio) {
+        this.heightRatio = heightRatio;
+        this.widthRatio = widthRatio;
+    }
+
+    public ImageView getThumbImageView() {
+        return mediaController.getThumbImageView();
+    }
+
+
 }

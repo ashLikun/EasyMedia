@@ -65,7 +65,7 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
         backButton.setOnClickListener(this);
     }
 
-    public void setInitData(int screen, Object[] objects) {
+    public void setInitData(int screen, Object... objects) {
         if (objects.length != 0) {
             setTitle(objects[0].toString());
         }
@@ -121,17 +121,17 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
                 int scale = intent.getIntExtra("scale", 100);
                 int percent = level * 100 / scale;
                 if (percent < 15) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_10);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_10);
                 } else if (percent >= 15 && percent < 40) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_30);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_30);
                 } else if (percent >= 40 && percent < 60) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_50);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_50);
                 } else if (percent >= 60 && percent < 80) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_70);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_70);
                 } else if (percent >= 80 && percent < 95) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_90);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_90);
                 } else if (percent >= 95 && percent <= 100) {
-                    batteryLevel.setBackgroundResource(R.drawable.easy_media_battery_level_100);
+                    batteryLevel.setBackgroundResource(R.mipmap.easy_media_battery_level_100);
                 }
                 getContext().unregisterReceiver(battertReceiver);
                 battertReceiver.setDebugUnregister(false);

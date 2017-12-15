@@ -7,24 +7,22 @@ import android.view.Surface;
  * 创建时间: 2017/11/24 17:10
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：抽象出来的公共接口，自定义播放器要实现这个接口
+ * 功能介绍：播放引擎
+ * 抽象出来的公共接口，自定义播放器要实现这个接口
  */
 public abstract class EasyMediaInterface {
     //正在播放的当前url或uri
     public Object currentDataSource;
-    /**
-     * 第一个是url的map
-     * 第二个是loop
-     * 第三个是header
-     * 第四个是context
-     * 包含了地址的map（多分辨率用），context，loop，header等
-     */
-    public Object[] dataSourceObjects;
 
     /**
      * 开始播放
      */
     public abstract void start();
+
+    /**
+     * 停止
+     */
+    public abstract void stop();
 
     /**
      * 准备

@@ -16,11 +16,27 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+        maven {
+            jcenter()
+            url "https://jitpack.io"
+        }
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile rootProject.ext.designVersion
+    provided 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
+    provided 'com.github.ashLikun.ijkplayer:lite:0.0.1'
 }
 
 apply from: '../maven.gradle'

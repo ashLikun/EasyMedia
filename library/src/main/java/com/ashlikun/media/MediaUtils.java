@@ -1,6 +1,5 @@
 package com.ashlikun.media;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.view.ContextThemeWrapper;
 import android.text.TextUtils;
@@ -23,7 +21,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
-import java.lang.reflect.Constructor;
+import com.ashlikun.media.status.MediaStatus;
+
 import java.util.Formatter;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -31,24 +30,27 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
+import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 
 /**
- * Created by Nathen
- * On 2016/02/21 12:25
+ * 作者　　: 李坤
+ * 创建时间: 2017/12/13 16:03
+ * 邮箱　　：496546144@qq.com
+ * <p>
+ * 功能介绍：
  */
+
 public class MediaUtils {
-    //是否存在actionBar
-    public static boolean ACTION_BAR_EXIST = true;
-    //是否存在ToolBar
-    public static boolean TOOL_BAR_EXIST = true;
+    //是否存在 FLAG_FULLSCREEN
+    public static boolean FLAG_FULLSCREEN_EXIST = true;
+    //当onResume的时候是否去播放
+    private static boolean ONRESUME_TO_PLAY = true;
     public static long CLICK_QUIT_FULLSCREEN_TIME = 0;
     public static final int FULL_SCREEN_NORMAL_DELAY = 300;
-    public static final String TAG = "EasyMedia";
     public static final String EASY_MEDIA_PROGRESS = "EASY_MEDIA_PROGRESS";
     //更新进度的定时器
     private static ScheduledExecutorService POOL_SCHEDULE;
@@ -94,10 +96,10 @@ public class MediaUtils {
     }
 
     /**
-     * This method requires the caller to hold the permission ACCESS_NETWORK_STATE.
+     * 是否有wifi
      *
-     * @param context context
-     * @return if wifi is connected,return true
+     * @param context
+     * @return
      */
     public static boolean isWifiConnected(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -105,29 +107,46 @@ public class MediaUtils {
         return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
+
     /**
-     * Get activity from context object
+     * 获取activity
      *
-     * @param context context
-     * @return object of Activity or null if it is not Activity
+     * @param context
+     * @return
      */
-    public static Activity scanForActivity(Context context) {
-        if (context == null) return null;
+    public static Activity getActivity(Context context) {
+        if (context == null) {
+            return null;
+        }
 
         if (context instanceof Activity) {
             return (Activity) context;
         } else if (context instanceof ContextWrapper) {
-            return scanForActivity(((ContextWrapper) context).getBaseContext());
+            return getActivity(((ContextWrapper) context).getBaseContext());
+        } else if (context instanceof ContextThemeWrapper) {
+            return getActivity(((ContextThemeWrapper) context).getBaseContext());
         }
 
         return null;
     }
 
     /**
-     * Get AppCompatActivity from context
+     * 获取Activity的跟布局DecorView
      *
-     * @param context context
-     * @return AppCompatActivity if it's not null
+     * @param context
+     * @return
+     */
+    public static ViewGroup getDecorView(Context context) {
+//        return (MediaUtils.getActivity(context)).getWindow().getDecorView()
+//                .findViewById(Window.ID_ANDROID_CONTENT);
+        return (ViewGroup) (MediaUtils.getActivity(context)).getWindow().getDecorView();
+    }
+
+    /**
+     * 获取activity
+     *
+     * @param context
+     * @return
      */
     public static AppCompatActivity getAppCompActivity(Context context) {
         if (context == null) {
@@ -142,20 +161,15 @@ public class MediaUtils {
     }
 
     public static void setRequestedOrientation(Context context, int orientation) {
-        if (getAppCompActivity(context) != null) {
-            getAppCompActivity(context).setRequestedOrientation(
-                    orientation);
-        } else {
-            scanForActivity(context).setRequestedOrientation(
-                    orientation);
-        }
+        getActivity(context).setRequestedOrientation(
+                orientation);
     }
 
     public static Window getWindow(Context context) {
         if (getAppCompActivity(context) != null) {
             return getAppCompActivity(context).getWindow();
         } else {
-            return scanForActivity(context).getWindow();
+            return getActivity(context).getWindow();
         }
     }
 
@@ -217,10 +231,12 @@ public class MediaUtils {
         }
     }
 
-    public static Object getCurrentFromDataSource(Object[] dataSourceObjects, int index) {
-        LinkedHashMap<String, Object> map = (LinkedHashMap) dataSourceObjects[0];
-        if (map != null && map.size() > 0) {
-            return getValueFromLinkedMap(map, index);
+    /**
+     * 从播放数组里面获取当前播放的
+     */
+    public static Object getCurrentFromDataSource(Object[] dataSource, int index) {
+        if (dataSource.length > index) {
+            return dataSource[index];
         }
         return null;
     }
@@ -237,64 +253,52 @@ public class MediaUtils {
         return null;
     }
 
-    public static boolean dataSourceObjectsContainsUri(Object[] dataSourceObjects, Object object) {
-        LinkedHashMap<String, Object> map = (LinkedHashMap) dataSourceObjects[0];
-        if (map != null) {
-            return map.containsValue(object);
+    /**
+     * 当前的播放数组是否包含正在播放的url
+     */
+    public static boolean dataSourceContainsUri(Object[] dataSource, Object object) {
+        if (dataSource == null || object == null) {
+            return false;
+        }
+        for (Object o : dataSource) {
+            return object == o || object.equals(o);
         }
         return false;
-    }
-
-    public static String getKeyFromDataSource(Object[] dataSourceObjects, int index) {
-        LinkedHashMap<String, Object> map = (LinkedHashMap) dataSourceObjects[0];
-        int currentIndex = 0;
-        for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-            Object key = it.next();
-            if (currentIndex == index) {
-                return key.toString();
-            }
-            currentIndex++;
-        }
-        return null;
     }
 
     /**
      * 直接开始全屏播放
      *
-     * @param context
-     * @param url     地址
-     * @param objects 标题
+     * @param easyVideoPlayer 请实例化一个播放器
+     * @param url             地址
+     * @param objects         标题
      */
-    public static void startFullscreen(Context context, String url, Object... objects) {
-        LinkedHashMap map = new LinkedHashMap();
-        map.put(EasyVideoPlayer.URL_KEY_DEFAULT, url);
-        Object[] dataSourceObjects = new Object[1];
-        dataSourceObjects[0] = map;
-        startFullscreen(context, dataSourceObjects, 0, objects);
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, String url, Object... objects) {
+        Object[] dataSource = new Object[1];
+        dataSource[0] = url;
+        startFullscreen(easyVideoPlayer, dataSource, 0, objects);
     }
 
-    public static void startFullscreen(Context context, Object[] dataSourceObjects, int defaultUrlMapIndex, Object... objects) {
-        hideSupportActionBar(context);
-        MediaUtils.setRequestedOrientation(context, EasyVideoPlayer.FULLSCREEN_ORIENTATION);
-        ViewGroup vp = (MediaUtils.scanForActivity(context))//.getWindow().getDecorView();
-                .findViewById(Window.ID_ANDROID_CONTENT);
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, Object[] dataSource, int defaultIndex, Object... objects) {
+        setActivityFullscreen(easyVideoPlayer.getContext(), true);
+        MediaUtils.setRequestedOrientation(easyVideoPlayer.getContext(),
+                easyVideoPlayer.isFullscreenPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR : EasyVideoPlayer.ORIENTATION_FULLSCREEN_LANDSCAPE);
+        ViewGroup vp = MediaUtils.getDecorView(easyVideoPlayer.getContext());
         View old = vp.findViewById(R.id.easy_media_fullscreen_id);
         if (old != null) {
             vp.removeView(old);
         }
         try {
-            Constructor<EasyVideoPlayer> constructor = EasyVideoPlayer.class.getConstructor(Context.class);
-            final EasyVideoPlayer easyVideoPlayer = constructor.newInstance(context);
             easyVideoPlayer.setId(R.id.easy_media_fullscreen_id);
             FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             vp.addView(easyVideoPlayer, lp);
-            Animation ra = AnimationUtils.loadAnimation(context, R.anim.start_fullscreen);
+            Animation ra = AnimationUtils.loadAnimation(easyVideoPlayer.getContext(), R.anim.start_fullscreen);
             easyVideoPlayer.setAnimation(ra);
-            easyVideoPlayer.setDataSource(dataSourceObjects, defaultUrlMapIndex, SCREEN_WINDOW_FULLSCREEN, objects);
+            easyVideoPlayer.setCurrentScreen(SCREEN_WINDOW_FULLSCREEN);
+            easyVideoPlayer.setDataSource(dataSource, defaultIndex, objects);
+            easyVideoPlayer.onPlayStartClick();
             CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -327,34 +331,24 @@ public class MediaUtils {
         EasyVideoPlayerManager.completeAll();
     }
 
-    //显示标题栏
-    @SuppressLint("RestrictedApi")
-    public static void showSupportActionBar(Context context) {
-        if (ACTION_BAR_EXIST && MediaUtils.getAppCompActivity(context) != null) {
-            ActionBar ab = MediaUtils.getAppCompActivity(context).getSupportActionBar();
-            if (ab != null) {
-                ab.setShowHideAnimationEnabled(false);
-                ab.show();
+    //设置activity全屏
+    public static void setActivityFullscreen(Context context, boolean isFullscreen) {
+        if (isFullscreen) {
+            int flag = MediaUtils.getWindow(context).getAttributes().flags;
+            if ((flag & WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                    == WindowManager.LayoutParams.FLAG_FULLSCREEN) {
+                FLAG_FULLSCREEN_EXIST = true;
+            } else {
+                FLAG_FULLSCREEN_EXIST = false;
             }
-        }
-        if (TOOL_BAR_EXIST) {
-            MediaUtils.getWindow(context).clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
-    }
-
-    //隐藏标题栏
-    @SuppressLint("RestrictedApi")
-    public static void hideSupportActionBar(Context context) {
-        if (ACTION_BAR_EXIST && MediaUtils.getAppCompActivity(context) != null) {
-            ActionBar ab = MediaUtils.getAppCompActivity(context).getSupportActionBar();
-            if (ab != null) {
-                ab.setShowHideAnimationEnabled(false);
-                ab.hide();
+            if (!FLAG_FULLSCREEN_EXIST) {
+                MediaUtils.getWindow(context).setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
-        }
-        if (TOOL_BAR_EXIST) {
-            MediaUtils.getWindow(context).setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            if (!FLAG_FULLSCREEN_EXIST) {
+                MediaUtils.getWindow(context).clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
         }
     }
 
@@ -365,9 +359,9 @@ public class MediaUtils {
         }
         if (EasyVideoPlayerManager.getSecondFloor() != null) {
             CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
-            if (MediaUtils.dataSourceObjectsContainsUri(EasyVideoPlayerManager.getFirstFloor().dataSourceObjects, EasyMediaManager.getCurrentDataSource())) {
-                EasyVideoPlayer EasyVideoPlayer = EasyVideoPlayerManager.getSecondFloor();
-                EasyVideoPlayer.onEvent(EasyVideoPlayer.currentScreen == SCREEN_WINDOW_FULLSCREEN ?
+            if (MediaUtils.dataSourceContainsUri(EasyVideoPlayerManager.getFirstFloor().dataSource, EasyMediaManager.getCurrentDataSource())) {
+                EasyVideoPlayer easyVideoPlayer = EasyVideoPlayerManager.getSecondFloor();
+                easyVideoPlayer.onEvent(easyVideoPlayer.currentScreen == SCREEN_WINDOW_FULLSCREEN ?
                         EasyMediaAction.ON_QUIT_FULLSCREEN :
                         EasyMediaAction.ON_QUIT_TINYSCREEN);
                 EasyVideoPlayerManager.getFirstFloor().playOnThisVideo();
@@ -388,8 +382,8 @@ public class MediaUtils {
     //释放video
     public static void releaseAllVideos() {
         if ((System.currentTimeMillis() - MediaUtils.CLICK_QUIT_FULLSCREEN_TIME) > MediaUtils.FULL_SCREEN_NORMAL_DELAY) {
+            //把之前的设置到完成状态
             EasyVideoPlayerManager.completeAll();
-            EasyMediaManager.instance().positionInList = -1;
             EasyMediaManager.instance().releaseMediaPlayer();
         }
     }
@@ -403,7 +397,7 @@ public class MediaUtils {
     public static void onChildViewAttachedToWindow(View view, int vidoPlayId) {
         if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null && EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
             EasyVideoPlayer videoPlayer = view.findViewById(vidoPlayId);
-            if (videoPlayer != null && MediaUtils.getCurrentFromDataSource(videoPlayer.dataSourceObjects, videoPlayer.currentUrlMapIndex).equals(EasyMediaManager.getCurrentDataSource())) {
+            if (videoPlayer != null && MediaUtils.getCurrentFromDataSource(videoPlayer.dataSource, videoPlayer.currentUrlIndex).equals(EasyMediaManager.getCurrentDataSource())) {
                 MediaUtils.backPress();
             }
         }
@@ -425,14 +419,14 @@ public class MediaUtils {
 
 
     /**
-     * 列表滑动时候自动小窗口
+     * ListView列表滑动时候自动小窗口
+     * RecyclerView请用recyclerView.addOnChildAttachStateChangeListener
      *
      * @param firstVisibleItem 第一个有效的Item
      * @param visibleItemCount 一共有效的Item
      */
-    public static void onScrollAutoTiny(int firstVisibleItem, int visibleItemCount) {
+    public static void onScrollAutoTiny(int currentPlayPosition, int firstVisibleItem, int visibleItemCount) {
         int lastVisibleItem = firstVisibleItem + visibleItemCount;
-        int currentPlayPosition = EasyMediaManager.instance().positionInList;
         if (currentPlayPosition >= 0) {
             if ((currentPlayPosition < firstVisibleItem || currentPlayPosition > (lastVisibleItem - 1))) {
                 if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
@@ -453,14 +447,15 @@ public class MediaUtils {
     }
 
     /**
-     * 列表滑动时候清空全部播放
+     * 列表滑动时候清空全部播放  ListView用的
+     * RecyclerView请用recyclerView.addOnChildAttachStateChangeListener
      *
-     * @param firstVisibleItem 第一个有效的Item
-     * @param visibleItemCount 一共有效的Item
+     * @param currentPlayPosition 当前正在播放的item
+     * @param firstVisibleItem    第一个有效的Item
+     * @param visibleItemCount    一共有效的Item
      */
-    public static void onScrollReleaseAllVideos(int firstVisibleItem, int visibleItemCount) {
+    public static void onScrollReleaseAllVideos(int currentPlayPosition, int firstVisibleItem, int visibleItemCount) {
         int lastVisibleItem = firstVisibleItem + visibleItemCount;
-        int currentPlayPosition = EasyMediaManager.instance().positionInList;
         if (currentPlayPosition >= 0) {
             if ((currentPlayPosition < firstVisibleItem || currentPlayPosition > (lastVisibleItem - 1))) {
                 MediaUtils.releaseAllVideos();
@@ -468,15 +463,66 @@ public class MediaUtils {
         }
     }
 
+    /**
+     * 作者　　: 李坤
+     * 创建时间: 2017/12/14 10:27
+     * 邮箱　　：496546144@qq.com
+     * <p>
+     * 方法功能：RecyclerView列表滑动时候自动小窗口
+     *
+     * @param isChileViewDetached 子view是否分离 true:分离，false:添加
+     */
+    public static void onRecyclerAutoTiny(EasyVideoPlayer videoPlayer, boolean isChileViewDetached) {
+        //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
+        if (videoPlayer == null || !MediaUtils.dataSourceContainsUri(videoPlayer.dataSource,
+                EasyMediaManager.getCurrentDataSource())) {
+            return;
+        }
+        if (isChileViewDetached) {
+            if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
+                    EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen != SCREEN_WINDOW_TINY) {
+                if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PAUSE) {
+                    MediaUtils.releaseAllVideos();
+                } else {
+                    EasyVideoPlayerManager.getCurrentVideoPlayer().startWindowTiny();
+                }
+            }
+        } else if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
+                EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
+            MediaUtils.backPress();
+        }
+    }
+
+    /**
+     * RecyclerView滑动时候清空全部播放  ListView用的
+     * RecyclerView请用recyclerView.addOnChildAttachStateChangeListener
+     *
+     * @param videoPlayer 当前子view播放器
+     */
+    public static void onRecyclerRelease(EasyVideoPlayer videoPlayer) {
+        //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
+        if (videoPlayer == null || !MediaUtils.dataSourceContainsUri(videoPlayer.dataSource,
+                EasyMediaManager.getCurrentDataSource())) {
+            return;
+        }
+        MediaUtils.releaseAllVideos();
+    }
+
+
     //对应activity得生命周期
     public static void onPause() {
         if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-            EasyVideoPlayer jzvd = EasyVideoPlayerManager.getCurrentVideoPlayer();
-            if (jzvd.currentState == CURRENT_STATE_AUTO_COMPLETE ||
-                    jzvd.currentState == CURRENT_STATE_NORMAL) {
-//                EasyVideoPlayer.releaseAllVideos();
+            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayer();
+            if (videoPlayer.currentState == CURRENT_STATE_AUTO_COMPLETE ||
+                    videoPlayer.currentState == CURRENT_STATE_NORMAL) {
+                MediaUtils.releaseAllVideos();
             } else {
-                jzvd.onStatePause();
+                if (videoPlayer.currentState == MediaStatus.CURRENT_STATE_PLAYING) {
+                    ONRESUME_TO_PLAY = true;
+                } else {
+                    ONRESUME_TO_PLAY = false;
+                }
+                videoPlayer.onStatePause();
                 EasyMediaManager.pause();
             }
         }
@@ -485,9 +531,9 @@ public class MediaUtils {
     //对应activity得生命周期
     public static void onResume() {
         if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-            EasyVideoPlayer jzvd = EasyVideoPlayerManager.getCurrentVideoPlayer();
-            if (jzvd.currentState == CURRENT_STATE_PAUSE) {
-                jzvd.onStatePlaying();
+            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayer();
+            if (videoPlayer.currentState == CURRENT_STATE_PAUSE && ONRESUME_TO_PLAY) {
+                videoPlayer.onStatePlaying();
                 EasyMediaManager.start();
             }
         }
@@ -513,12 +559,8 @@ public class MediaUtils {
                     MediaUtils.releaseAllVideos();
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                    try {
-                        if (EasyMediaManager.isPlaying()) {
-                            EasyMediaManager.pause();
-                        }
-                    } catch (IllegalStateException e) {
-                        e.printStackTrace();
+                    if (EasyMediaManager.isPlaying()) {
+                        EasyMediaManager.pause();
                     }
                     break;
                 case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:

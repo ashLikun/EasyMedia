@@ -29,7 +29,7 @@
                 android:id="@+id/tv_current"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#fff85959"
+                android:textColor="?colorPrimary"
                 android:textSize="14sp" />
 
             <TextView

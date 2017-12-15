@@ -1,4 +1,4 @@
 <resources>
-    <dimen name="media_start_button_w_h_normal">32dp</dimen>
-    <dimen name="media_start_button_w_h_fullscreen">48dp</dimen>
+    <dimen name="media_start_button_w_h_normal">44dp</dimen>
+    <dimen name="media_start_button_w_h_fullscreen">60dp</dimen>
 </resources>

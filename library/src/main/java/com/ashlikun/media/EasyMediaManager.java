@@ -25,7 +25,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public static SurfaceTexture savedSurfaceTexture;
     public static Surface surface;
 
-    public int positionInList = -1;
     //播放器
     public EasyMediaInterface mMediaPlay;
     public int currentVideoWidth = 0;
@@ -49,14 +48,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         return easyMediaManager;
     }
 
-    public static Object[] getDataSource() {
-        return instance().mMediaPlay.dataSourceObjects;
-    }
-
-    //这几个方法是不是多余了，为了不让其他地方动MediaInterface的方法
-    public static void setDataSource(Object[] dataSourceObjects) {
-        instance().mMediaPlay.dataSourceObjects = dataSourceObjects;
-    }
 
     //正在播放的url或者uri
     public static Object getCurrentDataSource() {
@@ -87,8 +78,16 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         instance().mMediaPlay.start();
     }
 
+    public static void stop() {
+        instance().mMediaPlay.stop();
+    }
+
     public static boolean isPlaying() {
-        return instance().mMediaPlay.isPlaying();
+        try {
+            return instance().mMediaPlay.isPlaying();
+        } catch (IllegalStateException e) {
+        }
+        return false;
     }
 
     public void releaseMediaPlayer() {
@@ -150,6 +149,9 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
                     mMediaPlay.setSurface(surface);
                     break;
                 case HANDLER_RELEASE:
+                    if (isPlaying()) {
+                        stop();
+                    }
                     mMediaPlay.release();
                     break;
             }

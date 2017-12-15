@@ -22,12 +22,12 @@ import com.ashlikun.media.status.MediaStatus;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
+import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
+import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
 
 /**
  * 作者　　: 李坤
@@ -46,9 +46,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     //进度文本
     public TextView currentTimeTextView, totalTimeTextView;
 
-
-    //
-    public TextView clarity;
     public OnEventListener onEventListener;
 
     public void setOnEventListener(OnEventListener onEventListener) {
@@ -73,16 +70,11 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         setGravity(Gravity.CENTER_VERTICAL);
         LayoutInflater.from(getContext()).inflate(R.layout.easy_layout_controller_bottom, this);
         setBackgroundResource(R.drawable.easy_media_bottom_bg);
-
-
         progressBar = findViewById(R.id.bottom_seek_progress);
         fullscreenButton = findViewById(R.id.fullscreen);
         currentTimeTextView = findViewById(R.id.current);
         totalTimeTextView = findViewById(R.id.total);
-        clarity = findViewById(R.id.clarity);
         progressBar.setOnSeekBarChangeListener(this);
-
-
         fullscreenButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,9 +85,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         });
     }
 
-    public void setInitData(Object[] dataSourceObjects, int screen) {
-        setClarityIsShow(dataSourceObjects != null
-                && dataSourceObjects.length > 1);
+    public void setInitData(Object[] dataSource, int screen) {
         if (screen == SCREEN_WINDOW_FULLSCREEN) {
             setIsFull(true);
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
@@ -111,10 +101,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         } else {
             fullscreenButton.setImageResource(R.drawable.easy_media_enlarge);
         }
-    }
-
-    public void setClarityIsShow(boolean isShow) {
-        clarity.setVisibility(isShow ? VISIBLE : GONE);
     }
 
     //重置进度条
@@ -251,6 +237,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
 
         void onFullscreenClick();
 
-        void onProgressChang( int progress);
+        void onProgressChang(int progress);
     }
 }

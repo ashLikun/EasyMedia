@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="50dp"
     android:layout_alignParentBottom="true"
-    android:background="@drawable/easy_media_bottom_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:visibility="invisible">
@@ -39,15 +38,6 @@
         android:text="00:00"
         android:textColor="#ffffff" />
 
-    <TextView
-        android:id="@+id/clarity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:paddingLeft="10dp"
-        android:text="clarity"
-        android:textAlignment="center"
-        android:textColor="#ffffff" />
 
     <ImageView
         android:id="@+id/fullscreen"

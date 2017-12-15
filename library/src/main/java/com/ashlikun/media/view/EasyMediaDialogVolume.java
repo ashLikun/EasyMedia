@@ -56,9 +56,9 @@ public class EasyMediaDialogVolume extends Dialog {
 
     public void setVolumePercent(int volumePercent) {
         if (volumePercent <= 0) {
-            mDialogVolumeImageView.setBackgroundResource(R.drawable.easy_media_close_volume);
+            mDialogVolumeImageView.setBackgroundResource(R.mipmap.easy_media_close_volume);
         } else {
-            mDialogVolumeImageView.setBackgroundResource(R.drawable.easy_media_add_volume);
+            mDialogVolumeImageView.setBackgroundResource(R.mipmap.easy_media_add_volume);
         }
         if (volumePercent > 100) {
             volumePercent = 100;

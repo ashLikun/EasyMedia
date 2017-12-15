@@ -1,5 +1,7 @@
 package com.ashlikun.media.controller;
 
+import android.widget.ImageView;
+
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.status.MediaScreenStatus;
 import com.ashlikun.media.view.EasyOnControllEvent;
@@ -14,7 +16,7 @@ import com.ashlikun.media.view.EasyOnControllEvent;
 
 public interface MediaControllerInterface {
 
-    public void setDataSource(Object[] dataSourceObjects, int defaultUrlMapIndex, int screen, Object... objects);
+    public void setDataSource(Object[] dataSource, int defaultIndex, Object... objects);
 
     public void setOnControllEvent(EasyOnControllEvent onControllEvent);
 
@@ -43,5 +45,8 @@ public interface MediaControllerInterface {
 
     //自动播放完成
     public void onAutoCompletion();
+
+    //获取占位图
+    public ImageView getThumbImageView();
 
 }

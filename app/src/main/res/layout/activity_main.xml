@@ -1,14 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.ashlikun.media.simple.MainActivity">
+    android:layout_height="match_parent">
 
-    <com.ashlikun.media.EasyVideoPlayer
-        android:id="@+id/mediaPlay"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="300dp"></com.ashlikun.media.EasyVideoPlayer>
+        android:layout_height="match_parent">
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.ashlikun.media.EasyVideoPlayer
+                android:id="@+id/mediaPlay"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"></com.ashlikun.media.EasyVideoPlayer>
+
+            <Button
+                android:id="@+id/listButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="内涵段子列表播放" />
+
+            <Button
+                android:id="@+id/fullScreenButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="直接全屏播放" />
+
+            <Button
+                android:id="@+id/fullScreenButton2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="直接全屏播放(只能横屏)" />
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</FrameLayout>

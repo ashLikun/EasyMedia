@@ -1,16 +1,21 @@
-package com.ashlikun.media;
+package com.ashlikun.media.play;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.view.Surface;
 
-import java.lang.reflect.Method;
-import java.util.Map;
+import com.ashlikun.media.EasyMediaInterface;
+import com.ashlikun.media.EasyMediaManager;
+import com.ashlikun.media.EasyVideoPlayerManager;
 
 /**
- * Created by Nathen on 2017/11/8.
- * 实现系统的播放引擎
+ * 作者　　: 李坤
+ * 创建时间: 2017/12/01 16:25
+ * 邮箱　　：496546144@qq.com
+ * <p>
+ * 功能介绍：实现系统的播放引擎
  */
+
 public class EasyMediaSystem extends EasyMediaInterface
         implements MediaPlayer.OnPreparedListener,
         MediaPlayer.OnCompletionListener,
@@ -28,13 +33,16 @@ public class EasyMediaSystem extends EasyMediaInterface
     }
 
     @Override
+    public void stop() {
+        mediaPlayer.stop();
+    }
+
+    @Override
     public void prepare() {
         try {
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            if (dataSourceObjects.length > 1) {
-                mediaPlayer.setLooping((boolean) dataSourceObjects[1]);
-            }
+            //  mediaPlayer.setLooping((boolean) dataSource[1]);
             mediaPlayer.setOnPreparedListener(EasyMediaSystem.this);
             mediaPlayer.setOnCompletionListener(EasyMediaSystem.this);
             mediaPlayer.setOnBufferingUpdateListener(EasyMediaSystem.this);
@@ -43,13 +51,7 @@ public class EasyMediaSystem extends EasyMediaInterface
             mediaPlayer.setOnInfoListener(EasyMediaSystem.this);
             mediaPlayer.setOnVideoSizeChangedListener(EasyMediaSystem.this);
             mediaPlayer.setOnSeekCompleteListener(this);
-            Class<MediaPlayer> clazz = MediaPlayer.class;
-            Method method = clazz.getDeclaredMethod("setDataSource", String.class, Map.class);
-            if (dataSourceObjects.length > 2) {
-                method.invoke(mediaPlayer, currentDataSource.toString(), dataSourceObjects[2]);
-            } else {
-                method.invoke(mediaPlayer, currentDataSource.toString(), null);
-            }
+            mediaPlayer.setDataSource(currentDataSource.toString());
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,7 +65,10 @@ public class EasyMediaSystem extends EasyMediaInterface
 
     @Override
     public boolean isPlaying() {
-        return mediaPlayer.isPlaying();
+        if (mediaPlayer != null) {
+            return mediaPlayer.isPlaying();
+        }
+        return false;
     }
 
     @Override
