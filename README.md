@@ -45,6 +45,9 @@ EasyMedia项目简介
                         .title("标题")
                         .url(videoUrl)
                         .builder());
+        //设置宽高比，内部会根据宽度自动计算高度，也有最大高度限制
+        videoPlayer.setVideoRatio(s.getWidth(), s.getHeigth());
+
         //直接全屏
          MediaUtils.startFullscreen(new EasyVideoPlayer(this), videoUrl, "标题");
 
