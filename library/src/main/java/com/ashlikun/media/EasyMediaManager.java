@@ -50,11 +50,11 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
 
     //正在播放的url或者uri
-    public static Object getCurrentDataSource() {
+    public static MediaData getCurrentDataSource() {
         return instance().mMediaPlay.currentDataSource;
     }
 
-    public static void setCurrentDataSource(Object currentDataSource) {
+    public static void setCurrentDataSource(MediaData currentDataSource) {
         instance().mMediaPlay.currentDataSource = currentDataSource;
     }
 

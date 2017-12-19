@@ -47,6 +47,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     public TextView currentTimeTextView, totalTimeTextView;
 
     public OnEventListener onEventListener;
+    boolean fullEnable = true;
 
     public void setOnEventListener(OnEventListener onEventListener) {
         this.onEventListener = onEventListener;
@@ -85,7 +86,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         });
     }
 
-    public void setInitData(Object[] dataSource, int screen) {
+    public void setInitData(int screen) {
         if (screen == SCREEN_WINDOW_FULLSCREEN) {
             setIsFull(true);
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
@@ -96,6 +97,9 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     }
 
     public void setIsFull(boolean isFull) {
+        if (!fullEnable) {
+            return;
+        }
         if (isFull) {
             fullscreenButton.setImageResource(R.drawable.easy_media_shrink);
         } else {
@@ -103,37 +107,41 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         }
     }
 
-    //重置进度条
-    public void resetProgressAndTime() {
-        progressBar.setProgress(0);
-        progressBar.setSecondaryProgress(0);
-        currentTimeTextView.setText(MediaUtils.stringForTime(0));
-        totalTimeTextView.setText(MediaUtils.stringForTime(0));
+    public void setFullEnable(boolean enable) {
+        fullEnable = enable;
+        fullscreenButton.setVisibility(enable ? VISIBLE : GONE);
     }
 
-    //设置最大进度
-    public void setMaxProgressAndTime() {
-        progressBar.setProgress(100);
-        progressBar.setSecondaryProgress(100);
-        currentTimeTextView.setText(totalTimeTextView.getText());
-    }
-
-    public void setProgress(int progress) {
-        progressBar.setProgress(progress);
-    }
-
-    public void setBufferProgress(int progress) {
-        progressBar.setSecondaryProgress(progress);
+    /**
+     * 设置进度  如果2个值都是100，就会设置最大值，如果某个值<0 就不设置
+     *
+     * @param progress          主进度
+     * @param secondaryProgress 缓存进度
+     */
+    public void setProgress(int progress, int secondaryProgress) {
+        if (progress >= 0) {
+            progressBar.setProgress(progress);
+        }
+        if (secondaryProgress >= 0) {
+            progressBar.setSecondaryProgress(secondaryProgress);
+        }
+        if (progress >= progressBar.getMax() && secondaryProgress >= progressBar.getMax()) {
+            currentTimeTextView.setText(totalTimeTextView.getText());
+        }
     }
 
     public int getBufferProgress() {
         return progressBar.getSecondaryProgress();
     }
 
+    /**
+     * 设置时间
+     *
+     * @param position 0：重置
+     * @param duration 0：重置
+     */
     public void setTime(int position, int duration) {
-        if (position != 0) {
-            currentTimeTextView.setText(MediaUtils.stringForTime(position));
-        }
+        currentTimeTextView.setText(MediaUtils.stringForTime(position));
         totalTimeTextView.setText(MediaUtils.stringForTime(duration));
     }
 
@@ -169,7 +177,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
             return;
         }
         int time = (int) (seekBar.getProgress() * getDuration() / 100.0);
-        Log.e("aaaa", "当前播放时间 = " + time + "    播放百分比" + seekBar.getProgress());
         EasyMediaManager.seekTo(time);
         startProgressSchedule();
         if (onEventListener != null) {
@@ -177,7 +184,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         }
     }
 
-    public int getDuration() {
+    private int getDuration() {
         int duration = 0;
         try {
             duration = EasyMediaManager.getDuration();
@@ -202,7 +209,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         }
     }
 
-    public class ProgressRunnable implements Runnable {
+    private class ProgressRunnable implements Runnable {
         @Override
         public void run() {
             if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PLAYING || EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PAUSE) {
@@ -218,11 +225,13 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
                         int duration = getDuration();
                         int progress = (int) (position * 100f / (duration == 0 ? 1 : duration));
                         if (progress != 0) {
-                            setProgress(progress);
                             if (onEventListener != null) {
                                 onEventListener.onProgressChang(progress);
+                            } else {
+                                setProgress(progress, -1);
                             }
                         }
+                        Log.e("aaaaa", progress + "     " + duration);
                         setTime(position, duration);
                     }
                 });

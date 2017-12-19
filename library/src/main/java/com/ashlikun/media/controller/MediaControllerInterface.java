@@ -2,8 +2,9 @@ package com.ashlikun.media.controller;
 
 import android.widget.ImageView;
 
-import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.MediaData;
 import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyOnControllEvent;
 
 /**
@@ -16,9 +17,11 @@ import com.ashlikun.media.view.EasyOnControllEvent;
 
 public interface MediaControllerInterface {
 
-    public void setDataSource(Object[] dataSource, int defaultIndex, Object... objects);
+    public void setDataSource(MediaData mediaData);
 
     public void setOnControllEvent(EasyOnControllEvent onControllEvent);
+    //是否可以全屏
+    public void setControllFullEnable(boolean fullEnable);
 
     public void setCurrentScreen(@MediaScreenStatus.Code int currentScreen);
 

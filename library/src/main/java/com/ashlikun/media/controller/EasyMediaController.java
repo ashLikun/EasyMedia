@@ -15,6 +15,7 @@ import android.widget.SeekBar;
 
 import com.ashlikun.media.EasyMediaAction;
 import com.ashlikun.media.EasyMediaManager;
+import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 import com.ashlikun.media.status.MediaScreenStatus;
@@ -48,7 +49,7 @@ public class EasyMediaController extends RelativeLayout implements
     protected EasyOnControllEvent onControllEvent;
     //音频管理器，改变声音大小
     protected AudioManager mAudioManager;
-    protected EasyControllerViewHolder viewHolder;
+    protected IControllerViewHolder viewHolder;
     //当前屏幕方向
     @MediaScreenStatus.Code
     public int currentScreen = MediaScreenStatus.SCREEN_WINDOW_NORMAL;
@@ -81,6 +82,11 @@ public class EasyMediaController extends RelativeLayout implements
         this.onControllEvent = onControllEvent;
     }
 
+    @Override
+    public void setControllFullEnable(boolean fullEnable) {
+        viewHolder.setControllFullEnable(fullEnable);
+    }
+
     public EasyMediaController(Context context) {
         this(context, null);
     }
@@ -95,12 +101,17 @@ public class EasyMediaController extends RelativeLayout implements
     }
 
     @Override
-    public void setDataSource(Object[] dataSource, int defaultIndex, Object... objects) {
-        viewHolder.setDataSource(dataSource, currentScreen, objects);
+    public void setDataSource(MediaData mediaData) {
+        viewHolder.setDataSource(mediaData, currentScreen);
     }
 
+    //可以从写
     public int getLayoutId() {
         return R.layout.easy_layout_controller;
+    }
+    //可以从写实现界面展示
+    public IControllerViewHolder getControllerViewHolder() {
+        return new EasyControllerViewHolder(this, this, this);
     }
 
     private void initView() {
@@ -108,7 +119,7 @@ public class EasyMediaController extends RelativeLayout implements
         mScreenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
         mScreenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
         View.inflate(getContext(), getLayoutId(), this);
-        viewHolder = new EasyControllerViewHolder(this, this, this);
+        viewHolder = getControllerViewHolder();
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         setOnClickListener(this);
     }
@@ -123,7 +134,6 @@ public class EasyMediaController extends RelativeLayout implements
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         onControllEvent.onEvent(EasyMediaAction.ON_SEEK_POSITION);
-        viewHolder.bottomContainer.startProgressSchedule();
         ViewParent vpup = getParent();
         while (vpup != null) {
             vpup.requestDisallowInterceptTouchEvent(false);
@@ -150,7 +160,7 @@ public class EasyMediaController extends RelativeLayout implements
     //底部进度改变
     @Override
     public void onProgressChang(int progress) {
-        viewHolder.bottomProgressBar.setProgress(progress);
+        viewHolder.setProgress(progress, -1);
     }
 
     @Override
@@ -180,7 +190,15 @@ public class EasyMediaController extends RelativeLayout implements
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
+        boolean res = super.onTouchEvent(event);
+        // 全屏模式下的CURRENT_STATE_ERROR状态下,不响应进度拖动事件.
+        // 否则会因为mediaplayer的状态非法导致App Crash
+        if (currentState == CURRENT_STATE_ERROR) {
+            return false;
+        }
+        if (currentScreen != MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN) {
+            return res;
+        }
         float x = event.getX();
         float y = event.getY();
         switch (event.getAction()) {
@@ -190,42 +208,37 @@ public class EasyMediaController extends RelativeLayout implements
                 mChangeVolume = false;
                 mChangePosition = false;
                 mChangeBrightness = false;
-                viewHolder.bottomContainer.stopProgressSchedule();
+                viewHolder.stopProgressSchedule();
                 break;
             case MotionEvent.ACTION_MOVE:
                 float deltaX = x - mDownX;
                 float deltaY = y - mDownY;
                 float absDeltaX = Math.abs(deltaX);
                 float absDeltaY = Math.abs(deltaY);
-                if (currentScreen == MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN) {
-                    if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
-                        if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
-                            viewHolder.bottomContainer.stopProgressSchedule();
-                            if (absDeltaX >= THRESHOLD) {
-                                // 全屏模式下的CURRENT_STATE_ERROR状态下,不响应进度拖动事件.
-                                // 否则会因为mediaplayer的状态非法导致App Crash
-                                if (currentState != CURRENT_STATE_ERROR) {
-                                    mChangePosition = true;
-                                    mGestureDownPosition = getCurrentPositionWhenPlaying();
-                                }
-                            } else {
-                                //如果y轴滑动距离超过设置的处理范围，那么进行滑动事件处理
-                                if (mDownX < mScreenWidth * 0.5f) {//左侧改变亮度
-                                    mChangeBrightness = true;
-                                    WindowManager.LayoutParams lp = MediaUtils.getWindow(getContext()).getAttributes();
-                                    if (lp.screenBrightness < 0) {
-                                        try {
-                                            mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
-                                        } catch (Settings.SettingNotFoundException e) {
-                                            e.printStackTrace();
-                                        }
-                                    } else {
-                                        mGestureDownBrightness = lp.screenBrightness * 255;
+
+                if (!mChangePosition && !mChangeVolume && !mChangeBrightness) {
+                    if (absDeltaX > THRESHOLD || absDeltaY > THRESHOLD) {
+                        viewHolder.stopProgressSchedule();
+                        if (absDeltaX >= THRESHOLD) {
+                            mChangePosition = true;
+                            mGestureDownPosition = getCurrentPositionWhenPlaying();
+                        } else {
+                            //如果y轴滑动距离超过设置的处理范围，那么进行滑动事件处理
+                            if (mDownX < mScreenWidth * 0.5f) {//左侧改变亮度
+                                mChangeBrightness = true;
+                                WindowManager.LayoutParams lp = MediaUtils.getWindow(getContext()).getAttributes();
+                                if (lp.screenBrightness < 0) {
+                                    try {
+                                        mGestureDownBrightness = Settings.System.getInt(getContext().getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+                                    } catch (Settings.SettingNotFoundException e) {
+                                        e.printStackTrace();
                                     }
-                                } else {//右侧改变声音
-                                    mChangeVolume = true;
-                                    mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                                } else {
+                                    mGestureDownBrightness = lp.screenBrightness * 255;
                                 }
+                            } else {//右侧改变声音
+                                mChangeVolume = true;
+                                mGestureDownVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                             }
                         }
                     }
@@ -283,16 +296,16 @@ public class EasyMediaController extends RelativeLayout implements
                 if (mChangeVolume) {
                     onControllEvent.onEvent(EasyMediaAction.ON_TOUCH_SCREEN_SEEK_VOLUME);
                 }
-                viewHolder.bottomContainer.startProgressSchedule();
+                viewHolder.startProgressSchedule();
                 break;
         }
         return true;
     }
 
-    public void setProgress() {
+    private void setProgress() {
         int duration = getDuration();
         int progress = mSeekTimePosition * 100 / (duration == 0 ? 1 : duration);
-        viewHolder.bottomContainer.setProgress(progress);
+        viewHolder.setProgress(progress, -1);
     }
 
     /**
@@ -433,23 +446,21 @@ public class EasyMediaController extends RelativeLayout implements
     //设置进度最大
     @Override
     public void setMaxProgressAndTime() {
-        viewHolder.bottomContainer.setMaxProgressAndTime();
-        viewHolder.bottomProgressBar.setProgress(100);
+        viewHolder.setProgress(100, 100);
     }
 
     //设置进度缓存
     @Override
     public void setBufferProgress(int bufferProgress) {
         if (bufferProgress != 0) {
-            viewHolder.bottomContainer.setBufferProgress(bufferProgress);
-            viewHolder.bottomProgressBar.setSecondaryProgress(bufferProgress);
+            viewHolder.setProgress(-1, bufferProgress);
         }
     }
 
     //获取进度缓存
     @Override
     public int getBufferProgress() {
-        return viewHolder.bottomContainer.getBufferProgress();
+        return viewHolder.getBufferProgress();
     }
 
     @Override
@@ -461,7 +472,7 @@ public class EasyMediaController extends RelativeLayout implements
 
     @Override
     public ImageView getThumbImageView() {
-        return viewHolder.thumbImageView;
+        return viewHolder.getThumbImageView();
     }
 
 }

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 
@@ -65,9 +66,9 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
         backButton.setOnClickListener(this);
     }
 
-    public void setInitData(int screen, Object... objects) {
-        if (objects.length != 0) {
-            setTitle(objects[0].toString());
+    public void setInitData(MediaData mediaData, int screen) {
+        if (mediaData != null) {
+            setTitle(mediaData.getTitle());
         }
         if (screen == SCREEN_WINDOW_FULLSCREEN) {
             setSystemTimeAndBattery();

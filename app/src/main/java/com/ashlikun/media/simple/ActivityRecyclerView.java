@@ -61,7 +61,7 @@ public class ActivityRecyclerView extends AppCompatActivity {
             @Override
             public void onChildViewAttachedToWindow(View view) {
                 EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaUtils.onRecyclerAutoTiny(videoPlayer, false);
+                MediaUtils.onRecyclerRelease(videoPlayer);
             }
 
             @Override

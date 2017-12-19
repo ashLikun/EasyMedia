@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ashlikun.media.EasyVideoPlayerManager;
+import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 import com.ashlikun.media.status.MediaScreenStatus;
@@ -36,7 +38,7 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHAN
  * 功能介绍：控制器的holder
  */
 
-public class EasyControllerViewHolder {
+public class EasyControllerViewHolder implements IControllerViewHolder {
     ViewGroup viewGroup;
     //开始按钮
     public ImageView startButton;
@@ -51,6 +53,8 @@ public class EasyControllerViewHolder {
     ProgressBar bottomProgressBar;
     //未播放时候占位图
     public ImageView thumbImageView;
+    //小窗口的退出按钮
+    public ImageView backTiny;
     //从新播放
     public TextView replayTextView;
     //当前屏幕方向
@@ -61,7 +65,7 @@ public class EasyControllerViewHolder {
     public int currentState = MediaStatus.CURRENT_STATE_NORMAL;
     AnimatorSet animatorSet = new AnimatorSet();
     boolean isCurrentAnimHint;
-    //之前是否是尊宝状态
+    //之前是否是准备状态
     private boolean isBeforeStatePreparing = false;
 
     public EasyControllerViewHolder(ViewGroup viewGroup, View.OnClickListener clickListener, MediaControllerBottom.OnEventListener onEventListener) {
@@ -75,16 +79,35 @@ public class EasyControllerViewHolder {
         thumbImageView = viewGroup.findViewById(R.id.thumb);
         replayTextView = viewGroup.findViewById(R.id.replay_text);
         bottomProgressBar = viewGroup.findViewById(R.id.bottom_progress);
+        backTiny = viewGroup.findViewById(R.id.back_tiny);
         thumbImageView.setOnClickListener(clickListener);
         startButton.setOnClickListener(clickListener);
         bottomContainer.setOnEventListener(onEventListener);
         viewGroup.findViewById(R.id.retry_btn).setOnClickListener(clickListener);
         changeUiToNormal();
         bottomContainer.stopProgressSchedule();
+        backTiny.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_LIST) {
+                    //只清空小窗口
+                    MediaUtils.quitFullscreenOrTinyWindow();
+                } else {
+                    //退出小窗口并且之前的继续播放
+                    MediaUtils.backPress();
+                }
+            }
+        });
     }
 
 
+    @Override
+    public void setControllFullEnable(boolean fullEnable) {
+        bottomContainer.setFullEnable(fullEnable);
+    }
+
     //根据状态改变ui
+    @Override
     public void changUi(@MediaStatus.Code int currentState, @MediaScreenStatus.Code int currentScreen) {
         if (this.currentState == currentState && this.currentScreen == currentScreen) {
             return;
@@ -94,6 +117,7 @@ public class EasyControllerViewHolder {
         if (currentState == CURRENT_STATE_PREPARING || currentState == CURRENT_STATE_PREPARING_CHANGING_URL) {
             isBeforeStatePreparing = true;
         }
+        backTiny.setVisibility(currentScreen == SCREEN_WINDOW_TINY ? View.VISIBLE : View.GONE);
         //小窗口隐藏顶部和顶部控制器
         if (currentScreen == SCREEN_WINDOW_TINY) {
             hintContainer(false);
@@ -115,12 +139,12 @@ public class EasyControllerViewHolder {
         //播放中
         else if (currentState == CURRENT_STATE_PLAYING) {
             changeUiToPlaying();
-            bottomContainer.startProgressSchedule();
+            startProgressSchedule();
         }
         //暂停
         else if (currentState == CURRENT_STATE_PAUSE) {
             changeUiToPause();
-            bottomContainer.startProgressSchedule();
+            stopProgressSchedule();
         }
         //自动完成了
         else if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
@@ -135,9 +159,10 @@ public class EasyControllerViewHolder {
         updateStartImage(currentState);
     }
 
-    public void setDataSource(Object[] dataSource, int screen, Object... objects) {
-        bottomContainer.setInitData(dataSource, screen);
-        topContainer.setInitData(screen, objects);
+    @Override
+    public void setDataSource(MediaData mediaData, int screen) {
+        bottomContainer.setInitData(screen);
+        topContainer.setInitData(mediaData, screen);
         if (screen == SCREEN_WINDOW_FULLSCREEN) {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_fullscreen));
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
@@ -157,7 +182,7 @@ public class EasyControllerViewHolder {
 
     //准备中
     public void changeUiToPreparing() {
-        bottomContainer.resetProgressAndTime();
+        bottomContainer.setTime(0, 0);
         switch (currentScreen) {
             case SCREEN_WINDOW_NORMAL:
             case SCREEN_WINDOW_LIST:
@@ -219,9 +244,7 @@ public class EasyControllerViewHolder {
             case SCREEN_WINDOW_TINY:
                 break;
         }
-
     }
-
 
     //播放
     private void changeUiToPlaying() {
@@ -283,16 +306,64 @@ public class EasyControllerViewHolder {
     }
 
     //清空全部ui展示
+    @Override
     public void changeUiToClean() {
         hintContainer(true);
         setMinControlsVisiblity(false, false, false, false, false);
     }
 
+
+    @Override
     public boolean containerIsShow() {
         return bottomContainer.getVisibility() == View.VISIBLE || topContainer.getVisibility() == View.VISIBLE;
     }
 
+    //开始进度定时器
+    @Override
+    public void startProgressSchedule() {
+        bottomContainer.startProgressSchedule();
+    }
+
+    //取消进度定时器
+    @Override
+    public void stopProgressSchedule() {
+        bottomContainer.stopProgressSchedule();
+    }
+
+    /**
+     * 设置进度  如果2个值都是100，就会设置最大值，如果某个值<0 就不设置
+     *
+     * @param progress          主进度
+     * @param secondaryProgress 缓存进度
+     */
+    @Override
+    public void setProgress(int progress, int secondaryProgress) {
+        if (progress >= 0) {
+            bottomProgressBar.setProgress(progress);
+        }
+        if (secondaryProgress >= 0) {
+            bottomProgressBar.setSecondaryProgress(secondaryProgress);
+        }
+        bottomContainer.setProgress(progress, secondaryProgress);
+    }
+
+    @Override
+    public ImageView getThumbImageView() {
+        return thumbImageView;
+    }
+
+    @Override
+    public int getBufferProgress() {
+        return bottomContainer.getBufferProgress();
+    }
+
+    @Override
+    public void setTime(int position, int duration) {
+        bottomContainer.setTime(position, duration);
+    }
+
     //显示或者隐藏顶部和底部控制器
+    @Override
     public void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaScreenStatus.Code final int currentScreen, final boolean isShow) {
         if (currentState != CURRENT_STATE_NORMAL
                 && currentState != CURRENT_STATE_ERROR

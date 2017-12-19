@@ -35,6 +35,7 @@
         android:id="@+id/total"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingRight="10dp"
         android:text="00:00"
         android:textColor="#ffffff" />
 
@@ -43,7 +44,6 @@
         android:id="@+id/fullscreen"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:scaleType="centerInside"
         android:src="@drawable/easy_media_enlarge" />

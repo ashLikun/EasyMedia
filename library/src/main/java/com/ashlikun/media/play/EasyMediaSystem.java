@@ -2,11 +2,18 @@ package com.ashlikun.media.play;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.text.TextUtils;
 import android.view.Surface;
+import android.widget.Toast;
 
 import com.ashlikun.media.EasyMediaInterface;
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
+import com.ashlikun.media.MediaUtils;
+import com.ashlikun.media.R;
+
+import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * 作者　　: 李坤
@@ -51,7 +58,28 @@ public class EasyMediaSystem extends EasyMediaInterface
             mediaPlayer.setOnInfoListener(EasyMediaSystem.this);
             mediaPlayer.setOnVideoSizeChangedListener(EasyMediaSystem.this);
             mediaPlayer.setOnSeekCompleteListener(this);
-            mediaPlayer.setDataSource(currentDataSource.toString());
+            if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
+                if (currentDataSource.getHeaders() != null) {
+                    Class<MediaPlayer> clazz = MediaPlayer.class;
+                    Method method = clazz.getDeclaredMethod("setDataSource", String.class, Map.class);
+                    method.invoke(mediaPlayer, currentDataSource.getUrl(), currentDataSource.getHeaders());
+                } else {
+                    mediaPlayer.setDataSource(currentDataSource.getUrl());
+                }
+            } else if (currentDataSource.getUri() != null && !TextUtils.isEmpty(currentDataSource.getUri().toString())) {
+                if (currentDataSource.getHeaders() != null) {
+                    mediaPlayer.setDataSource(MediaUtils.mContext, currentDataSource.getUri(), currentDataSource.getHeaders());
+                } else {
+                    mediaPlayer.setDataSource(MediaUtils.mContext, currentDataSource.getUri());
+                }
+            } else if (currentDataSource.getFileDescriptor() != null) {
+                mediaPlayer.setDataSource(currentDataSource.getFileDescriptor().getFileDescriptor(),
+                        currentDataSource.getFileDescriptor().getStartOffset(), currentDataSource.getFileDescriptor().getDeclaredLength());
+            } else {
+                Toast.makeText(MediaUtils.mContext, MediaUtils.mContext.getText(R.string.no_url), Toast.LENGTH_SHORT).show();
+            }
+
+
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();

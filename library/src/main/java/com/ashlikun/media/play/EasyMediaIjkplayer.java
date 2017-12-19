@@ -2,11 +2,15 @@ package com.ashlikun.media.play;
 
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.text.TextUtils;
 import android.view.Surface;
+import android.widget.Toast;
 
 import com.ashlikun.media.EasyMediaInterface;
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
+import com.ashlikun.media.MediaUtils;
+import com.ashlikun.media.R;
 
 import java.io.IOException;
 
@@ -41,7 +45,6 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
-
         ijkMediaPlayer.setOnPreparedListener(EasyMediaIjkplayer.this);
         ijkMediaPlayer.setOnVideoSizeChangedListener(EasyMediaIjkplayer.this);
         ijkMediaPlayer.setOnCompletionListener(EasyMediaIjkplayer.this);
@@ -52,12 +55,29 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnTimedTextListener(EasyMediaIjkplayer.this);
 
         try {
-            ijkMediaPlayer.setDataSource(currentDataSource.toString());
+            if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
+                if (currentDataSource.getHeaders() != null) {
+                    ijkMediaPlayer.setDataSource(currentDataSource.getUrl(), currentDataSource.getHeaders());
+                } else {
+                    ijkMediaPlayer.setDataSource(currentDataSource.getUrl());
+                }
+            } else if (currentDataSource.getUri() != null && !TextUtils.isEmpty(currentDataSource.getUri().toString())) {
+                if (currentDataSource.getHeaders() != null) {
+                    ijkMediaPlayer.setDataSource(MediaUtils.mContext, currentDataSource.getUri(), currentDataSource.getHeaders());
+                } else {
+                    ijkMediaPlayer.setDataSource(MediaUtils.mContext, currentDataSource.getUri());
+                }
+            } else if (currentDataSource.getFileDescriptor() != null) {
+                ijkMediaPlayer.setDataSource(currentDataSource.getFileDescriptor().getFileDescriptor());
+            }else{
+                Toast.makeText(MediaUtils.mContext,MediaUtils.mContext.getText(R.string.no_url),Toast.LENGTH_SHORT).show();
+            }
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             ijkMediaPlayer.setScreenOnWhilePlaying(true);
             ijkMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
+            Toast.makeText(MediaUtils.mContext, MediaUtils.mContext.getText(R.string.no_url), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.ashlikun.media.simple"
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion 19
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         multiDexEnabled false

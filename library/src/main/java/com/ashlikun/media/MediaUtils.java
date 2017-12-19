@@ -23,9 +23,9 @@ import android.widget.FrameLayout;
 
 import com.ashlikun.media.status.MediaStatus;
 
+import java.util.ArrayList;
 import java.util.Formatter;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -45,6 +45,7 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
  */
 
 public class MediaUtils {
+    public static Context mContext;
     //是否存在 FLAG_FULLSCREEN
     public static boolean FLAG_FULLSCREEN_EXIST = true;
     //当onResume的时候是否去播放
@@ -55,6 +56,11 @@ public class MediaUtils {
     //更新进度的定时器
     private static ScheduledExecutorService POOL_SCHEDULE;
     private static Handler mHandler;
+
+    //在Applicable里面初始化
+    public static void init(Context context) {
+        MediaUtils.mContext = context.getApplicationContext();
+    }
 
     public static Handler getMainHander() {
         if (mHandler == null) {
@@ -185,7 +191,7 @@ public class MediaUtils {
      * @param url      对应的Url
      * @param progress 进度
      */
-    public static void saveProgress(Context context, Object url, int progress) {
+    public static void saveProgress(Context context, MediaData url, int progress) {
         if (!EasyVideoPlayer.SAVE_PROGRESS) {
             return;
         }
@@ -234,21 +240,9 @@ public class MediaUtils {
     /**
      * 从播放数组里面获取当前播放的
      */
-    public static Object getCurrentFromDataSource(Object[] dataSource, int index) {
-        if (dataSource.length > index) {
-            return dataSource[index];
-        }
-        return null;
-    }
-
-    public static Object getValueFromLinkedMap(LinkedHashMap<String, Object> map, int index) {
-        int currentIndex = 0;
-        for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-            Object key = it.next();
-            if (currentIndex == index) {
-                return map.get(key);
-            }
-            currentIndex++;
+    public static MediaData getCurrentMediaData(List<MediaData> dataSource, int index) {
+        if (dataSource.size() > index) {
+            return dataSource.get(index);
         }
         return null;
     }
@@ -256,7 +250,7 @@ public class MediaUtils {
     /**
      * 当前的播放数组是否包含正在播放的url
      */
-    public static boolean dataSourceContainsUri(Object[] dataSource, Object object) {
+    public static boolean isContainsUri(List<MediaData> dataSource, MediaData object) {
         if (dataSource == null || object == null) {
             return false;
         }
@@ -270,16 +264,30 @@ public class MediaUtils {
      * 直接开始全屏播放
      *
      * @param easyVideoPlayer 请实例化一个播放器
-     * @param url             地址
-     * @param objects         标题
+     * @param url             地址  或者 AssetFileDescriptor
+     * @param title           标题
      */
-    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, String url, Object... objects) {
-        Object[] dataSource = new Object[1];
-        dataSource[0] = url;
-        startFullscreen(easyVideoPlayer, dataSource, 0, objects);
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, String url, String title) {
+        List<MediaData> mediaData = new ArrayList<>();
+        mediaData.add(new MediaData.Builder()
+                .url(url)
+                .title(title)
+                .builder());
+        startFullscreen(easyVideoPlayer, mediaData, 0);
     }
 
-    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, Object[] dataSource, int defaultIndex, Object... objects) {
+    /**
+     * 设置数据源
+     *
+     * @param data 视频ur
+     */
+    public void startFullscreen(EasyVideoPlayer easyVideoPlayer, MediaData data) {
+        List<MediaData> mediaData = new ArrayList<>();
+        mediaData.add(data);
+        startFullscreen(easyVideoPlayer, mediaData, 0);
+    }
+
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, List<MediaData> mediaData, int defaultIndex) {
         setActivityFullscreen(easyVideoPlayer.getContext(), true);
         MediaUtils.setRequestedOrientation(easyVideoPlayer.getContext(),
                 easyVideoPlayer.isFullscreenPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR : EasyVideoPlayer.ORIENTATION_FULLSCREEN_LANDSCAPE);
@@ -295,8 +303,10 @@ public class MediaUtils {
             vp.addView(easyVideoPlayer, lp);
             Animation ra = AnimationUtils.loadAnimation(easyVideoPlayer.getContext(), R.anim.start_fullscreen);
             easyVideoPlayer.setAnimation(ra);
+            easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
             easyVideoPlayer.setCurrentScreen(SCREEN_WINDOW_FULLSCREEN);
-            easyVideoPlayer.setDataSource(dataSource, defaultIndex, objects);
+            easyVideoPlayer.setDataSource(mediaData, defaultIndex);
             easyVideoPlayer.onPlayStartClick();
             CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
         } catch (Exception e) {
@@ -359,7 +369,7 @@ public class MediaUtils {
         }
         if (EasyVideoPlayerManager.getSecondFloor() != null) {
             CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
-            if (MediaUtils.dataSourceContainsUri(EasyVideoPlayerManager.getFirstFloor().dataSource, EasyMediaManager.getCurrentDataSource())) {
+            if (MediaUtils.isContainsUri(EasyVideoPlayerManager.getFirstFloor().mediaData, EasyMediaManager.getCurrentDataSource())) {
                 EasyVideoPlayer easyVideoPlayer = EasyVideoPlayerManager.getSecondFloor();
                 easyVideoPlayer.onEvent(easyVideoPlayer.currentScreen == SCREEN_WINDOW_FULLSCREEN ?
                         EasyMediaAction.ON_QUIT_FULLSCREEN :
@@ -397,7 +407,7 @@ public class MediaUtils {
     public static void onChildViewAttachedToWindow(View view, int vidoPlayId) {
         if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null && EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
             EasyVideoPlayer videoPlayer = view.findViewById(vidoPlayId);
-            if (videoPlayer != null && MediaUtils.getCurrentFromDataSource(videoPlayer.dataSource, videoPlayer.currentUrlIndex).equals(EasyMediaManager.getCurrentDataSource())) {
+            if (videoPlayer != null && MediaUtils.getCurrentMediaData(videoPlayer.mediaData, videoPlayer.currentUrlIndex).equals(EasyMediaManager.getCurrentDataSource())) {
                 MediaUtils.backPress();
             }
         }
@@ -474,7 +484,7 @@ public class MediaUtils {
      */
     public static void onRecyclerAutoTiny(EasyVideoPlayer videoPlayer, boolean isChileViewDetached) {
         //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
-        if (videoPlayer == null || !MediaUtils.dataSourceContainsUri(videoPlayer.dataSource,
+        if (videoPlayer == null || !MediaUtils.isContainsUri(videoPlayer.mediaData,
                 EasyMediaManager.getCurrentDataSource())) {
             return;
         }
@@ -494,14 +504,14 @@ public class MediaUtils {
     }
 
     /**
-     * RecyclerView滑动时候清空全部播放  ListView用的
+     * RecyclerView滑动时候清空全部播放
      * RecyclerView请用recyclerView.addOnChildAttachStateChangeListener
      *
      * @param videoPlayer 当前子view播放器
      */
     public static void onRecyclerRelease(EasyVideoPlayer videoPlayer) {
         //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
-        if (videoPlayer == null || !MediaUtils.dataSourceContainsUri(videoPlayer.dataSource,
+        if (videoPlayer == null || !MediaUtils.isContainsUri(videoPlayer.mediaData,
                 EasyMediaManager.getCurrentDataSource())) {
             return;
         }

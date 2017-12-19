@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="EasyVideoPlayer"></declare-styleable>
+    <declare-styleable name="EasyVideoPlayer">
+        <attr name="evp_full_screen_enable" format="boolean"></attr>
+        <attr name="android:background"></attr>
+    </declare-styleable>
 </resources>

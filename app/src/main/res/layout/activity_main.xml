@@ -16,7 +16,8 @@
             <com.ashlikun.media.EasyVideoPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"></com.ashlikun.media.EasyVideoPlayer>
+                android:layout_height="250dp"
+                app:evp_full_screen_enable="false"></com.ashlikun.media.EasyVideoPlayer>
 
             <Button
                 android:id="@+id/listButton"
