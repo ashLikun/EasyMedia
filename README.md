@@ -15,9 +15,11 @@ EasyMedia项目简介
 ## 详细介绍
 
 ## 截图
-![image1](photo/photo1.png) ![image2](photo/photo2.png)![image3](photo/photo3.png)
+![image1](photo/photo1.png) ![image2](photo/photo2.png)
 
-![image4](photo/photo4.png)![image5](photo/photo5.png) ![image6](photo/photo6.png)
+![image3](photo/photo3.png)![image4](photo/photo4.png)
+
+![image5](photo/photo5.png) ![image6](photo/photo6.png)
 
 ## 使用
 ####    权限
