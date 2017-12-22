@@ -1,5 +1,7 @@
-EasyMedia项目简介
+[![Release](https://jitpack.io/v/ashLikun/EasyMedia.svg)](https://jitpack.io/#ashLikun/EasyMedia)
 
+EasyMedia项目简介
+        视频播放
 ## 使用方法
 
         build.gradle文件中添加:
