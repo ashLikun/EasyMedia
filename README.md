@@ -3,11 +3,11 @@ EasyMedia项目简介
 ## 使用方法
 
         build.gradle文件中添加:
-        //核心库
+        //UI核心库
         compile 'com.github.ashLikun:EasyMedia:1.0.2'
         //使用Ijkplay
         compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
-        //so文件
+        //so文件(Ijkplay)
         compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
         compile 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
         compile 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
