@@ -1,17 +1,34 @@
-EasyMedia项目简介
+[![Release](https://jitpack.io/v/ashLikun/EasyMedia.svg)](https://jitpack.io/#ashLikun/EasyMedia)
 
+
+EasyMedia项目简介
+        视频播放
 ## 使用方法
 
-        build.gradle文件中添加:
-        //UI核心库
-        compile 'com.github.ashLikun:EasyMedia:1.0.2'
-        //使用Ijkplay
-        compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
-        //so文件(Ijkplay)
-        compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
-        compile 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
-        compile 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
+build.gradle文件中添加:
 
+```gradle
+allprojects {
+    repositories {
+        maven { url "https://jitpack.io" }
+    }
+}
+```
+并且:
+
+```gradle
+dependencies {
+    //核心库
+    compile 'com.github.ashLikun:EasyMedia:{latest version}'
+    //使用Ijkplay
+    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
+    //so文件
+    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
+    compile 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
+    compile 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
+}
+```
+        
 ## 详细介绍
 
 ## 截图
