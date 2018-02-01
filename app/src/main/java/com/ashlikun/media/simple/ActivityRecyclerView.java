@@ -9,7 +9,7 @@ import android.view.View;
 import com.ashlikun.adapter.ViewHolder;
 import com.ashlikun.adapter.recyclerview.CommonAdapter;
 import com.ashlikun.glideutils.GlideUtils;
-import com.ashlikun.media.EasyVideoPlayer;
+import com.ashlikun.media.view.EasyVideoPlayer;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.simple.data.NeiHanData;
 import com.ashlikun.media.simple.divider.HorizontalDividerItemDecoration;
@@ -61,7 +61,7 @@ public class ActivityRecyclerView extends AppCompatActivity {
             @Override
             public void onChildViewAttachedToWindow(View view) {
                 EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaUtils.onRecyclerRelease(videoPlayer);
+                MediaUtils.onRecyclerAutoTiny(videoPlayer, false);
             }
 
             @Override
@@ -85,13 +85,13 @@ public class ActivityRecyclerView extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        MediaUtils.onPause();
+        //   MediaUtils.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        MediaUtils.onResume();
+        //  MediaUtils.onResume();
     }
 
     @Override

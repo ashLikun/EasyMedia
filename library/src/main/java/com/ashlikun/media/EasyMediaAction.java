@@ -27,6 +27,6 @@ public interface EasyMediaAction {
     //继续播放
     int ON_CLICK_START_NO_WIFI_GOON = 101;
 
-    void onEvent(int type, MediaData url, @MediaScreenStatus.Code int screen);
+    void onEvent(int type, MediaData url);
 
 }

@@ -69,8 +69,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
                 }
             } else if (currentDataSource.getFileDescriptor() != null) {
                 ijkMediaPlayer.setDataSource(currentDataSource.getFileDescriptor().getFileDescriptor());
-            }else{
-                Toast.makeText(MediaUtils.mContext,MediaUtils.mContext.getText(R.string.no_url),Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(MediaUtils.mContext, MediaUtils.mContext.getText(R.string.no_url), Toast.LENGTH_SHORT).show();
             }
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             ijkMediaPlayer.setScreenOnWhilePlaying(true);
@@ -133,8 +133,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
             EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onPrepared();
+                    if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
                     }
                 }
             });
@@ -148,8 +148,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onVideoSizeChanged();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onVideoSizeChanged();
                 }
             }
         });
@@ -160,8 +160,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onAutoCompletion();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
                 }
             }
         });
@@ -172,8 +172,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onError(what, extra);
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onError(what, extra);
                 }
             }
         });
@@ -185,11 +185,11 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onPrepared();
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
                     } else {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onInfo(what, extra);
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onInfo(what, extra);
                     }
                 }
             }
@@ -202,8 +202,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().setBufferProgress(percent);
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().setBufferProgress(percent);
                 }
             }
         });
@@ -214,8 +214,8 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onSeekComplete();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onSeekComplete();
                 }
             }
         });

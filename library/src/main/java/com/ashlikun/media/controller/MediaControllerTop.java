@@ -22,7 +22,6 @@ import java.util.Date;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 
 /**
  * 作者　　: 李坤
@@ -77,11 +76,7 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
             setBackIsShow(false);
             setBatteryIsShow(false);
-        } else if (screen == SCREEN_WINDOW_TINY) {
-            setBackIsShow(true);
-            setBatteryIsShow(false);
         }
-
     }
 
     //设置系统的时间和电量

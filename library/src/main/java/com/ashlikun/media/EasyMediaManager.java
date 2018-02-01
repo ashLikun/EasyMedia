@@ -7,6 +7,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 import android.view.TextureView;
+import android.view.ViewGroup;
+
+import com.ashlikun.media.view.EasyTextureView;
 
 /**
  * 整个播放器的管理器，
@@ -23,8 +26,8 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
     public static EasyTextureView textureView;
     public static SurfaceTexture savedSurfaceTexture;
+    //设置给MediaPlay的渲染器,里面有savedSurfaceTexture
     public static Surface surface;
-
     //播放器
     public EasyMediaInterface mMediaPlay;
     public int currentVideoWidth = 0;
@@ -33,6 +36,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public MediaHandler mMediaHandler;
     //主线程的handler
     public Handler mainThreadHandler;
+    //播放事件的回掉
+    public static EasyMediaAction MEDIA_EVENT;
+    //是否允许过非wifi播放视频
+    public static boolean WIFI_ALLOW_PLAY = true;
 
     public EasyMediaManager() {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
@@ -49,7 +56,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     }
 
 
-    //正在播放的url或者uri
+    //正在播放的视频数据
     public static MediaData getCurrentDataSource() {
         return instance().mMediaPlay.currentDataSource;
     }
@@ -96,6 +103,20 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         mMediaHandler.sendMessage(msg);
     }
 
+    /**
+     * 释放渲染器和保存的SurfaceTexture，textureView
+     */
+    public void releaseAllSufaceView() {
+        if (EasyMediaManager.surface != null) {
+            EasyMediaManager.surface.release();
+        }
+        if (EasyMediaManager.savedSurfaceTexture != null) {
+            EasyMediaManager.savedSurfaceTexture.release();
+        }
+        EasyMediaManager.textureView = null;
+        EasyMediaManager.savedSurfaceTexture = null;
+    }
+
     public void prepare() {
         releaseMediaPlayer();
         Message msg = new Message();
@@ -128,6 +149,17 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
     }
 
+    /**
+     * 移除TextureView
+     */
+    public void removeTextureView() {
+        if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.getParent() != null) {
+            EasyMediaManager.textureView.setSurfaceTextureListener(null);
+            ((ViewGroup) EasyMediaManager.textureView.getParent()).removeView(EasyMediaManager.textureView);
+        }
+        EasyMediaManager.savedSurfaceTexture = null;
+        EasyMediaManager.textureView = null;
+    }
 
     public class MediaHandler extends Handler {
         public MediaHandler(Looper looper) {

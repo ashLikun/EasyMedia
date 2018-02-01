@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
@@ -21,7 +20,6 @@ import com.ashlikun.media.status.MediaStatus;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
@@ -53,8 +51,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     ProgressBar bottomProgressBar;
     //未播放时候占位图
     public ImageView thumbImageView;
-    //小窗口的退出按钮
-    public ImageView backTiny;
     //从新播放
     public TextView replayTextView;
     //当前屏幕方向
@@ -79,25 +75,24 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         thumbImageView = viewGroup.findViewById(R.id.thumb);
         replayTextView = viewGroup.findViewById(R.id.replay_text);
         bottomProgressBar = viewGroup.findViewById(R.id.bottom_progress);
-        backTiny = viewGroup.findViewById(R.id.back_tiny);
         thumbImageView.setOnClickListener(clickListener);
         startButton.setOnClickListener(clickListener);
         bottomContainer.setOnEventListener(onEventListener);
         viewGroup.findViewById(R.id.retry_btn).setOnClickListener(clickListener);
         changeUiToNormal();
         bottomContainer.stopProgressSchedule();
-        backTiny.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_LIST) {
-                    //只清空小窗口
-                    MediaUtils.quitFullscreenOrTinyWindow();
-                } else {
-                    //退出小窗口并且之前的继续播放
-                    MediaUtils.backPress();
-                }
-            }
-        });
+//        backTiny.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_LIST) {
+//                    //只清空小窗口
+//                    MediaUtils.quitFullscreenOrTinyWindow();
+//                } else {
+//                    //退出小窗口并且之前的继续播放
+//                    MediaUtils.backPress();
+//                }
+//            }
+//        });
     }
 
 
@@ -116,11 +111,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         this.currentScreen = currentScreen;
         if (currentState == CURRENT_STATE_PREPARING || currentState == CURRENT_STATE_PREPARING_CHANGING_URL) {
             isBeforeStatePreparing = true;
-        }
-        backTiny.setVisibility(currentScreen == SCREEN_WINDOW_TINY ? View.VISIBLE : View.GONE);
-        //小窗口隐藏顶部和顶部控制器
-        if (currentScreen == SCREEN_WINDOW_TINY) {
-            hintContainer(false);
         }
         //默认
         if (currentState == CURRENT_STATE_NORMAL) {
@@ -167,8 +157,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_fullscreen));
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_normal));
-        } else if (screen == SCREEN_WINDOW_TINY) {
-            changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_normal));
         }
     }
 
@@ -190,9 +178,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
                 hintContainer(false);
                 setMinControlsVisiblity(false, true, true, false, false);
                 break;
-            case SCREEN_WINDOW_TINY:
-                setMinControlsVisiblity(false, true, true, false, false);
-                break;
         }
     }
 
@@ -207,9 +192,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
                 hintContainer(false);
                 setMinControlsVisiblity(true, false, true, false, false);
                 break;
-            case SCREEN_WINDOW_TINY:
-                setMinControlsVisiblity(true, false, false, false, false);
-                break;
         }
     }
 
@@ -222,8 +204,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
                 topContainer.setVisibility(View.VISIBLE);
                 bottomContainer.setVisibility(View.GONE);
                 setMinControlsVisiblity(true, false, true, false, false);
-                break;
-            case SCREEN_WINDOW_TINY:
                 break;
         }
     }
@@ -241,8 +221,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
                 bottomContainer.setVisibility(View.GONE);
                 setMinControlsVisiblity(true, false, false, false, true);
                 break;
-            case SCREEN_WINDOW_TINY:
-                break;
         }
     }
 
@@ -256,9 +234,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
                 isBeforeStatePreparing = false;
                 setMinControlsVisiblity(false, false, false, true, false);
                 break;
-            case SCREEN_WINDOW_TINY:
-                setMinControlsVisiblity(false, false, false, true, false);
-                break;
         }
     }
 
@@ -270,9 +245,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             case SCREEN_WINDOW_FULLSCREEN:
                 showContainer(!containerIsShow());
                 setMinControlsVisiblity(true, false, false, false, false);
-                break;
-            case SCREEN_WINDOW_TINY:
-                setMinControlsVisiblity(true, false, false, true, false);
                 break;
         }
     }
@@ -372,20 +344,15 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             MediaUtils.getMainHander().post(new Runnable() {
                 @Override
                 public void run() {
-                    if (currentScreen == SCREEN_WINDOW_TINY) {
-                        startButton.setVisibility(isShow ? View.VISIBLE : View.GONE);
+                    if (isShow) {
+                        showContainer(true);
+                        startButton.setVisibility(View.VISIBLE);
+                        bottomProgressBar.setVisibility(View.GONE);
                     } else {
-                        if (isShow) {
-                            showContainer(true);
-                            startButton.setVisibility(View.VISIBLE);
-                            bottomProgressBar.setVisibility(View.GONE);
-                        } else {
-                            hintContainer(true);
-                            startButton.setVisibility(View.GONE);
-                            bottomProgressBar.setVisibility(View.VISIBLE);
-                        }
+                        hintContainer(true);
+                        startButton.setVisibility(View.GONE);
+                        bottomProgressBar.setVisibility(View.VISIBLE);
                     }
-
                 }
             });
         }

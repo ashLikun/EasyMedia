@@ -1,9 +1,11 @@
 package com.ashlikun.media;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.ConnectivityManager;
@@ -22,6 +24,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.view.EasyBaseVideoPlay;
+import com.ashlikun.media.view.EasyVideoPlayTiny;
+import com.ashlikun.media.view.EasyVideoPlayer;
 
 import java.util.ArrayList;
 import java.util.Formatter;
@@ -31,8 +36,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
+import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
 
@@ -281,7 +286,7 @@ public class MediaUtils {
      *
      * @param data 视频ur
      */
-    public void startFullscreen(EasyVideoPlayer easyVideoPlayer, MediaData data) {
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, MediaData data) {
         List<MediaData> mediaData = new ArrayList<>();
         mediaData.add(data);
         startFullscreen(easyVideoPlayer, mediaData, 0);
@@ -296,22 +301,51 @@ public class MediaUtils {
         if (old != null) {
             vp.removeView(old);
         }
-        try {
-            easyVideoPlayer.setId(R.id.easy_media_fullscreen_id);
-            FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            vp.addView(easyVideoPlayer, lp);
-            Animation ra = AnimationUtils.loadAnimation(easyVideoPlayer.getContext(), R.anim.start_fullscreen);
-            easyVideoPlayer.setAnimation(ra);
-            easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
-            easyVideoPlayer.setCurrentScreen(SCREEN_WINDOW_FULLSCREEN);
-            easyVideoPlayer.setDataSource(mediaData, defaultIndex);
+        easyVideoPlayer.setId(R.id.easy_media_fullscreen_id);
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        vp.addView(easyVideoPlayer, lp);
+        Animation ra = AnimationUtils.loadAnimation(easyVideoPlayer.getContext(), R.anim.start_fullscreen);
+        easyVideoPlayer.setAnimation(ra);
+        easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
+        easyVideoPlayer.setCurrentScreen(SCREEN_WINDOW_FULLSCREEN);
+        int status = easyVideoPlayer.getCurrentState();
+        easyVideoPlayer.setDataSource(mediaData, defaultIndex);
+        easyVideoPlayer.setState(status);
+        if (easyVideoPlayer.getCurrentState() == CURRENT_STATE_NORMAL) {
             easyVideoPlayer.onPlayStartClick();
-            CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+        CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
+        EasyVideoPlayerManager.setVideoFullscreen(easyVideoPlayer);
+    }
+
+    /**
+     * 开始小窗口播放
+     */
+    public static boolean startWindowTiny(EasyVideoPlayTiny tiny, List<MediaData> mediaData, int defaultIndex) {
+        EasyVideoPlayer videoPlayerDefault = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
+        if (videoPlayerDefault != null && (videoPlayerDefault.getCurrentState() == CURRENT_STATE_NORMAL ||
+                videoPlayerDefault.getCurrentState() == CURRENT_STATE_ERROR ||
+                videoPlayerDefault.getCurrentState() == CURRENT_STATE_AUTO_COMPLETE)) {
+            return false;
+        }
+        if (videoPlayerDefault != null) {
+            videoPlayerDefault.removeTextureView();
+        }
+        tiny.setId(R.id.easy_media_tiny_id);
+
+        tiny.setDataSource(mediaData, defaultIndex);
+        tiny.addTextureView();
+        EasyVideoPlayerManager.setVideoTiny(tiny);
+        tiny.showWindow();
+        if (videoPlayerDefault == null && !isContainsUri(mediaData, EasyMediaManager.getCurrentDataSource())) {
+            tiny.play();
+        } else {
+            tiny.currentState = videoPlayerDefault.getCurrentState();
+        }
+        return true;
+
     }
 
     /**
@@ -330,13 +364,18 @@ public class MediaUtils {
      */
     public static void setEasyMediaAction(EasyMediaAction easyMediaAction) {
         if (easyMediaAction instanceof Application) {
-            EasyVideoPlayer.MEDIA_EVENT = easyMediaAction;
+            EasyMediaManager.MEDIA_EVENT = easyMediaAction;
         }
     }
 
     //直接退出全屏和小窗
     public static void quitFullscreenOrTinyWindow() {
-        EasyVideoPlayerManager.getFirstFloor().clearFloatScreen();
+        if (EasyVideoPlayerManager.getVideoFullscreen() != null) {
+            EasyVideoPlayerManager.getVideoFullscreen().clearFloatScreen();
+        }
+        if (EasyVideoPlayerManager.getVideoTiny() != null) {
+            EasyVideoPlayerManager.getVideoTiny().cleanTiny();
+        }
         EasyMediaManager.instance().releaseMediaPlayer();
         EasyVideoPlayerManager.completeAll();
     }
@@ -362,27 +401,24 @@ public class MediaUtils {
         }
     }
 
+
     //返回键点击
     public static boolean backPress() {
         if ((System.currentTimeMillis() - CLICK_QUIT_FULLSCREEN_TIME) < FULL_SCREEN_NORMAL_DELAY) {
             return false;
         }
-        if (EasyVideoPlayerManager.getSecondFloor() != null) {
-            CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
-            if (MediaUtils.isContainsUri(EasyVideoPlayerManager.getFirstFloor().mediaData, EasyMediaManager.getCurrentDataSource())) {
-                EasyVideoPlayer easyVideoPlayer = EasyVideoPlayerManager.getSecondFloor();
-                easyVideoPlayer.onEvent(easyVideoPlayer.currentScreen == SCREEN_WINDOW_FULLSCREEN ?
-                        EasyMediaAction.ON_QUIT_FULLSCREEN :
-                        EasyMediaAction.ON_QUIT_TINYSCREEN);
-                EasyVideoPlayerManager.getFirstFloor().playOnThisVideo();
+        CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
+        if (EasyVideoPlayerManager.getVideoDefault() != null) {
+            if (MediaUtils.isContainsUri(EasyVideoPlayerManager.getVideoDefault().getMediaData(), EasyMediaManager.getCurrentDataSource())) {
+                //如果默认的Video播放过视频,就直接在这个默认的上面播放
+                EasyVideoPlayerManager.getVideoDefault().onEvent(EasyMediaAction.ON_QUIT_TINYSCREEN);
+                EasyVideoPlayerManager.getVideoDefault().playOnThisVideo();
             } else {
+                //直接退出全屏或者小窗口
                 MediaUtils.quitFullscreenOrTinyWindow();
             }
             return true;
-        } else if (EasyVideoPlayerManager.getFirstFloor() != null &&
-                (EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_FULLSCREEN ||
-                        EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_TINY)) {
-            CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
+        } else if (EasyVideoPlayerManager.getVideoFullscreen() != null || EasyVideoPlayerManager.getVideoTiny() != null) {
             MediaUtils.quitFullscreenOrTinyWindow();
             return true;
         }
@@ -394,6 +430,7 @@ public class MediaUtils {
         if ((System.currentTimeMillis() - MediaUtils.CLICK_QUIT_FULLSCREEN_TIME) > MediaUtils.FULL_SCREEN_NORMAL_DELAY) {
             //把之前的设置到完成状态
             EasyVideoPlayerManager.completeAll();
+            //释放播放器
             EasyMediaManager.instance().releaseMediaPlayer();
         }
     }
@@ -405,7 +442,7 @@ public class MediaUtils {
      * @param vidoPlayId 播放器控件的id
      */
     public static void onChildViewAttachedToWindow(View view, int vidoPlayId) {
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null && EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
+        if (EasyVideoPlayerManager.getVideoTiny() != null) {
             EasyVideoPlayer videoPlayer = view.findViewById(vidoPlayId);
             if (videoPlayer != null && MediaUtils.getCurrentMediaData(videoPlayer.mediaData, videoPlayer.currentUrlIndex).equals(EasyMediaManager.getCurrentDataSource())) {
                 MediaUtils.backPress();
@@ -415,13 +452,15 @@ public class MediaUtils {
 
     //当子view从窗口分离
     public static void onChildViewDetachedFromWindow(View view) {
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null && EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen != SCREEN_WINDOW_TINY) {
-            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayer();
+        if (EasyVideoPlayerManager.getVideoTiny() == null) {
+            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
             if (((ViewGroup) view).indexOfChild(videoPlayer) != -1) {
-                if (videoPlayer.currentState == CURRENT_STATE_PAUSE) {
+                if (videoPlayer.getCurrentState() == CURRENT_STATE_PAUSE) {
                     releaseAllVideos();
                 } else {
-                    videoPlayer.startWindowTiny();
+                    if (startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.mediaData, videoPlayer.currentUrlIndex)) {
+                        videoPlayer.onStateNormal();
+                    }
                 }
             }
         }
@@ -439,17 +478,17 @@ public class MediaUtils {
         int lastVisibleItem = firstVisibleItem + visibleItemCount;
         if (currentPlayPosition >= 0) {
             if ((currentPlayPosition < firstVisibleItem || currentPlayPosition > (lastVisibleItem - 1))) {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen != SCREEN_WINDOW_TINY) {
-                    if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PAUSE) {
+                if (EasyVideoPlayerManager.getVideoTiny() == null) {
+                    if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
                         MediaUtils.releaseAllVideos();
                     } else {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().startWindowTiny();
+                        EasyVideoPlayer videoPlayer = (EasyVideoPlayer) EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
+                        startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.mediaData, videoPlayer.currentUrlIndex);
+                        videoPlayer.onStateNormal();
                     }
                 }
             } else {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
+                if (EasyVideoPlayerManager.getVideoTiny() != null) {
                     MediaUtils.backPress();
                 }
             }
@@ -489,16 +528,17 @@ public class MediaUtils {
             return;
         }
         if (isChileViewDetached) {
-            if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen != SCREEN_WINDOW_TINY) {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PAUSE) {
+            if (EasyVideoPlayerManager.getVideoTiny() == null) {
+                if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
                     MediaUtils.releaseAllVideos();
                 } else {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().startWindowTiny();
+                    if (startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.mediaData, videoPlayer.currentUrlIndex)) {
+                        videoPlayer.onStateNormal();
+                    }
+
                 }
             }
-        } else if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null &&
-                EasyVideoPlayerManager.getCurrentVideoPlayer().currentScreen == SCREEN_WINDOW_TINY) {
+        } else if (EasyVideoPlayerManager.getVideoTiny() != null) {
             MediaUtils.backPress();
         }
     }
@@ -521,13 +561,13 @@ public class MediaUtils {
 
     //对应activity得生命周期
     public static void onPause() {
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayer();
-            if (videoPlayer.currentState == CURRENT_STATE_AUTO_COMPLETE ||
-                    videoPlayer.currentState == CURRENT_STATE_NORMAL) {
+        EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
+        if (videoPlayer != null) {
+            if (videoPlayer.getCurrentState() == CURRENT_STATE_AUTO_COMPLETE ||
+                    videoPlayer.getCurrentState() == CURRENT_STATE_NORMAL) {
                 MediaUtils.releaseAllVideos();
             } else {
-                if (videoPlayer.currentState == MediaStatus.CURRENT_STATE_PLAYING) {
+                if (videoPlayer.getCurrentState() == MediaStatus.CURRENT_STATE_PLAYING) {
                     ONRESUME_TO_PLAY = true;
                 } else {
                     ONRESUME_TO_PLAY = false;
@@ -540,9 +580,9 @@ public class MediaUtils {
 
     //对应activity得生命周期
     public static void onResume() {
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-            EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayer();
-            if (videoPlayer.currentState == CURRENT_STATE_PAUSE && ONRESUME_TO_PLAY) {
+        EasyVideoPlayer videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
+        if (videoPlayer != null) {
+            if (videoPlayer.getCurrentState() == CURRENT_STATE_PAUSE && ONRESUME_TO_PLAY) {
                 videoPlayer.onStatePlaying();
                 EasyMediaManager.start();
             }
@@ -557,6 +597,57 @@ public class MediaUtils {
             mAudioManager.abandonAudioFocus(onAudioFocusChangeListener);
         }
 
+    }
+
+    /**
+     * 显示非wifi播放提示
+     *
+     * @param context
+     * @param play
+     * @return 是否弹窗
+     */
+    public static boolean showWifiDialog(Context context, MediaData data, final EasyBaseVideoPlay play) {
+        if (!data.isLocal() &&
+                !MediaUtils.isWifiConnected(context) && !EasyMediaManager.WIFI_ALLOW_PLAY) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(context.getResources().getString(R.string.tips_not_wifi));
+            builder.setPositiveButton(context.getResources().getString(R.string.tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (play instanceof EasyVideoPlayer) {
+                        ((EasyVideoPlayer) play).onEvent(EasyMediaAction.ON_CLICK_START_NO_WIFI_GOON);
+                        ((EasyVideoPlayer) play).startVideo();
+                    } else if (play instanceof EasyVideoPlayTiny) {
+                        ((EasyVideoPlayTiny) play).onEvent(EasyMediaAction.ON_CLICK_START_NO_WIFI_GOON);
+                        ((EasyVideoPlayTiny) play).startVideo();
+                    }
+                    EasyMediaManager.WIFI_ALLOW_PLAY = true;
+                }
+            });
+            builder.setNegativeButton(context.getResources().getString(R.string.tips_not_wifi_cancel), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (play instanceof EasyVideoPlayer && ((EasyVideoPlayer) play).currentScreen == SCREEN_WINDOW_FULLSCREEN) {
+                        ((EasyVideoPlayer) play).clearFullscreenLayout();
+                    }
+                }
+            });
+            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialog) {
+                    dialog.dismiss();
+                    if (play instanceof EasyVideoPlayer && ((EasyVideoPlayer) play).currentScreen == SCREEN_WINDOW_FULLSCREEN) {
+                        dialog.dismiss();
+                        ((EasyVideoPlayer) play).clearFullscreenLayout();
+                    }
+                }
+            });
+            builder.create().show();
+            return true;
+        }
+        return false;
     }
 
     public static AudioManager.OnAudioFocusChangeListener onAudioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {//是否新建个class，代码更规矩，并且变量的位置也很尴尬

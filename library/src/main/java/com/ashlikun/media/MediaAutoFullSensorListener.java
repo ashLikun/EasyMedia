@@ -5,6 +5,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import com.ashlikun.media.view.EasyVideoPlayer;
+
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/12/7　9:54
@@ -22,8 +24,8 @@ public class MediaAutoFullSensorListener implements SensorEventListener {
         //过滤掉用力过猛会有一个反向的大数值
         if (((x > -15 && x < -10) || (x < 15 && x > 10)) && Math.abs(y) < 1.5) {
             if ((System.currentTimeMillis() - EasyVideoPlayer.lastAutoFullscreenTime) > 2000) {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().autoFullscreen(x);
+                if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().autoFullscreen(x);
                 }
                 EasyVideoPlayer.lastAutoFullscreenTime = System.currentTimeMillis();
             }

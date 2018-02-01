@@ -133,8 +133,8 @@ public class EasyMediaSystem extends EasyMediaInterface
             EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onPrepared();
+                    if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
                     }
                 }
             });
@@ -146,8 +146,8 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onAutoCompletion();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
                 }
             }
         });
@@ -158,8 +158,8 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().setBufferProgress(percent);
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().setBufferProgress(percent);
                 }
             }
         });
@@ -170,8 +170,8 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onError(what, extra);
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onError(what, extra);
                 }
             }
         });
@@ -183,11 +183,11 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onPrepared();
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
                     } else {
-                        EasyVideoPlayerManager.getCurrentVideoPlayer().onInfo(what, extra);
+                        EasyVideoPlayerManager.getCurrentVideoPlay().onInfo(what, extra);
                     }
                 }
             }
@@ -202,8 +202,8 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onVideoSizeChanged();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onVideoSizeChanged();
                 }
             }
         });
@@ -214,8 +214,8 @@ public class EasyMediaSystem extends EasyMediaInterface
         EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayer() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlayer().onSeekComplete();
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onSeekComplete();
                 }
             }
         });

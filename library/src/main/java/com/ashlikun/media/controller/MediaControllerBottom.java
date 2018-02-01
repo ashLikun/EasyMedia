@@ -2,7 +2,6 @@ package com.ashlikun.media.controller;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
 import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_TINY;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
 
@@ -90,8 +88,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         if (screen == SCREEN_WINDOW_FULLSCREEN) {
             setIsFull(true);
         } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
-            setIsFull(false);
-        } else if (screen == SCREEN_WINDOW_TINY) {
             setIsFull(false);
         }
     }
@@ -166,14 +162,14 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        EasyVideoPlayerManager.getCurrentVideoPlayer().onEvent(EasyMediaAction.ON_SEEK_POSITION);
+        EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().onEvent(EasyMediaAction.ON_SEEK_POSITION);
         ViewParent vpup = getParent();
         while (vpup != null) {
             vpup.requestDisallowInterceptTouchEvent(false);
             vpup = vpup.getParent();
         }
-        if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != MediaStatus.CURRENT_STATE_PLAYING &&
-                EasyVideoPlayerManager.getCurrentVideoPlayer().currentState != MediaStatus.CURRENT_STATE_PAUSE) {
+        if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() != MediaStatus.CURRENT_STATE_PLAYING &&
+                EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() != MediaStatus.CURRENT_STATE_PAUSE) {
             return;
         }
         int time = (int) (seekBar.getProgress() * getDuration() / 100.0);
@@ -212,7 +208,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     private class ProgressRunnable implements Runnable {
         @Override
         public void run() {
-            if (EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PLAYING || EasyVideoPlayerManager.getCurrentVideoPlayer().currentState == CURRENT_STATE_PAUSE) {
+            if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().currentState == CURRENT_STATE_PLAYING || EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().currentState == CURRENT_STATE_PAUSE) {
                 MediaUtils.getMainHander().post(new Runnable() {
                     @Override
                     public void run() {
@@ -231,7 +227,6 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
                                 setProgress(progress, -1);
                             }
                         }
-                        Log.e("aaaaa", progress + "     " + duration);
                         setTime(position, duration);
                     }
                 });

@@ -25,15 +25,6 @@
         android:layout_alignParentTop="true"></com.ashlikun.media.controller.MediaControllerTop>
 
 
-    <ImageView
-        android:id="@+id/back_tiny"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginLeft="6dp"
-        android:layout_marginTop="6dp"
-        android:src="@drawable/easy_media_click_back_tiny_selector"
-        android:padding="5dp"
-        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/loading"

@@ -1,4 +1,4 @@
-package com.ashlikun.media;
+package com.ashlikun.media.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
