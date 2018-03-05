@@ -206,7 +206,7 @@ public class EasyVideoPlayer extends FrameLayout
     public void startVideo() {
         //销毁其他播放的视频
         MediaUtils.releaseAllVideos();
-        initTextureView();
+        EasyMediaManager.instance().initTextureView(getContext());
         addTextureView();
         MediaUtils.setAudioFocus(getContext(), true);
         MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -528,15 +528,6 @@ public class EasyVideoPlayer extends FrameLayout
                 MediaUtils.releaseAllVideos();
             }
         }
-    }
-
-    /**
-     * 初始化TextureView
-     */
-    public void initTextureView() {
-        EasyMediaManager.instance().removeTextureView();
-        EasyMediaManager.textureView = new EasyTextureView(getContext());
-        EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.instance());
     }
 
     /**

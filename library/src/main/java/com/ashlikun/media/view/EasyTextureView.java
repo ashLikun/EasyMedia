@@ -15,7 +15,7 @@ import com.ashlikun.media.status.MediaDisplayType;
  * <p>
  * 因为SurfaceView的内容不在应用窗口上，所以不能使用变换（平移、缩放、旋转等）。
  * 也难以放在ListView或者ScrollView中，不能使用UI控件的一些特性比如View.setAlpha()。
- * 为了解决这个问题 Android 4.0中引入了TextureView。
+ * 为了解决这个问题 Android 4.0中引入了TextureView。只能在具有硬件加速的设备中，就是gup
  */
 public class EasyTextureView extends TextureView {
     protected static final String TAG = "JZResizeTextureView";

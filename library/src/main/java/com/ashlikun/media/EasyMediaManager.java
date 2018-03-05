@@ -1,5 +1,6 @@
 package com.ashlikun.media;
 
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -55,6 +56,14 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         return easyMediaManager;
     }
 
+    /**
+     * 初始化TextureView
+     */
+    public void initTextureView(Context context) {
+        EasyMediaManager.instance().removeTextureView();
+        EasyMediaManager.textureView = new EasyTextureView(context);
+        EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.instance());
+    }
 
     //正在播放的视频数据
     public static MediaData getCurrentDataSource() {
@@ -130,6 +139,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
             savedSurfaceTexture = surfaceTexture;
             prepare();
         } else {
+            //说明之前正在某个SurfaceTexture上渲染播放，这里直接拿来播放
             textureView.setSurfaceTexture(savedSurfaceTexture);
         }
     }

@@ -107,6 +107,7 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
         setDataSource(mediaData, 0);
     }
 
+
     /**
      * 设置数据源
      *
@@ -271,7 +272,7 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
     public void startVideo() {
         //销毁其他播放的视频
         MediaUtils.releaseAllVideos();
-        initTextureView();
+        EasyMediaManager.instance().initTextureView(getContext());
         addTextureView();
         MediaUtils.setAudioFocus(getContext(), true);
         MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -313,14 +314,6 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
         return MediaUtils.getCurrentMediaData(mediaData, currentUrlIndex);
     }
 
-    /**
-     * 初始化TextureView
-     */
-    public void initTextureView() {
-        EasyMediaManager.instance().removeTextureView();
-        EasyMediaManager.textureView = new EasyTextureView(getContext());
-        EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.instance());
-    }
 
     /**
      * 是否是当前EasyVideoPlay在播放视频
