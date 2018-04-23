@@ -1,3 +1,4 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
@@ -21,12 +22,14 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 ext {
-    compileSdkVersion = 26
-    buildToolsVersion = "26.0.2"
-    designVersion = "com.android.support:design:25.3.1"
-    v4Version = "com.android.support:support-v4:25.3.1"
-    frameVersion = "1.4.0"
-    targetSdkVersion = 25
+    superVersion = "27.0.2"
+    compileSdkVersion = 27
+    buildToolsVersion = "27.0.2"
+    designVersion = "com.android.support:design:" + superVersion
+    v4Version = "com.android.support:support-v4:" + superVersion
+    v7AppCompat = "com.android.support:appcompat-v7:" + superVersion
+    frameVersion = "2.0.6"
+    targetSdkVersion = 24
     minSdkVersion = 16
     versionCode = 1
     versionName = "0.0.1"
