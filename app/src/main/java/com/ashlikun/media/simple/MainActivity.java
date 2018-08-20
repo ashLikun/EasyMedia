@@ -16,15 +16,16 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ashlikun.glideutils.GlideUtils;
-import com.ashlikun.media.view.EasyVideoPlayer;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.play.EasyMediaIjkplayer;
+import com.ashlikun.media.view.EasyVideoPlayer;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EasyVideoPlayer mediaPlay;
-    String videoUrl2 = "http://ic.snssdk.com/neihan/video/playback/1513563522.2/?video_id=90ffcaa3a2a642bb8e6f02b73a5b27de&quality=origin&line=1&is_gif=0&device_platform=android";
+//    String videoUrl2 = "http://ic.snssdk.com/neihan/video/playback/1513563522.2/?video_id=90ffcaa3a2a642bb8e6f02b73a5b27de&quality=origin&line=1&is_gif=0&device_platform=android";
+    String videoUrl2 = "http://p2.suibianyuming.com.cn/1524714504video_341679.mp4";
     String videoUrl = "http://fs.mv.web.kugou.com/201712191633/784d23335957e44b18e748187f7726a9/G107/M02/16/13/S5QEAFl5rxCAaVBHAXjrv4kCk4A283.mp4";
     String[] permissions = new String[]{
             Manifest.permission.SYSTEM_ALERT_WINDOW,
