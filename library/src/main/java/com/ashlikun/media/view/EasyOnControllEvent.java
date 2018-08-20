@@ -1,5 +1,7 @@
 package com.ashlikun.media.view;
 
+import com.ashlikun.media.EasyMediaAction;
+
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/12/5　17:40
@@ -8,7 +10,7 @@ package com.ashlikun.media.view;
  * 功能介绍：控制器的事件
  */
 
-public interface EasyOnControllEvent {
+public interface EasyOnControllEvent extends EasyMediaAction {
     /**
      * 开始播放按钮点击
      */
@@ -28,11 +30,4 @@ public interface EasyOnControllEvent {
      * 当控制器点击的时候
      */
     void onControllerClick();
-
-    /**
-     * b
-     *
-     * @param type
-     */
-    void onEvent(int type);
 }

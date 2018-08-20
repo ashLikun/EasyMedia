@@ -17,34 +17,35 @@ import com.ashlikun.media.view.EasyOnControllEvent;
 
 public interface MediaControllerInterface {
 
-    public void setDataSource(MediaData mediaData);
+    void setDataSource(MediaData mediaData);
 
-    public void setOnControllEvent(EasyOnControllEvent onControllEvent);
+    void setOnControllEvent(EasyOnControllEvent onControllEvent);
+
     //是否可以全屏
-    public void setControllFullEnable(boolean fullEnable);
+    void setControllFullEnable(boolean fullEnable);
 
-    public void setCurrentScreen(@MediaScreenStatus.Code int currentScreen);
+    void setCurrentScreen(@MediaScreenStatus.Code int currentScreen);
 
-    public void setCurrentState(@MediaStatus.Code int currentState);
+    void setCurrentState(@MediaStatus.Code int currentState);
 
 
     //开始显示控制器的定时器
-    public void startDismissControlViewSchedule();
+    void startDismissControlViewSchedule();
 
     //取消显示控制器的定时器
-    public void cancelDismissControlViewSchedule();
+    void cancelDismissControlViewSchedule();
 
     //设置进度最大
-    public void setMaxProgressAndTime();
+    void setMaxProgressAndTime();
 
     //获取当前播放位置
-    public int getCurrentPositionWhenPlaying();
+    int getCurrentPositionWhenPlaying();
 
     //设置进度缓存
-    public void setBufferProgress(int bufferProgress);
+    void setBufferProgress(int bufferProgress);
 
     //获取进度缓存
-    public int getBufferProgress();
+    int getBufferProgress();
 
     //自动播放完成
     public void onAutoCompletion();

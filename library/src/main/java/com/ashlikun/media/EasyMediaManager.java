@@ -17,29 +17,48 @@ import com.ashlikun.media.view.EasyTextureView;
  */
 public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
-    //单利模式
+    /**
+     * 单利模式
+     */
     public static EasyMediaManager easyMediaManager;
 
     public static final String TAG = "EasyMediaManager";
-    //handler标识
+    /**
+     * handler标识
+     */
     public static final int HANDLER_PREPARE = 0;
     public static final int HANDLER_RELEASE = 2;
 
+    /**
+     * 播放器的渲染器
+     */
     public static EasyTextureView textureView;
     public static SurfaceTexture savedSurfaceTexture;
-    //设置给MediaPlay的渲染器,里面有savedSurfaceTexture
+    /**
+     * 设置给MediaPlay的渲染器,里面有savedSurfaceTexture
+     */
     public static Surface surface;
-    //播放器
+    /**
+     * 播放器
+     */
     public EasyMediaInterface mMediaPlay;
     public int currentVideoWidth = 0;
     public int currentVideoHeight = 0;
-    //播放器Handler,独立线程
+    /**
+     * 播放器Handler,独立线程
+     */
     public MediaHandler mMediaHandler;
-    //主线程的handler
+    /**
+     * 主线程的handler
+     */
     public Handler mainThreadHandler;
-    //播放事件的回掉
+    /**
+     * 播放事件的回掉
+     */
     public static EasyMediaAction MEDIA_EVENT;
-    //是否允许过非wifi播放视频
+    /**
+     * 是否允许过非wifi播放视频
+     */
     public static boolean WIFI_ALLOW_PLAY = true;
 
     public EasyMediaManager() {
@@ -65,7 +84,11 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.instance());
     }
 
-    //正在播放的视频数据
+    /**
+     * 正在播放的视频数据
+     *
+     * @return
+     */
     public static MediaData getCurrentDataSource() {
         return instance().mMediaPlay.currentDataSource;
     }
@@ -75,14 +98,23 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     }
 
     public static int getCurrentPosition() {
+        if (instance().mMediaPlay == null) {
+            return 0;
+        }
         return instance().mMediaPlay.getCurrentPosition();
     }
 
     public static int getDuration() {
+        if (instance().mMediaPlay == null) {
+            return 0;
+        }
         return instance().mMediaPlay.getDuration();
     }
 
     public static void seekTo(int time) {
+        if (instance().mMediaPlay == null) {
+            return;
+        }
         instance().mMediaPlay.seekTo(time);
     }
 

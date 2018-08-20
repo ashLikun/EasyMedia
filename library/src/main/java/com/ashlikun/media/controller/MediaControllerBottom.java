@@ -191,13 +191,17 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         return duration;
     }
 
-    //开始进度定时器
+    /**
+     * 开始进度定时器
+     */
     public void startProgressSchedule() {
         stopProgressSchedule();
         progressFuture = MediaUtils.POOL_SCHEDULE().scheduleWithFixedDelay(new ProgressRunnable(), 0, 300, TimeUnit.MILLISECONDS);
     }
 
-    //取消进度定时器
+    /**
+     * 取消进度定时器
+     */
     public void stopProgressSchedule() {
         if (progressFuture != null && !progressFuture.isCancelled()) {
             progressFuture.cancel(true);
@@ -208,7 +212,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
     private class ProgressRunnable implements Runnable {
         @Override
         public void run() {
-            if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().currentState == CURRENT_STATE_PLAYING || EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().currentState == CURRENT_STATE_PAUSE) {
+            if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PLAYING || EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
                 MediaUtils.getMainHander().post(new Runnable() {
                     @Override
                     public void run() {

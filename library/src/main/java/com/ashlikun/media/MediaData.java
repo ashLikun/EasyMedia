@@ -71,7 +71,15 @@ public class MediaData {
         if (builder.fileDescriptor != null) {
             sb.append(builder.fileDescriptor);
         }
-        return super.toString();
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        return super.equals(obj) || toString().equals(obj.toString());
     }
 
     public static class Builder {

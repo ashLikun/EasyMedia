@@ -14,15 +14,25 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 public interface MediaScreenStatus {
-    //默认的
-    public static final int SCREEN_WINDOW_NORMAL = 0;
-    //列表的
-    public static final int SCREEN_WINDOW_LIST = 1;
-    //全屏的
-    public static final int SCREEN_WINDOW_FULLSCREEN = 2;
+    /**
+     * 默认的
+     */
+    int SCREEN_WINDOW_NORMAL = 0;
+    /**
+     * 列表的
+     */
+    int SCREEN_WINDOW_LIST = 1;
+    /**
+     * 全屏的
+     */
+    int SCREEN_WINDOW_FULLSCREEN = 2;
+    /**
+     * 小窗口
+     */
+    int SCREEN_WINDOW_TINY = 3;
 
     @IntDef(value = {SCREEN_WINDOW_NORMAL, SCREEN_WINDOW_LIST
-            , SCREEN_WINDOW_FULLSCREEN})
+            , SCREEN_WINDOW_FULLSCREEN, SCREEN_WINDOW_TINY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Code {
 

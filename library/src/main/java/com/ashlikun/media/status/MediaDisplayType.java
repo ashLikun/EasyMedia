@@ -14,7 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 public interface MediaDisplayType {
-    int VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER = 0;//default
+    int VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER = 0;
     int VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT = 1;
     int VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP = 2;
     int VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL = 3;

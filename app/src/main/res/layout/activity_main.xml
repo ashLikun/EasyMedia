@@ -17,14 +17,14 @@
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                app:evp_full_screen_enable="false"></com.ashlikun.media.view.EasyVideoPlayer>
+                app:evp_full_screen_enable="true"></com.ashlikun.media.view.EasyVideoPlayer>
 
             <Button
                 android:id="@+id/listButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="内涵段子列表播放" />
+                android:text="火山列表播放" />
 
             <Button
                 android:id="@+id/fullScreenButton"

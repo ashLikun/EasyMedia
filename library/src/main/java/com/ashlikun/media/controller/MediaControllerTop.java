@@ -13,7 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ashlikun.media.MediaData;
-import com.ashlikun.media.MediaUtils;
+import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.R;
 
 import java.text.SimpleDateFormat;
@@ -140,7 +140,7 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.back) {
-            MediaUtils.backPress();
+            MediaScreenUtils.backPress();
         }
     }
 }

@@ -18,20 +18,16 @@ import com.ashlikun.media.EasyMediaAction;
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaData;
+import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.play.EasyMediaSystem;
-import com.ashlikun.media.status.MediaStatus;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
 import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING;
 
 /**
  * 作者　　: 李坤
@@ -51,20 +47,16 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING;
  * android:visibility="gone" />
  */
 
-public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay {
-    public ViewGroup textureViewContainer;
-    //数据源，列表
-    public List<MediaData> mediaData;
-    public int currentUrlIndex = 0;
-    @MediaStatus.Code
-    public int currentState = MediaStatus.CURRENT_STATE_NORMAL;//当前状态
+public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPlayListener {
     WindowManager mWindowManager = (WindowManager) getContext().getApplicationContext()
             .getSystemService(Context.WINDOW_SERVICE);
     WindowManager.LayoutParams mLayoutParams = new WindowManager.LayoutParams();
-
-    private float mTouchStartX;
-    private float mTouchStartY;
-    private int mStatusHeight;
+    protected float touchStartX;
+    protected float touchStartY;
+    /**
+     * 状态栏高度
+     */
+    protected int statusHeight;
 
     public EasyVideoPlayTiny(@NonNull Context context) {
         this(context, null);
@@ -72,17 +64,12 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
 
     public EasyVideoPlayTiny(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        initView(context, attrs);
     }
 
-    private void initView(Context context, AttributeSet attrs) {
-        mStatusHeight = getStatusBarHeight();
-        textureViewContainer = new FrameLayout(context);
-        textureViewContainer.setBackgroundColor(0xff000000);
-        LayoutParams containerLp = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        containerLp.rightMargin = dip2px(10);
-        containerLp.topMargin = dip2px(10);
-        addView(textureViewContainer, containerLp);
+    @Override
+    protected void initView(Context context, AttributeSet attrs) {
+        super.initView(context, attrs);
+        statusHeight = getStatusBarHeight();
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(R.drawable.easy_media_click_back_tiny_selector);
         LayoutParams containerBack = new LayoutParams(dip2px(20), dip2px(20));
@@ -91,63 +78,16 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
         imageView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaUtils.backPress();
+                MediaScreenUtils.backPress();
             }
         });
     }
 
     /**
-     * 设置数据源
-     *
-     * @param data 视频ur
+     * 播放器生命周期,自己主动调用的,还原状态
      */
-    public void setDataSource(MediaData data) {
-        List<MediaData> mediaData = new ArrayList<>();
-        mediaData.add(data);
-        setDataSource(mediaData, 0);
-    }
-
-
-    /**
-     * 设置数据源
-     *
-     * @param mediaData    视频数据，数组
-     * @param defaultIndex 播放的url 位置 0 开始
-     */
-    public void setDataSource(List<MediaData> mediaData, int defaultIndex) {
-        //是否有播放器，没用就用系统的
-        if (EasyMediaManager.instance().mMediaPlay == null) {
-            EasyMediaManager.instance().mMediaPlay = new EasyMediaSystem();
-        }
-        //过滤已经在播放的
-        if (this.mediaData != null && mediaData.size() > defaultIndex &&
-                getCurrentData().equals(MediaUtils.getCurrentMediaData(mediaData, defaultIndex))) {
-            return;
-        }
-        if (isCurrentVideoPlay() && MediaUtils.isContainsUri(mediaData, EasyMediaManager.getCurrentDataSource())) {
-            //当前View正在播放视频  保存进度
-            int position = 0;
-            try {
-                position = EasyMediaManager.getCurrentPosition();
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-            if (position != 0) {
-                MediaUtils.saveProgress(getContext(), EasyMediaManager.getCurrentDataSource(), position);
-            }
-            EasyMediaManager.instance().releaseMediaPlayer();
-        }
-        this.mediaData = mediaData;
-        this.currentUrlIndex = defaultIndex;
-        onStateNormal();
-    }
-
-    public void onStateNormal() {
-        currentState = CURRENT_STATE_NORMAL;
-    }
-
-    //播放器生命周期,自己主动调用的,还原状态
-    public void onCompletion() {
+    @Override
+    public void onForceCompletionTo() {
         //保存进度
         if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
             int position = 0;
@@ -170,7 +110,9 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
 
     }
 
-    public void onStatePrepared() {//因为这个紧接着就会进入播放状态，所以不设置state
+    @Override
+    public void onStatePrepared() {
+        //因为这个紧接着就会进入播放状态，所以不设置state
         int position = MediaUtils.getSavedProgress(getContext(), getCurrentData());
         if (position != 0) {
             EasyMediaManager.seekTo(position);
@@ -201,29 +143,6 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
         }
     }
 
-    public void onStatePreparing() {
-        currentState = CURRENT_STATE_PREPARING;
-    }
-
-    //开始播放回掉
-    public void onStatePlaying() {
-        currentState = CURRENT_STATE_PLAYING;
-    }
-
-    //暂停
-    public void onStatePause() {
-        currentState = CURRENT_STATE_PAUSE;
-    }
-
-    //错误
-    public void onStateError() {
-        currentState = CURRENT_STATE_ERROR;
-    }
-
-    //自动完成
-    public void onStateAutoComplete() {
-        currentState = CURRENT_STATE_AUTO_COMPLETE;
-    }
 
     @Override
     public void onPrepared() {
@@ -262,70 +181,50 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
     }
 
 
+    @Override
     public List<MediaData> getMediaData() {
         return mediaData;
     }
 
-    /**
-     * 开始播放
-     */
-    public void startVideo() {
-        //销毁其他播放的视频
-        MediaUtils.releaseAllVideos();
-        EasyMediaManager.instance().initTextureView(getContext());
-        addTextureView();
-        MediaUtils.setAudioFocus(getContext(), true);
-        MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        EasyMediaManager.setCurrentDataSource(getCurrentData());
-        onStatePreparing();
-        EasyVideoPlayerManager.setVideoTiny(this);
-    }
-
+    @Override
     public void removeTextureView() {
         if (EasyMediaManager.textureView != null) {
             textureViewContainer.removeView(EasyMediaManager.textureView);
         }
     }
 
+    @Override
     public int getCurrentState() {
         return currentState;
     }
 
+    @Override
     public int getCurrentUrlIndex() {
         return currentUrlIndex;
     }
 
+    @Override
     public void onEvent(int type) {
         if (EasyMediaManager.MEDIA_EVENT != null && isCurrentPlay() && getCurrentData() != null) {
-            EasyMediaManager.MEDIA_EVENT.onEvent(type, getCurrentData());
+            EasyMediaManager.MEDIA_EVENT.onEvent(type);
         }
     }
 
     /**
-     * 当前EasyVideoPlay  是否正在播放
+     * 获取当前播放uil
+     *
+     * @return
      */
-    public boolean isCurrentPlay() {
-        return isCurrentVideoPlay()
-                && MediaUtils.isContainsUri(mediaData, EasyMediaManager.getCurrentDataSource());
-    }
-
-    //获取当前播放uil
+    @Override
     public MediaData getCurrentData() {
         return MediaUtils.getCurrentMediaData(mediaData, currentUrlIndex);
     }
 
 
     /**
-     * 是否是当前EasyVideoPlay在播放视频
-     */
-    public boolean isCurrentVideoPlay() {
-        return EasyVideoPlayerManager.getVideoTiny() != null
-                && EasyVideoPlayerManager.getVideoTiny() == this;
-    }
-
-    /**
      * 添加TextureView
      */
+    @Override
     public void addTextureView() {
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
@@ -335,7 +234,9 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
         textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
     }
 
-    //清空小窗口
+    /**
+     * 清空小窗口
+     */
     public void cleanTiny() {
         if (mWindowManager != null) {
             mWindowManager.removeView(this);
@@ -368,16 +269,16 @@ public class EasyVideoPlayTiny extends FrameLayout implements EasyBaseVideoPlay 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float rawX = event.getRawX();
-        float rawY = event.getRawY() - mStatusHeight;
+        float rawY = event.getRawY() - statusHeight;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                mTouchStartX = event.getX();
-                mTouchStartY = event.getY();
+                touchStartX = event.getX();
+                touchStartY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
                 //原始坐标减去移动坐标
-                mLayoutParams.x = (int) (rawX - mTouchStartX);
-                mLayoutParams.y = (int) (rawY - mTouchStartY);
+                mLayoutParams.x = (int) (rawX - touchStartX);
+                mLayoutParams.y = (int) (rawY - touchStartY);
                 mWindowManager.updateViewLayout(this, mLayoutParams);
                 break;
         }

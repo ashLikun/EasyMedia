@@ -11,7 +11,9 @@ import android.view.Surface;
  * 抽象出来的公共接口，自定义播放器要实现这个接口
  */
 public abstract class EasyMediaInterface {
-    // 视频数据
+    /**
+     * 视频数据
+     */
     public MediaData currentDataSource;
 
     /**
