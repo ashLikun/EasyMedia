@@ -18,6 +18,11 @@ import java.util.List;
  * 设置玩数据源就会播放
  */
 public class MiniVideoPlay extends BaseEasyVideoPlay {
+    /**
+     * 是否自动从新播放
+     */
+    boolean isAutoRestart = true;
+
     public MiniVideoPlay(@NonNull Context context) {
         super(context);
     }
@@ -31,11 +36,19 @@ public class MiniVideoPlay extends BaseEasyVideoPlay {
 
     @Override
     public void onAutoCompletion() {
-        EasyMediaManager.start();
+        if (isAutoRestart) {
+            EasyMediaManager.start();
+        } else {
+            super.onAutoCompletion();
+        }
     }
 
     @Override
     protected void saveVideoPlayView() {
         EasyVideoPlayerManager.setVideoDefault(this);
+    }
+
+    public void setAutoRestart(boolean autoRestart) {
+        isAutoRestart = autoRestart;
     }
 }
