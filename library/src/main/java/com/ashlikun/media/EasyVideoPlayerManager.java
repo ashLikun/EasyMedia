@@ -30,7 +30,7 @@ public class EasyVideoPlayerManager {
         return FIRST_FLOOR_VIDEO_PLAY;
     }
 
-    public static void setVideoDefault(EasyVideoPlayer jzVideoPlayer) {
+    public static void setVideoDefault(BaseEasyVideoPlay jzVideoPlayer) {
         FIRST_FLOOR_VIDEO_PLAY = jzVideoPlayer;
     }
 
@@ -96,6 +96,6 @@ public class EasyVideoPlayerManager {
             FIRST_FLOOR_VIDEO_PLAY.onForceCompletionTo();
             FIRST_FLOOR_VIDEO_PLAY = null;
         }
-
+        EasyMediaManager.setCurrentDataSource(null);
     }
 }

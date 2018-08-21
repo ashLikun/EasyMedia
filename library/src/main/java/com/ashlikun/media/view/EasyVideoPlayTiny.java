@@ -8,9 +8,7 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -83,35 +81,19 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         });
     }
 
+
     /**
      * 播放器生命周期,自己主动调用的,还原状态
      */
     @Override
     public void onForceCompletionTo() {
-        //保存进度
-        if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
-            int position = 0;
-            try {
-                position = EasyMediaManager.getCurrentPosition();
-            } catch (IllegalStateException e) {
-            }
-            MediaUtils.saveProgress(getContext(), getCurrentData(), position);
-        }
-        cleanTiny();
-        //还原默认状态
-        onStateNormal();
-        EasyMediaManager.instance().currentVideoWidth = 0;
-        EasyMediaManager.instance().currentVideoHeight = 0;
-        MediaUtils.setAudioFocus(getContext(), false);
-        //取消休眠
-        MediaUtils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        //释放渲染器和保存的SurfaceTexture，textureView
-        EasyMediaManager.instance().releaseAllSufaceView();
-
+        super.onForceCompletionTo();
     }
+
 
     @Override
     public void onStatePrepared() {
+        super.onStatePrepared();
         //因为这个紧接着就会进入播放状态，所以不设置state
         int position = MediaUtils.getSavedProgress(getContext(), getCurrentData());
         if (position != 0) {
@@ -143,41 +125,16 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         }
     }
 
-
-    @Override
-    public void onPrepared() {
-        onStatePrepared();
-        onStatePlaying();
-    }
-
-    @Override
-    public void onInfo(int what, int extra) {
-
-    }
-
-    @Override
-    public void onSeekComplete() {
-
-    }
-
     @Override
     public void onError(int what, int extra) {
+        super.onError(what, extra);
         cleanTiny();
     }
 
     @Override
     public void onAutoCompletion() {
+        super.onAutoCompletion();
         cleanTiny();
-    }
-
-    @Override
-    public void onVideoSizeChanged() {
-
-    }
-
-    @Override
-    public void setBufferProgress(int bufferProgress) {
-
     }
 
 
@@ -193,45 +150,12 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         }
     }
 
-    @Override
-    public int getCurrentState() {
-        return currentState;
-    }
-
-    @Override
-    public int getCurrentUrlIndex() {
-        return currentUrlIndex;
-    }
-
-    @Override
-    public void onEvent(int type) {
-        if (EasyMediaManager.MEDIA_EVENT != null && isCurrentPlay() && getCurrentData() != null) {
-            EasyMediaManager.MEDIA_EVENT.onEvent(type);
-        }
-    }
-
     /**
-     * 获取当前播放uil
-     *
-     * @return
+     * 保存播放器到对应的EasyVideoPlayerManager里面
      */
     @Override
-    public MediaData getCurrentData() {
-        return MediaUtils.getCurrentMediaData(mediaData, currentUrlIndex);
-    }
-
-
-    /**
-     * 添加TextureView
-     */
-    @Override
-    public void addTextureView() {
-        FrameLayout.LayoutParams layoutParams =
-                new FrameLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        Gravity.CENTER);
-        textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
+    protected void saveVideoPlayView() {
+        EasyVideoPlayerManager.setVideoTiny(this);
     }
 
     /**
@@ -239,7 +163,10 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
      */
     public void cleanTiny() {
         if (mWindowManager != null) {
-            mWindowManager.removeView(this);
+            try {
+                mWindowManager.removeView(this);
+            } catch (Exception e) {
+            }
         }
         removeTextureView();
         EasyVideoPlayerManager.setVideoTiny(null);
@@ -290,7 +217,11 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         return (int) (dipValue * scale + 0.5f);
     }
 
-    //获取状态栏高度
+    /**
+     * 获取状态栏高度
+     *
+     * @return
+     */
     public int getStatusBarHeight() {
         int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {

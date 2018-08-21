@@ -33,7 +33,8 @@ public class MediaScreenUtils {
      */
     public static final int FULL_SCREEN_NORMAL_DELAY = 300;
     /**
-     * 第一次按返回的时间
+     * 1:返回键，第一次按返回的时间,
+     * 2:还有就是释放视频渲染器时候释放可以释放，比如当小视频点击全屏按钮就不能释放,直接全屏就得释放
      */
     public static long CLICK_QUIT_FULLSCREEN_TIME = 0;
     /**
@@ -68,7 +69,15 @@ public class MediaScreenUtils {
         startFullscreen(easyVideoPlayer, mediaData, 0);
     }
 
+    /**
+     * 直接开始全屏播放
+     *
+     * @param easyVideoPlayer 请实例化一个播放器
+     * @param mediaData       地址  或者 AssetFileDescriptor
+     * @param defaultIndex    第几个
+     */
     public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, List<MediaData> mediaData, int defaultIndex) {
+        MediaUtils.releaseAllVideos();
         setActivityFullscreen(easyVideoPlayer.getContext(), true);
         MediaUtils.setRequestedOrientation(easyVideoPlayer.getContext(),
                 easyVideoPlayer.isFullscreenPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR : EasyVideoPlayer.ORIENTATION_FULLSCREEN_LANDSCAPE);
@@ -213,6 +222,7 @@ public class MediaScreenUtils {
                 videoPlayerDefault.getCurrentState() == CURRENT_STATE_AUTO_COMPLETE)) {
             return false;
         }
+
         if (videoPlayerDefault != null) {
             videoPlayerDefault.removeTextureView();
         }
@@ -220,7 +230,7 @@ public class MediaScreenUtils {
 
         tiny.setDataSource(mediaData, defaultIndex);
         tiny.addTextureView();
-        EasyVideoPlayerManager.setVideoTiny(tiny);
+
         tiny.showWindow();
         if (videoPlayerDefault == null && !MediaUtils.isContainsUri(mediaData, EasyMediaManager.getCurrentDataSource())) {
             tiny.play();

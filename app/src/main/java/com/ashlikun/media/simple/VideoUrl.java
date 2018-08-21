@@ -9,6 +9,10 @@ package com.ashlikun.media.simple;
  */
 
 public class VideoUrl {
+    public static String meinv = "http://ic.snssdk.com/neihan/video/playback/1513563522.2/?video_id=90ffcaa3a2a642bb8e6f02b73a5b27de&quality=origin&line=1&is_gif=0&device_platform=android";
+    //    String videoUrl2 = "http://p2.suibianyuming.com.cn/1524714504video_341679.mp4";
+//    String videoUrl = "http://fs.mv.web.kugou.com/201712191633/784d23335957e44b18e748187f7726a9/G107/M02/16/13/S5QEAFl5rxCAaVBHAXjrv4kCk4A283.mp4";
+    public static String meinv2 = "http://jsmov2.a.yximgs.com/upic/2018/08/19/17/BMjAxODA4MTkxNzQxMDBfMTE4OTkwMV83NjcxMTEyNTcwXzFfMw==_hd3_B9725b809535516c402d3cfc81d8c1e13.mp4?tag=1-1534821741-h-1-u54cnxzbkp-aee2b10cb2eaea47";
     /**
      * 内涵首页视屏接口
      */

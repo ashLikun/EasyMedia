@@ -36,11 +36,17 @@ public class EasyMediaSystem extends EasyMediaInterface
 
     @Override
     public void start() {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.start();
     }
 
     @Override
     public void stop() {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.stop();
     }
 
@@ -88,11 +94,17 @@ public class EasyMediaSystem extends EasyMediaInterface
 
     @Override
     public void pause() {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.pause();
     }
 
     @Override
     public boolean isPlaying() {
+        if (mediaPlayer == null) {
+            return false;
+        }
         if (mediaPlayer != null) {
             return mediaPlayer.isPlaying();
         }
@@ -101,6 +113,9 @@ public class EasyMediaSystem extends EasyMediaInterface
 
     @Override
     public void seekTo(int time) {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.seekTo(time);
     }
 
@@ -113,21 +128,33 @@ public class EasyMediaSystem extends EasyMediaInterface
 
     @Override
     public int getCurrentPosition() {
+        if (mediaPlayer == null) {
+            return 0;
+        }
         return mediaPlayer.getCurrentPosition();
     }
 
     @Override
     public int getDuration() {
+        if (mediaPlayer == null) {
+            return 0;
+        }
         return mediaPlayer.getDuration();
     }
 
     @Override
     public void setSurface(Surface surface) {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.setSurface(surface);
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        if (mediaPlayer == null) {
+            return;
+        }
         mediaPlayer.start();
         if (currentDataSource.toString().toLowerCase().contains("mp3")) {
             EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
@@ -148,6 +175,7 @@ public class EasyMediaSystem extends EasyMediaInterface
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
+                    currentDataSource = null;
                 }
             }
         });

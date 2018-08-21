@@ -109,23 +109,30 @@ public class MediaListUtils {
      * @param isChileViewDetached 子view是否分离 true:分离，false:添加
      */
     public static void onRecyclerAutoTiny(EasyVideoPlayer videoPlayer, boolean isChileViewDetached) {
-        //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
 
         if (videoPlayer == null || !MediaUtils.isContainsUri(videoPlayer.getMediaData(),
                 EasyMediaManager.getCurrentDataSource())) {
+            //如果当前的view播放的视频地址不是正在播放的视频地址就过滤掉这次
             return;
         }
+        //这里一定是在播放的
         if (isChileViewDetached) {
             if (EasyVideoPlayerManager.getVideoTiny() == null) {
-                if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
+                if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny() != null &&
+                        EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
                     MediaUtils.releaseAllVideos();
                 } else {
-                    if (MediaScreenUtils.startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.getMediaData(), videoPlayer.getCurrentUrlIndex())) {
+                    if (MediaScreenUtils.startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()),
+                            videoPlayer.getMediaData(), videoPlayer.getCurrentUrlIndex())) {
                         videoPlayer.setStatus(MediaStatus.CURRENT_STATE_NORMAL);
+                        //列表的时候如果进入小窗口，那么久把列表的view设为null,可能回收后就不对了
+                        EasyVideoPlayerManager.setVideoDefault(null);
                     }
                 }
             }
         } else if (EasyVideoPlayerManager.getVideoTiny() != null) {
+            //回来的时候再把这个保存,对应于上面的设为null
+            EasyVideoPlayerManager.setVideoDefault(videoPlayer);
             MediaScreenUtils.backPress();
         }
     }

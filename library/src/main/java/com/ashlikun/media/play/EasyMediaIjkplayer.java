@@ -37,6 +37,7 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void prepare() {
+
         ijkMediaPlayer = new IjkMediaPlayer();
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
@@ -55,7 +56,9 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnTimedTextListener(EasyMediaIjkplayer.this);
 
         try {
-            if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
+            if (currentDataSource == null) {
+                Toast.makeText(MediaUtils.mContext, MediaUtils.mContext.getText(R.string.no_url), Toast.LENGTH_SHORT).show();
+            } else if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
                 if (currentDataSource.getHeaders() != null) {
                     ijkMediaPlayer.setDataSource(currentDataSource.getUrl(), currentDataSource.getHeaders());
                 } else {
@@ -108,26 +111,41 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public int getCurrentPosition() {
+        if (ijkMediaPlayer == null) {
+            return 0;
+        }
         return (int) ijkMediaPlayer.getCurrentPosition();
     }
 
     @Override
     public int getDuration() {
+        if (ijkMediaPlayer == null) {
+            return 0;
+        }
         return (int) ijkMediaPlayer.getDuration();
     }
 
     @Override
     public void setSurface(Surface surface) {
+        if (ijkMediaPlayer == null) {
+            return;
+        }
         ijkMediaPlayer.setSurface(surface);
     }
 
     @Override
     public void stop() {
+        if (ijkMediaPlayer == null) {
+            return;
+        }
         ijkMediaPlayer.stop();
     }
 
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
+        if (ijkMediaPlayer == null) {
+            return;
+        }
         ijkMediaPlayer.start();
         if (currentDataSource.toString().toLowerCase().contains("mp3")) {
             EasyMediaManager.instance().mainThreadHandler.post(new Runnable() {
@@ -162,6 +180,7 @@ public class EasyMediaIjkplayer extends EasyMediaInterface implements IMediaPlay
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
+                    currentDataSource = null;
                 }
             }
         });

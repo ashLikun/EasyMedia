@@ -18,6 +18,11 @@ import com.ashlikun.media.status.MediaDisplayType;
  * 为了解决这个问题 Android 4.0中引入了TextureView。只能在具有硬件加速的设备中，就是gup
  */
 public class EasyTextureView extends TextureView {
+    /**
+     * 视频大小缩放规则,全局的
+     */
+    @MediaDisplayType.Code
+    public static int VIDEO_IMAGE_DISPLAY_TYPE = 0;
     protected static final String TAG = "JZResizeTextureView";
 
     public int currentVideoWidth = 0;
@@ -54,14 +59,14 @@ public class EasyTextureView extends TextureView {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int viewRotation = (int) getRotation();
-        int videoWidth = currentVideoWidth;
-        int videoHeight = currentVideoHeight;
-        int parentHeight = ((View) getParent()).getMeasuredHeight();
-        int parentWidth = ((View) getParent()).getMeasuredWidth();
+        float videoWidth = currentVideoWidth;
+        float videoHeight = currentVideoHeight;
+        float parentHeight = ((View) getParent()).getMeasuredHeight();
+        float parentWidth = ((View) getParent()).getMeasuredWidth();
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT) {
+            if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT) {
                 if (viewRotation == 90 || viewRotation == 270) {
-                    int tempSize = parentWidth;
+                    float tempSize = parentWidth;
                     parentWidth = parentHeight;
                     parentHeight = tempSize;
                 }
@@ -77,8 +82,8 @@ public class EasyTextureView extends TextureView {
             heightMeasureSpec = tempMeasureSpec;
         }
 
-        int width = getDefaultSize(videoWidth, widthMeasureSpec);
-        int height = getDefaultSize(videoHeight, heightMeasureSpec);
+        float width = getDefaultSize((int) videoWidth, widthMeasureSpec);
+        float height = getDefaultSize((int) videoHeight, heightMeasureSpec);
         if (videoWidth > 0 && videoHeight > 0) {
 
             int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
@@ -136,18 +141,18 @@ public class EasyTextureView extends TextureView {
             // no size yet, just adopt the given spec sizes
         }
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL) {
+            if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL) {
                 /**原图**/
                 height = videoHeight;
                 width = videoWidth;
-            } else if (EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP) {
+            } else if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP) {
                 if (viewRotation == 90 || viewRotation == 270) {
-                    int tempSize = parentWidth;
+                    float tempSize = parentWidth;
                     parentWidth = parentHeight;
                     parentHeight = tempSize;
                 }
                 /**充满剪切**/
-                if (videoHeight / videoWidth > parentHeight / parentWidth) {
+                if (videoHeight / (videoWidth * 1.0f) > parentHeight / parentWidth) {
                     height = parentWidth / width * height;
                     width = parentWidth;
                 } else if (videoHeight / videoWidth < parentHeight / parentWidth) {
@@ -156,6 +161,6 @@ public class EasyTextureView extends TextureView {
                 }
             }
         }
-        setMeasuredDimension(width, height);
+        setMeasuredDimension((int) width, (int) height);
     }
 }

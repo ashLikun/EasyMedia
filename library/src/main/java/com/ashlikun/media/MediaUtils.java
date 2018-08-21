@@ -21,6 +21,7 @@ import android.view.Window;
 import com.ashlikun.media.status.MediaDisplayType;
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.BaseEasyVideoPlay;
+import com.ashlikun.media.view.EasyTextureView;
 import com.ashlikun.media.view.EasyVideoPlayer;
 
 import java.util.Formatter;
@@ -278,6 +279,7 @@ public class MediaUtils {
      * 释放video
      */
     public static void releaseAllVideos() {
+        //这里判断，防止播放器点击全屏（这种清空不能释放）
         if (MediaScreenUtils.isBackOk()) {
             //把之前的设置到完成状态
             EasyVideoPlayerManager.completeAll();
@@ -402,7 +404,7 @@ public class MediaUtils {
      * @param type
      */
     public static void setVideoImageDisplayType(@MediaDisplayType.Code int type) {
-        EasyVideoPlayer.VIDEO_IMAGE_DISPLAY_TYPE = type;
+        EasyTextureView.VIDEO_IMAGE_DISPLAY_TYPE = type;
         if (EasyMediaManager.textureView != null) {
             EasyMediaManager.textureView.requestLayout();
         }

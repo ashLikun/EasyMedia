@@ -34,7 +34,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation rootProject.ext.designVersion
+    compileOnly rootProject.ext.v7AppCompat
     compileOnly 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     //    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'
     compileOnly 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'

@@ -23,22 +23,29 @@
                 android:id="@+id/listButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="火山列表播放" />
 
             <Button
                 android:id="@+id/fullScreenButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="直接全屏播放" />
 
             <Button
                 android:id="@+id/fullScreenButton2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="直接全屏播放(只能横屏)" />
+
+            <Button
+                android:id="@+id/miniButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="迷你播放器" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

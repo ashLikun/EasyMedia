@@ -1,11 +1,9 @@
 package com.ashlikun.media.view;
 
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -38,15 +36,12 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
  */
 public class EasyVideoPlayer extends BaseEasyVideoPlay
         implements EasyOnControllEvent, IEasyVideoPlayListener {
-    public static int ORIENTATION_FULLSCREEN_SENSOR = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
-    public static int ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
-    public static int ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+
     /**
      * 是否保存进度
      */
     public static boolean SAVE_PROGRESS = true;
-    @MediaDisplayType.Code
-    public static int VIDEO_IMAGE_DISPLAY_TYPE = 0;
+
 
     public int seekToInAdvance = 0;
     public int widthRatio = 0;
@@ -121,24 +116,24 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
 
 
     @Override
-    public void setDataSource(List<MediaData> mediaData, int defaultIndex) {
-        super.setDataSource(mediaData, defaultIndex);
-        mediaController.setCurrentScreen(getCurrentScreen());
-        mediaController.setDataSource(mediaData.get(currentUrlIndex));
+    public boolean setDataSource(List<MediaData> mediaData, int defaultIndex) {
+        if (super.setDataSource(mediaData, defaultIndex)) {
+            mediaController.setCurrentScreen(getCurrentScreen());
+            mediaController.setDataSource(mediaData.get(currentUrlIndex));
+        }
+        return true;
     }
 
     /**
-     * 开始播放
+     * 保存播放器到对应的EasyVideoPlayerManager里面
      */
     @Override
-    public void startVideo() {
-        super.startVideo();
+    protected void saveVideoPlayView() {
         if (isScreenFull()) {
             EasyVideoPlayerManager.setVideoFullscreen(this);
         } else {
             EasyVideoPlayerManager.setVideoDefault(this);
         }
-
     }
 
     /**
@@ -301,56 +296,21 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     }
 
     /**
-     * 播放器生命周期
+     * 准备播放
      */
     @Override
     public void onPrepared() {
-        onStatePrepared();
-        onStatePlaying();
+        super.onPrepared();
     }
 
     /**
-     * 播放器生命周期
-     *
-     * @param what
-     * @param extra
-     */
-    @Override
-    public void onInfo(int what, int extra) {
-
-    }
-
-    /**
-     * 播放器生命周期
-     */
-    @Override
-    public void onSeekComplete() {
-
-    }
-
-    /**
-     * 播放器生命周期
-     *
-     * @param what
-     * @param extra
-     */
-    @Override
-    public void onError(int what, int extra) {
-        if (what != 38 && what != -38 && extra != -38) {
-            onStateError();
-            if (isCurrentPlay()) {
-                EasyMediaManager.instance().releaseMediaPlayer();
-            }
-        }
-    }
-
-    /**
-     * 播放器生命周期
+     * 缓存进度更新
      *
      * @param bufferProgress
      */
     @Override
     public void setBufferProgress(int bufferProgress) {
+        super.setBufferProgress(bufferProgress);
         mediaController.setBufferProgress(bufferProgress);
     }
 
@@ -359,15 +319,12 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onAutoCompletion() {
-        Runtime.getRuntime().gc();
-        onEvent(EasyMediaAction.ON_AUTO_COMPLETE);
+        super.onAutoCompletion();
         mediaController.onAutoCompletion();
         onStateAutoComplete();
         if (isScreenFull()) {
             MediaScreenUtils.backPress();
         }
-        EasyMediaManager.instance().releaseMediaPlayer();
-        MediaUtils.saveProgress(getContext(), getCurrentData(), 0);
     }
 
     /**
@@ -375,11 +332,11 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onVideoSizeChanged() {
+        super.onVideoSizeChanged();
         if (EasyMediaManager.textureView != null) {
             if (videoRotation != 0) {
                 EasyMediaManager.textureView.setRotation(videoRotation);
             }
-            EasyMediaManager.textureView.setVideoSize(EasyMediaManager.instance().currentVideoWidth, EasyMediaManager.instance().currentVideoHeight);
         }
     }
 
@@ -389,43 +346,15 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onForceCompletionTo() {
-        if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
-            int position = mediaController.getCurrentPositionWhenPlaying();
-            MediaUtils.saveProgress(getContext(), getCurrentData(), position);
-        }
-        onStateNormal();
-        removeTextureView();
-        EasyMediaManager.instance().currentVideoWidth = 0;
-        EasyMediaManager.instance().currentVideoHeight = 0;
-        MediaUtils.setAudioFocus(getContext(), false);
-        //取消休眠
-        MediaUtils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        //如果是全屏播放就清楚全屏的view
-        if (isScreenFull()) {
-            MediaScreenUtils.clearFullscreenLayout(getContext());
-            MediaUtils.setRequestedOrientation(getContext(), ORIENTATION_NORMAL);
-        }
-        //释放渲染器和保存的SurfaceTexture，textureView
-        EasyMediaManager.instance().releaseAllSufaceView();
+        super.onForceCompletionTo();
     }
-
-
-    @Override
-    public int getCurrentState() {
-        return currentState;
-    }
-
-    @Override
-    public List<MediaData> getMediaData() {
-        return mediaData;
-    }
-
     /**
      * 开始全屏播放
      * 在当前activity的跟布局加一个新的最大化的EasyVideoPlayer
      * 再把activity设置成全屏，
      */
     public void startWindowFullscreen() {
+        //这里对应的不能释放当前视频
         MediaScreenUtils.CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
         removeTextureView();
         EasyVideoPlayer fullPlay = new EasyVideoPlayer(getContext());
@@ -541,5 +470,11 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         return mediaController.getThumbImageView();
     }
 
-
+    @Override
+    public void release() {
+        super.release();
+        if (mediaController != null) {
+            mediaController.cancelDismissControlViewSchedule();
+        }
+    }
 }

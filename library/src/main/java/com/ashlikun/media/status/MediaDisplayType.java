@@ -14,9 +14,21 @@ import java.lang.annotation.RetentionPolicy;
  */
 
 public interface MediaDisplayType {
+    /**
+     * Video大小适配视频
+     */
     int VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER = 0;
+    /**
+     * 填充整个父View
+     */
     int VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT = 1;
+    /**
+     * 充满剪切
+     */
     int VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP = 2;
+    /**
+     * 原始大小
+     */
     int VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL = 3;
 
     @IntDef(value = {VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER, VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT

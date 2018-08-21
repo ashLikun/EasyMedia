@@ -1,6 +1,7 @@
 package com.ashlikun.media.view;
 
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.ashlikun.media.EasyMediaAction;
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaData;
@@ -37,6 +39,19 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHAN
  * 功能介绍：播放器基础类
  */
 public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVideoPlayListener {
+    /**
+     * Activity 全屏Flag
+     */
+    public static int ORIENTATION_FULLSCREEN_SENSOR = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
+    /**
+     * 默认的activty的方向Flag
+     */
+    public static int ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+    /**
+     * Activity 竖屏Flag
+     */
+    public static int ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+
     /**
      * 当前状态
      */
@@ -111,18 +126,21 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * @param mediaData    视频数据，数组
      * @param defaultIndex 播放的url 位置 0 开始
      */
-    public void setDataSource(List<MediaData> mediaData, int defaultIndex) {
+    public boolean setDataSource(List<MediaData> mediaData, int defaultIndex) {
         //是否有播放器，没用就用系统的
         if (EasyMediaManager.instance().mMediaPlay == null) {
             EasyMediaManager.instance().mMediaPlay = new EasyMediaSystem();
         }
         this.mediaData = mediaData;
-        this.currentUrlIndex = defaultIndex;
-        //过滤已经在播放的
-        if (this.mediaData != null && mediaData.size() > defaultIndex &&
+        //如果这个已经在播放就不管
+        if (getMediaData() != null && getMediaData().size() > defaultIndex &&
                 MediaUtils.isContainsUri(getMediaData(),
                         EasyMediaManager.getCurrentDataSource())) {
-            return;
+            saveVideoPlayView();
+            if (currentState == MediaStatus.CURRENT_STATE_NORMAL) {
+                onStateNormal();
+            }
+            return false;
         }
         if (isCurrentVideoPlay() && MediaUtils.isContainsUri(mediaData, EasyMediaManager.getCurrentDataSource())) {
             //当前View正在播放视频  保存进度
@@ -142,8 +160,16 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                 EasyVideoPlayerManager.getVideoTiny().cleanTiny();
             }
         }
+        this.currentUrlIndex = defaultIndex;
         onStateNormal();
+        return true;
     }
+
+    /**
+     * 保存播放器到对应的EasyVideoPlayerManager里面
+     * 可能会多次调用
+     */
+    protected abstract void saveVideoPlayView();
 
     /**
      * 开始播放
@@ -158,6 +184,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         EasyMediaManager.setCurrentDataSource(getCurrentData());
         onStatePreparing();
+        saveVideoPlayView();
     }
 
     /**
@@ -194,7 +221,9 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                 break;
         }
     }
-
+    /********************************************************************************************
+     *                                       设置播放器状态后的回调
+     ********************************************************************************************/
     /**
      * 设置当前初始状态
      */
@@ -251,7 +280,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     /**
      * 添加TextureView
      */
-    protected void addTextureView() {
+    public void addTextureView() {
         FrameLayout.LayoutParams layoutParams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
@@ -266,6 +295,143 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     public void removeTextureView() {
         textureViewContainer.removeView(EasyMediaManager.textureView);
     }
+
+
+    /**
+     * 释放播放器,全屏下不能释放,先退出全屏再释放
+     */
+    public void release() {
+        if (getCurrentData().equals(EasyMediaManager.getCurrentDataSource())) {
+            //在非全屏的情况下只能backPress()
+            if (isScreenFull()) {
+                MediaScreenUtils.backPress();
+            } else {
+                MediaUtils.releaseAllVideos();
+            }
+        }
+    }
+
+    /********************************************************************************************
+     *                                           播放器的生命周期，可以重写
+     ********************************************************************************************/
+    /**
+     * 准备播放
+     */
+    @Override
+    public void onPrepared() {
+        onStatePrepared();
+        onStatePlaying();
+    }
+
+    /**
+     * 播放信息
+     *
+     * @param what  错误码
+     * @param extra 扩展码
+     */
+    @Override
+    public void onInfo(int what, int extra) {
+
+    }
+
+    /**
+     * 设置进度完成
+     */
+    @Override
+    public void onSeekComplete() {
+
+    }
+
+    /**
+     * 播放错误
+     *
+     * @param what  错误码
+     * @param extra 扩展码
+     */
+    @Override
+    public void onError(int what, int extra) {
+        if (what != 38 && what != -38 && extra != -38) {
+            onStateError();
+            if (isCurrentPlay()) {
+                EasyMediaManager.instance().releaseMediaPlayer();
+            }
+        }
+    }
+
+    /**
+     * 自动播放完成，播放器回调的
+     */
+    @Override
+    public void onAutoCompletion() {
+        onEvent(EasyMediaAction.ON_AUTO_COMPLETE);
+        EasyMediaManager.instance().releaseMediaPlayer();
+        Runtime.getRuntime().gc();
+        MediaUtils.saveProgress(getContext(), getCurrentData(), 0);
+    }
+
+    /**
+     * 播放器生命周期,自己主动调用的,还原状态
+     */
+    @Override
+    public void onForceCompletionTo() {
+        if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
+            int position = 0;
+            try {
+                position = EasyMediaManager.getCurrentPosition();
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
+            MediaUtils.saveProgress(getContext(), getCurrentData(), position);
+        }
+        //还原默认状态
+        onStateNormal();
+        removeTextureView();
+        EasyMediaManager.instance().currentVideoWidth = 0;
+        EasyMediaManager.instance().currentVideoHeight = 0;
+        //取消音频焦点
+        MediaUtils.setAudioFocus(getContext(), false);
+        //取消休眠
+        MediaUtils.getActivity(getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //如果是全屏播放就清楚全屏的view
+        if (isScreenFull()) {
+            MediaScreenUtils.clearFullscreenLayout(getContext());
+            MediaUtils.setRequestedOrientation(getContext(), ORIENTATION_NORMAL);
+        }
+        //释放渲染器和保存的SurfaceTexture，textureView
+        EasyMediaManager.instance().releaseAllSufaceView();
+    }
+
+    /**
+     * 播放器大小改变
+     */
+    @Override
+    public void onVideoSizeChanged() {
+        if (EasyMediaManager.textureView != null) {
+            EasyMediaManager.textureView.setVideoSize(EasyMediaManager.instance().currentVideoWidth, EasyMediaManager.instance().currentVideoHeight);
+        }
+    }
+
+    /**
+     * 缓存进度更新
+     *
+     * @param bufferProgress
+     */
+    @Override
+    public void setBufferProgress(int bufferProgress) {
+
+    }
+
+    @Override
+    public void onEvent(int type) {
+        if (EasyMediaManager.MEDIA_EVENT != null && isCurrentPlay()) {
+            EasyMediaManager.MEDIA_EVENT.onEvent(type);
+        }
+    }
+
+    /********************************************************************************************
+     *                                           下面这些都是获取属性和设置属性
+     ********************************************************************************************/
+
 
     /**
      * 当前EasyVideoPlay  是否正在播放
@@ -285,15 +451,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     /**
-     * 获取当前播放uil
-     *
-     * @return
-     */
-    public MediaData getCurrentData() {
-        return MediaUtils.getCurrentMediaData(mediaData, currentUrlIndex);
-    }
-
-    /**
      * 当前播放到第几个视频，用于多视频播放，没有就返回0
      *
      * @return
@@ -302,58 +459,15 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         return currentUrlIndex;
     }
 
+
     /**
-     * 释放播放器,全屏下不能释放,先退出全屏再释放
+     * 获取播放器类型
+     *
+     * @return 1:默认的，2全屏的，3：小窗口
      */
-    public void release() {
-        if (getCurrentData().equals(EasyMediaManager.getCurrentDataSource()) && MediaScreenUtils.isBackOk()) {
-            //在非全屏的情况下只能backPress()
-            if (isScreenFull()) {
-                MediaScreenUtils.backPress();
-            } else {
-                MediaUtils.releaseAllVideos();
-            }
-        }
-    }
-
-    @Override
-    public void onPrepared() {
-
-    }
-
-    @Override
-    public void onInfo(int what, int extra) {
-
-    }
-
-    @Override
-    public void onSeekComplete() {
-
-    }
-
-    @Override
-    public void onError(int what, int extra) {
-
-    }
-
-    @Override
-    public void onAutoCompletion() {
-
-    }
-
-    @Override
-    public void onForceCompletionTo() {
-
-    }
-
-    @Override
-    public void onVideoSizeChanged() {
-
-    }
-
-    @Override
-    public void setBufferProgress(int bufferProgress) {
-
+    @MediaScreenStatus.Code
+    public int getCurrentScreen() {
+        return currentScreen;
     }
 
     /**
@@ -363,6 +477,15 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     public List<MediaData> getMediaData() {
         return mediaData;
+    }
+
+    /**
+     * 获取当前播放uil
+     *
+     * @return
+     */
+    public MediaData getCurrentData() {
+        return MediaUtils.getCurrentMediaData(mediaData, currentUrlIndex);
     }
 
     /**
@@ -382,23 +505,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     public void setCurrentState(@MediaStatus.Code int currentState) {
         this.currentState = currentState;
-    }
-
-    @Override
-    public void onEvent(int type) {
-        if (EasyMediaManager.MEDIA_EVENT != null && isCurrentPlay() && getCurrentData() != null) {
-            EasyMediaManager.MEDIA_EVENT.onEvent(type);
-        }
-    }
-
-    /**
-     * 获取播放器类型
-     *
-     * @return 1:默认的，2全屏的，3：小窗口
-     */
-    @MediaScreenStatus.Code
-    public int getCurrentScreen() {
-        return currentScreen;
     }
 
     /**

@@ -37,4 +37,5 @@ public interface MediaScreenStatus {
     public @interface Code {
 
     }
+
 }
