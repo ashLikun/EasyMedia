@@ -2,6 +2,7 @@ package com.ashlikun.media.view;
 
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.content.res.TypedArray;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -16,20 +17,15 @@ import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.MediaUtils;
+import com.ashlikun.media.R;
 import com.ashlikun.media.play.EasyMediaSystem;
-import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaDisplayType;
 import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.status.MediaViewType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHANGING_URL;
 
 /**
  * 作者　　: 李坤
@@ -37,6 +33,7 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHAN
  * 邮箱　　：496546144@qq.com
  * <p>
  * 功能介绍：播放器基础类
+ * {@link #setDataSource} 去设置播放的数据源
  */
 public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVideoPlayListener {
     /**
@@ -55,7 +52,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     /**
      * 当前状态
      */
-    protected int currentState = MediaStatus.CURRENT_STATE_NORMAL;
+    protected int currentState = MediaStatus.NORMAL;
     /**
      * 数据源，列表
      */
@@ -66,11 +63,15 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     protected int currentUrlIndex = 0;
 
     /**
-     * 当前屏幕方向
+     * 当前播放器类型
      */
-    @MediaScreenStatus.Code
-    protected int currentScreen;
-
+    @MediaViewType.Code
+    protected int currentMediaType;
+    /**
+     * 视频大小缩放类型
+     */
+    @MediaDisplayType.Code
+    private int displayType = MediaDisplayType.ADAPTER;
     /**
      * 播放视频的渲染控件，一般为TextureView
      */
@@ -90,6 +91,11 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     protected void initView(Context context, AttributeSet attrs) {
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseEasyVideoPlay);
+        if (!a.hasValue(0)) {
+            setBackgroundColor(0xff000000);
+        }
+        displayType = a.getInt(R.styleable.BaseEasyVideoPlay_video_display_type, displayType);
         textureViewContainer = new FrameLayout(getContext());
         addView(textureViewContainer, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
     }
@@ -137,7 +143,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                 MediaUtils.isContainsUri(getMediaData(),
                         EasyMediaManager.getCurrentDataSource())) {
             saveVideoPlayView();
-            if (currentState == MediaStatus.CURRENT_STATE_NORMAL) {
+            if (currentState == MediaStatus.NORMAL) {
                 onStateNormal();
             }
             return false;
@@ -166,7 +172,10 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     /**
-     * 保存播放器到对应的EasyVideoPlayerManager里面
+     * 保存播放器 用于全局管理
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoTiny}
      * 可能会多次调用
      */
     protected abstract void saveVideoPlayView();
@@ -178,7 +187,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     public void startVideo() {
         //销毁其他播放的视频
         MediaUtils.releaseAllVideos();
-        EasyMediaManager.instance().initTextureView(getContext());
+        EasyMediaManager.instance().initTextureView(getContext(), displayType);
         addTextureView();
         MediaUtils.setAudioFocus(getContext(), true);
         MediaUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -186,6 +195,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         onStatePreparing();
         saveVideoPlayView();
     }
+
 
     /**
      * 设置当前播放器状态
@@ -198,28 +208,45 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
 
     public void setStatus(int state, int currentUrlIndex, int seekToInAdvance) {
         switch (state) {
-            case CURRENT_STATE_NORMAL:
+            case MediaStatus.NORMAL:
                 onStateNormal();
                 break;
-            case CURRENT_STATE_PREPARING:
+            case MediaStatus.PREPARING:
                 onStatePreparing();
                 break;
-            case CURRENT_STATE_PREPARING_CHANGING_URL:
+            case MediaStatus.PREPARING_CHANGING_URL:
                 onStatePreparingChangingUrl(currentUrlIndex, seekToInAdvance);
                 break;
-            case CURRENT_STATE_PLAYING:
+            case MediaStatus.PLAYING:
                 onStatePlaying();
                 break;
-            case CURRENT_STATE_PAUSE:
+            case MediaStatus.PAUSE:
                 onStatePause();
                 break;
-            case CURRENT_STATE_ERROR:
+            case MediaStatus.ERROR:
                 onStateError();
                 break;
-            case CURRENT_STATE_AUTO_COMPLETE:
+            case MediaStatus.AUTO_COMPLETE:
                 onStateAutoComplete();
                 break;
         }
+    }
+
+    public int getDisplayType() {
+        return displayType;
+    }
+
+    /**
+     * 设置播放器显示类型
+     *
+     * @param displayType
+     */
+    public void setDisplayType(int displayType) {
+        this.displayType = displayType;
+        if (textureViewContainer.getChildAt(0) == EasyMediaManager.textureView) {
+            EasyMediaManager.textureView.setDisplayType(displayType);
+        }
+
     }
     /********************************************************************************************
      *                                       设置播放器状态后的回调
@@ -228,18 +255,18 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * 设置当前初始状态
      */
     protected void onStateNormal() {
-        currentState = CURRENT_STATE_NORMAL;
+        currentState = MediaStatus.NORMAL;
     }
 
     /**
      * 当准备好了时候
      */
     protected void onStatePreparing() {
-        currentState = CURRENT_STATE_PREPARING;
+        currentState = MediaStatus.PREPARING;
     }
 
     protected void onStatePreparingChangingUrl(int currentUrlIndex, int seekToInAdvance) {
-        currentState = CURRENT_STATE_PREPARING_CHANGING_URL;
+        currentState = MediaStatus.PREPARING_CHANGING_URL;
         this.currentUrlIndex = currentUrlIndex;
         EasyMediaManager.setCurrentDataSource(getCurrentData());
         EasyMediaManager.instance().prepare();
@@ -253,28 +280,28 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * 开始播放回掉
      */
     protected void onStatePlaying() {
-        currentState = CURRENT_STATE_PLAYING;
+        currentState = MediaStatus.PLAYING;
     }
 
     /**
      * 暂停
      */
     protected void onStatePause() {
-        currentState = CURRENT_STATE_PAUSE;
+        currentState = MediaStatus.PAUSE;
     }
 
     /**
      * 错误
      */
     protected void onStateError() {
-        currentState = CURRENT_STATE_ERROR;
+        currentState = MediaStatus.ERROR;
     }
 
     /**
      * 自动完成
      */
     protected void onStateAutoComplete() {
-        currentState = CURRENT_STATE_AUTO_COMPLETE;
+        currentState = MediaStatus.AUTO_COMPLETE;
     }
 
     /**
@@ -374,7 +401,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     @Override
     public void onForceCompletionTo() {
-        if (currentState == CURRENT_STATE_PLAYING || currentState == CURRENT_STATE_PAUSE) {
+        if (currentState == MediaStatus.PLAYING || currentState == MediaStatus.PAUSE) {
             int position = 0;
             try {
                 position = EasyMediaManager.getCurrentPosition();
@@ -432,7 +459,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      *                                           下面这些都是获取属性和设置属性
      ********************************************************************************************/
 
-
     /**
      * 当前EasyVideoPlay  是否正在播放
      */
@@ -463,11 +489,11 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     /**
      * 获取播放器类型
      *
-     * @return 1:默认的，2全屏的，3：小窗口
+     * @return 0:默认的，1:列表的,2全屏的，3：小窗口
      */
-    @MediaScreenStatus.Code
-    public int getCurrentScreen() {
-        return currentScreen;
+    @MediaViewType.Code
+    public int getCurrentMediaType() {
+        return currentMediaType;
     }
 
     /**
@@ -513,7 +539,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * @return
      */
     public boolean isScreenFull() {
-        return currentScreen == MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
+        return currentMediaType == MediaViewType.FULLSCREEN;
     }
 
     /**
@@ -522,7 +548,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * @return
      */
     public boolean isScreenNormal() {
-        return currentScreen == MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+        return currentMediaType == MediaViewType.NORMAL;
     }
 
     /**
@@ -531,7 +557,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * @return
      */
     public boolean isScreenList() {
-        return currentScreen == MediaScreenStatus.SCREEN_WINDOW_LIST;
+        return currentMediaType == MediaViewType.LIST;
     }
 
     /**
@@ -540,16 +566,16 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * @return
      */
     public boolean isScreenTiny() {
-        return currentScreen == MediaScreenStatus.SCREEN_WINDOW_TINY;
+        return currentMediaType == MediaViewType.TINY;
     }
 
     /**
-     * 设置当前屏幕，默认的和列表或者小窗口
+     * 设置当前播放器View类型
      * 请在setDataSource之前设置
      *
-     * @param currentScreen
+     * @param currentMediaType
      */
-    public void setCurrentScreen(int currentScreen) {
-        this.currentScreen = currentScreen;
+    public void setCurrentMediaType(int currentMediaType) {
+        this.currentMediaType = currentMediaType;
     }
 }

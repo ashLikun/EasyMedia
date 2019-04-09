@@ -18,7 +18,7 @@ import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyMediaDialogBright;
 import com.ashlikun.media.view.EasyMediaDialogProgress;
@@ -28,16 +28,16 @@ import com.ashlikun.media.view.EasyOnControllEvent;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
+import static com.ashlikun.media.status.MediaStatus.ERROR;
+import static com.ashlikun.media.status.MediaStatus.PAUSE;
+import static com.ashlikun.media.status.MediaStatus.PLAYING;
 
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/11/28　9:43
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：
+ * 功能介绍：视频控制器
  */
 
 public class EasyMediaController extends RelativeLayout implements
@@ -51,11 +51,11 @@ public class EasyMediaController extends RelativeLayout implements
     protected AudioManager mAudioManager;
     protected IControllerViewHolder viewHolder;
     //当前屏幕方向
-    @MediaScreenStatus.Code
-    public int currentScreen = MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+    @MediaViewType.Code
+    public int currentScreen = MediaViewType.NORMAL;
     //当前播放状态
     @MediaStatus.Code
-    public int currentState = MediaStatus.CURRENT_STATE_NORMAL;
+    public int currentState = MediaStatus.NORMAL;
     protected float mDownX;//按下的X坐标
     protected float mDownY;//按下的Y坐标
     protected int mScreenWidth;//屏幕宽度
@@ -105,11 +105,20 @@ public class EasyMediaController extends RelativeLayout implements
         viewHolder.setDataSource(mediaData, currentScreen);
     }
 
-    //可以从写
+    /**
+     * 可以从写
+     *
+     * @return
+     */
     public int getLayoutId() {
         return R.layout.easy_layout_controller;
     }
-    //可以从写实现界面展示
+
+    /**
+     * 可以从写实现界面展示
+     *
+     * @return
+     */
     public IControllerViewHolder getControllerViewHolder() {
         return new EasyControllerViewHolder(this, this, this);
     }
@@ -139,8 +148,8 @@ public class EasyMediaController extends RelativeLayout implements
             vpup.requestDisallowInterceptTouchEvent(false);
             vpup = vpup.getParent();
         }
-        if (currentState != CURRENT_STATE_PLAYING &&
-                currentState != CURRENT_STATE_PAUSE) {
+        if (currentState != PLAYING &&
+                currentState != PAUSE) {
             return;
         }
         int time = seekBar.getProgress() * getDuration() / 100;
@@ -193,10 +202,10 @@ public class EasyMediaController extends RelativeLayout implements
         boolean res = super.onTouchEvent(event);
         // 全屏模式下的CURRENT_STATE_ERROR状态下,不响应进度拖动事件.
         // 否则会因为mediaplayer的状态非法导致App Crash
-        if (currentState == CURRENT_STATE_ERROR) {
+        if (currentState == ERROR) {
             return false;
         }
-        if (currentScreen != MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN) {
+        if (currentScreen != MediaViewType.FULLSCREEN) {
             return res;
         }
         float x = event.getX();
@@ -323,7 +332,11 @@ public class EasyMediaController extends RelativeLayout implements
         viewHolder.changeUiToClean();
     }
 
-    //显示音量对话框
+    /**
+     * 显示音量对话框
+     * @param deltaY
+     * @param volumePercent
+     */
     public void showVolumeDialog(float deltaY, int volumePercent) {
         if (mVolumeDialog == null) {
             mVolumeDialog = new EasyMediaDialogVolume(getContext());
@@ -333,7 +346,10 @@ public class EasyMediaController extends RelativeLayout implements
         viewHolder.changeUiToClean();
     }
 
-    //显示亮度对话框
+    /**
+     * 显示亮度对话框
+     * @param brightnessPercent
+     */
     public void showBrightnessDialog(int brightnessPercent) {
         if (mBrightDialog == null) {
             mBrightDialog = new EasyMediaDialogBright(getContext());
@@ -387,8 +403,8 @@ public class EasyMediaController extends RelativeLayout implements
     @Override
     public int getCurrentPositionWhenPlaying() {
         int position = 0;
-        if (currentState == CURRENT_STATE_PLAYING ||
-                currentState == CURRENT_STATE_PAUSE) {
+        if (currentState == PLAYING ||
+                currentState == PAUSE) {
             try {
                 position = EasyMediaManager.getCurrentPosition();
             } catch (IllegalStateException e) {
@@ -399,7 +415,9 @@ public class EasyMediaController extends RelativeLayout implements
         return position;
     }
 
-    //点击时候显示控制器（3秒后消失）
+    /**
+     * 点击时候显示控制器（3秒后消失）
+     */
     @Override
     public void startDismissControlViewSchedule() {
         cancelDismissControlViewSchedule();
@@ -432,7 +450,7 @@ public class EasyMediaController extends RelativeLayout implements
     }
 
     @Override
-    public void setCurrentScreen(@MediaScreenStatus.Code int currentScreen) {
+    public void setCurrentScreen(@MediaViewType.Code int currentScreen) {
         this.currentScreen = currentScreen;
     }
 
@@ -443,13 +461,19 @@ public class EasyMediaController extends RelativeLayout implements
         viewHolder.changUi(currentState, currentScreen);
     }
 
-    //设置进度最大
+    /**
+     * 设置进度最大
+     */
     @Override
     public void setMaxProgressAndTime() {
         viewHolder.setProgress(100, 100);
     }
 
-    //设置进度缓存
+    /**
+     * 设置进度缓存
+     *
+     * @param bufferProgress
+     */
     @Override
     public void setBufferProgress(int bufferProgress) {
         if (bufferProgress != 0) {
@@ -457,7 +481,11 @@ public class EasyMediaController extends RelativeLayout implements
         }
     }
 
-    //获取进度缓存
+    /**
+     * 获取进度缓存
+     *
+     * @return
+     */
     @Override
     public int getBufferProgress() {
         return viewHolder.getBufferProgress();
@@ -474,5 +502,4 @@ public class EasyMediaController extends RelativeLayout implements
     public ImageView getThumbImageView() {
         return viewHolder.getThumbImageView();
     }
-
 }

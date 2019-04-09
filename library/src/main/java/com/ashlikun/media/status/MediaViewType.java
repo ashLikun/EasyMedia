@@ -10,29 +10,29 @@ import java.lang.annotation.RetentionPolicy;
  * 创建时间: 2017/11/28　10:17
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：屏幕状态
+ * 功能介绍：播放器类型
  */
 
-public interface MediaScreenStatus {
+public interface MediaViewType {
     /**
      * 默认的
      */
-    int SCREEN_WINDOW_NORMAL = 0;
+    int NORMAL = 0;
     /**
      * 列表的
      */
-    int SCREEN_WINDOW_LIST = 1;
+    int LIST = 1;
     /**
      * 全屏的
      */
-    int SCREEN_WINDOW_FULLSCREEN = 2;
+    int FULLSCREEN = 2;
     /**
      * 小窗口
      */
-    int SCREEN_WINDOW_TINY = 3;
+    int TINY = 3;
 
-    @IntDef(value = {SCREEN_WINDOW_NORMAL, SCREEN_WINDOW_LIST
-            , SCREEN_WINDOW_FULLSCREEN, SCREEN_WINDOW_TINY})
+    @IntDef(value = {NORMAL, LIST
+            , FULLSCREEN, TINY})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Code {
 

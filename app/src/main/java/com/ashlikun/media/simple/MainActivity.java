@@ -1,7 +1,6 @@
 package com.ashlikun.media.simple;
 
 import android.Manifest;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,17 +14,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.ashlikun.glideutils.GlideUtils;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.play.EasyMediaIjkplayer;
 import com.ashlikun.media.view.EasyVideoPlayer;
+import com.ashlikun.okhttputils.http.OkHttpUtils;
+import com.ashlikun.orm.LiteOrmUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EasyVideoPlayer mediaPlay;
-     String[] permissions = new String[]{
+    String[] permissions = new String[]{
             Manifest.permission.SYSTEM_ALERT_WINDOW,
     };
 
@@ -33,35 +33,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         quanxian();
-        MediaUtils.init(getApplicationContext());
+        //数据库
+        LiteOrmUtil.init(getApplication());
+        OkHttpUtils.init(null);
+        MediaUtils.init(getApplication());
         MediaUtils.setMediaInterface(new EasyMediaIjkplayer());
-        GlideUtils.init(new GlideUtils.OnNeedListener() {
-            @Override
-            public Application getApplication() {
-                return MainActivity.this.getApplication();
-            }
-
-            @Override
-            public boolean isDebug() {
-                return BuildConfig.DEBUG;
-            }
-
-            @Override
-            public String getBaseUrl() {
-                return "www.baidu.com";
-            }
-        });
+//        GlideUtils.init(new GlideUtils.OnNeedListener() {
+//            @Override
+//            public Application getApplication() {
+//                return MainActivity.this.getApplication();
+//            }
+//
+//            @Override
+//            public boolean isDebug() {
+//                return BuildConfig.DEBUG;
+//            }
+//
+//            @Override
+//            public String getBaseUrl() {
+//                return "www.baidu.com";
+//            }
+//        });
         setContentView(R.layout.activity_main);
         mediaPlay = (EasyVideoPlayer) findViewById(R.id.mediaPlay);
         mediaPlay.setDataSource(new MediaData.Builder()
                 .title("标题")
-                .url(VideoUrl.meinv)
+                .url(VideoUrl.meinv2)
                 .builder());
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
         findViewById(R.id.listButton).setOnClickListener(this);
         findViewById(R.id.fullScreenButton).setOnClickListener(this);
         findViewById(R.id.fullScreenButton2).setOnClickListener(this);
         findViewById(R.id.miniButton).setOnClickListener(this);
+        findViewById(R.id.douyinButton).setOnClickListener(this);
     }
 
     @Override
@@ -69,12 +73,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (v.getId() == R.id.listButton) {
             Intent intent = new Intent(this, HuoSanActivity.class);
             startActivity(intent);
+        } else if (v.getId() == R.id.douyinButton) {
+            Intent intent = new Intent(this, DouyinActivity.class);
+            startActivity(intent);
         } else if (v.getId() == R.id.fullScreenButton) {
-            MediaScreenUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.meinv, "标题");
+            MediaScreenUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.fullScreenButton2) {
             EasyVideoPlayer easyVideoPlayer = new EasyVideoPlayer(this);
             easyVideoPlayer.setFullscreenPortrait(false);
-            MediaScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv, "标题");
+            MediaScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.miniButton) {
             Intent intent = new Intent(this, MiniActivity.class);
             startActivity(intent);

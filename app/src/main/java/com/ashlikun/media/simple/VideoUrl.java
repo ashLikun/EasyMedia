@@ -9,7 +9,6 @@ package com.ashlikun.media.simple;
  */
 
 public class VideoUrl {
-    public static String meinv = "http://ic.snssdk.com/neihan/video/playback/1513563522.2/?video_id=90ffcaa3a2a642bb8e6f02b73a5b27de&quality=origin&line=1&is_gif=0&device_platform=android";
     //    String videoUrl2 = "http://p2.suibianyuming.com.cn/1524714504video_341679.mp4";
 //    String videoUrl = "http://fs.mv.web.kugou.com/201712191633/784d23335957e44b18e748187f7726a9/G107/M02/16/13/S5QEAFl5rxCAaVBHAXjrv4kCk4A283.mp4";
     public static String meinv2 = "http://jsmov2.a.yximgs.com/upic/2018/08/19/17/BMjAxODA4MTkxNzQxMDBfMTE4OTkwMV83NjcxMTEyNTcwXzFfMw==_hd3_B9725b809535516c402d3cfc81d8c1e13.mp4?tag=1-1534821741-h-1-u54cnxzbkp-aee2b10cb2eaea47";
@@ -22,4 +21,9 @@ public class VideoUrl {
      * 火山http://180.186.38.200
      */
     public static String HUOSAHN = "http://180.186.38.200/rest/n/feed/hot?app=0&ver=5.8&c=OPPO&mod=OnePlus%28ONEPLUS%20A5000%29&appver=5.8.6.6612&ftt=&lon=120.665804&language=zh-cn&sys=ANDROID_8.1.0&max_memory=256&ud=1068800036&country_code=cn&oc=OPPO&did_gt=1534750900671&iuid=DurDcJfe8f5%2FUjetd%2BX9jz01zGPu%2F02u%2B9ASmOVHYwJO6zeRfOC2dIk9wV5iUPizZW2h2XKlUXPTH%2BN0BO1VE2GQ&extId=0ffc1adf72263ba25aaca8af3b57e196&net=WIFI&lat=31.296571&did=ANDROID_bce07749c4e197fd";
+
+    /**
+     * 抖音视频
+     */
+    public static String DOYYIN = "https://api-hl.amemv.com/aweme/v1/aweme/post/?max_cursor=0&user_id=97078359588&count=20&retry_type=no_retry&mcc_mnc=46003&iid=55777141457&device_id=61058447325&ac=wifi&channel=xiaomi&aid=1128&app_name=aweme&version_code=380&version_name=3.8.0&device_platform=android&ssmix=a&device_type=MI+5&device_brand=Xiaomi&language=zh&os_api=26&os_version=8.0.0&uuid=862585037457659&openudid=4b35fe0092dd154f&manifest_version_code=380&resolution=1080*1920&dpi=480&update_version_code=3802&_rticket=1554357818037&ts=1554357818&js_sdk_version=1.6.4&as=a1c5996a3a039cbee54899&cp=9438c651a45da4e7e1Sw%5Ba&mas=016e096ea75536a2d5d1bf098bf0088da89c9c1c2caca6a646c69c";
 }

@@ -15,13 +15,10 @@ import android.widget.TextView;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.R;
+import com.ashlikun.media.status.MediaViewType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
 
 /**
  * 作者　　: 李坤
@@ -69,11 +66,11 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
         if (mediaData != null) {
             setTitle(mediaData.getTitle());
         }
-        if (screen == SCREEN_WINDOW_FULLSCREEN) {
+        if (screen == MediaViewType.FULLSCREEN) {
             setSystemTimeAndBattery();
             setBackIsShow(true);
             setBatteryIsShow(true);
-        } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
+        } else if (screen == MediaViewType.NORMAL || screen == MediaViewType.LIST) {
             setBackIsShow(false);
             setBatteryIsShow(false);
         }

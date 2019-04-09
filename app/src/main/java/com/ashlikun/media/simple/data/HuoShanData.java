@@ -52,14 +52,14 @@ public class HuoShanData extends HttpResponse {
         }
 
         public String getImageUrl() {
-            return cover_thumbnail_urls != null ? cover_thumbnail_urls.get(0).url : "";
+            return (cover_thumbnail_urls != null && !cover_thumbnail_urls.isEmpty()) ? cover_thumbnail_urls.get(0).url : "";
         }
 
         public String getUrl() {
             return main_mv_urls != null ? main_mv_urls.get(0).url : "";
         }
 
-        public int getHeight() {
+        public float getHeight() {
             return ext_params != null ? ext_params.h : -2;
         }
     }

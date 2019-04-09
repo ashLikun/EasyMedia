@@ -10,29 +10,29 @@ import java.lang.annotation.RetentionPolicy;
  * 创建时间: 2017/12/12　13:34
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：视频显示样式
+ * 功能介绍：视频缩放类型
  */
 
 public interface MediaDisplayType {
     /**
      * Video大小适配视频
      */
-    int VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER = 0;
+    int ADAPTER = 0;
     /**
      * 填充整个父View
      */
-    int VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT = 1;
+    int MATCH_PARENT = 1;
     /**
      * 充满剪切
      */
-    int VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP = 2;
+    int MATCH_CROP = 2;
     /**
      * 原始大小
      */
-    int VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL = 3;
+    int ORIGINAL = 3;
 
-    @IntDef(value = {VIDEO_IMAGE_DISPLAY_TYPE_ADAPTER, VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT
-            , VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP, VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL})
+    @IntDef(value = {ADAPTER, MATCH_PARENT
+            , MATCH_CROP, ORIGINAL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Code {
 

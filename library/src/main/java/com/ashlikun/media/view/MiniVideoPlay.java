@@ -2,12 +2,11 @@ package com.ashlikun.media.view;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 
 import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.EasyVideoPlayerManager;
-import com.ashlikun.media.MediaData;
-
-import java.util.List;
 
 /**
  * 作者　　: 李坤
@@ -15,7 +14,7 @@ import java.util.List;
  * 邮箱　　：496546144@qq.com
  * <p>
  * 功能介绍：简单的播放器，只会播放视频没有其他任何控制器
- * 设置玩数据源就会播放
+ * 适合抖音样式的短视频
  */
 public class MiniVideoPlay extends BaseEasyVideoPlay {
     /**
@@ -23,15 +22,17 @@ public class MiniVideoPlay extends BaseEasyVideoPlay {
      */
     boolean isAutoRestart = true;
 
+
     public MiniVideoPlay(@NonNull Context context) {
         super(context);
     }
 
-    @Override
-    public boolean setDataSource(List<MediaData> mediaData, int defaultIndex) {
-        super.setDataSource(mediaData, defaultIndex);
-        startVideo();
-        return true;
+    public MiniVideoPlay(@NonNull Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public MiniVideoPlay(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
     }
 
     @Override
@@ -43,6 +44,13 @@ public class MiniVideoPlay extends BaseEasyVideoPlay {
         }
     }
 
+    /**
+     * 保存播放器 用于全局管理
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoTiny}
+     * 可能会多次调用
+     */
     @Override
     protected void saveVideoPlayView() {
         EasyVideoPlayerManager.setVideoDefault(this);

@@ -14,19 +14,9 @@ import android.widget.TextView;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.status.MediaStatus;
 
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_LIST;
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PREPARING_CHANGING_URL;
 
 /**
  * 作者　　: 李坤
@@ -54,11 +44,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     //从新播放
     public TextView replayTextView;
     //当前屏幕方向
-    @MediaScreenStatus.Code
-    public int currentScreen = MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+    @MediaViewType.Code
+    public int currentScreen = MediaViewType.NORMAL;
     //当前播放状态
     @MediaStatus.Code
-    public int currentState = MediaStatus.CURRENT_STATE_NORMAL;
+    public int currentState = MediaStatus.NORMAL;
     AnimatorSet animatorSet = new AnimatorSet();
     boolean isCurrentAnimHint;
     //之前是否是准备状态
@@ -103,46 +93,46 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
 
     //根据状态改变ui
     @Override
-    public void changUi(@MediaStatus.Code int currentState, @MediaScreenStatus.Code int currentScreen) {
+    public void changUi(@MediaStatus.Code int currentState, @MediaViewType.Code int currentScreen) {
         if (this.currentState == currentState && this.currentScreen == currentScreen) {
             return;
         }
         this.currentState = currentState;
         this.currentScreen = currentScreen;
-        if (currentState == CURRENT_STATE_PREPARING || currentState == CURRENT_STATE_PREPARING_CHANGING_URL) {
+        if (currentState == MediaStatus.PREPARING || currentState == MediaStatus.PREPARING_CHANGING_URL) {
             isBeforeStatePreparing = true;
         }
         //默认
-        if (currentState == CURRENT_STATE_NORMAL) {
+        if (currentState == MediaStatus.NORMAL) {
             changeUiToNormal();
             bottomContainer.stopProgressSchedule();
         }
         //准备
-        else if (currentState == CURRENT_STATE_PREPARING) {
+        else if (currentState == MediaStatus.PREPARING) {
             changeUiToPreparing();
         }
         //准备改变播放的url
-        else if (currentState == CURRENT_STATE_PREPARING_CHANGING_URL) {
+        else if (currentState == MediaStatus.PREPARING_CHANGING_URL) {
             loadingProgressBar.setVisibility(View.VISIBLE);
             startButton.setVisibility(View.GONE);
         }
         //播放中
-        else if (currentState == CURRENT_STATE_PLAYING) {
+        else if (currentState == MediaStatus.PLAYING) {
             changeUiToPlaying();
             startProgressSchedule();
         }
         //暂停
-        else if (currentState == CURRENT_STATE_PAUSE) {
+        else if (currentState == MediaStatus.PAUSE) {
             changeUiToPause();
             stopProgressSchedule();
         }
         //自动完成了
-        else if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
+        else if (currentState == MediaStatus.AUTO_COMPLETE) {
             changeUiToComplete();
             bottomContainer.stopProgressSchedule();
         }
         //错误
-        else if (currentState == CURRENT_STATE_ERROR) {
+        else if (currentState == MediaStatus.ERROR) {
             changeUiToError();
             bottomContainer.stopProgressSchedule();
         }
@@ -153,9 +143,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     public void setDataSource(MediaData mediaData, int screen) {
         bottomContainer.setInitData(screen);
         topContainer.setInitData(mediaData, screen);
-        if (screen == SCREEN_WINDOW_FULLSCREEN) {
+        if (screen == MediaViewType.FULLSCREEN) {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_fullscreen));
-        } else if (screen == SCREEN_WINDOW_NORMAL || screen == SCREEN_WINDOW_LIST) {
+        } else if (screen == MediaViewType.NORMAL || screen == MediaViewType.LIST) {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_normal));
         }
     }
@@ -172,9 +162,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     public void changeUiToPreparing() {
         bottomContainer.setTime(0, 0);
         switch (currentScreen) {
-            case SCREEN_WINDOW_NORMAL:
-            case SCREEN_WINDOW_LIST:
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
+            case MediaViewType.FULLSCREEN:
                 hintContainer(false);
                 setMinControlsVisiblity(false, true, true, false, false);
                 break;
@@ -185,9 +175,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     //改变ui到默认状态
     private void changeUiToNormal() {
         switch (currentScreen) {
-            case MediaScreenStatus.SCREEN_WINDOW_NORMAL:
-            case MediaScreenStatus.SCREEN_WINDOW_LIST:
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
+            case MediaViewType.FULLSCREEN:
                 //这边加动画，在低版本手机会卡顿，主要是列表里每次都会走这个方法
                 hintContainer(false);
                 setMinControlsVisiblity(true, false, true, false, false);
@@ -198,25 +188,27 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     //改变ui成完成
     private void changeUiToComplete() {
         switch (currentScreen) {
-            case SCREEN_WINDOW_NORMAL:
-            case SCREEN_WINDOW_LIST:
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
+            case MediaViewType.FULLSCREEN:
                 topContainer.setVisibility(View.VISIBLE);
                 bottomContainer.setVisibility(View.GONE);
-                setMinControlsVisiblity(true, false, true, false, false);
+                setMinControlsVisiblity(true, false, false, false, false);
                 break;
         }
     }
 
-    //改变ui错误
+    /**
+     * 改变ui错误
+     */
     private void changeUiToError() {
         switch (currentScreen) {
-            case SCREEN_WINDOW_NORMAL:
-            case SCREEN_WINDOW_LIST:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
                 hintContainer(false);
                 setMinControlsVisiblity(true, false, false, false, true);
                 break;
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.FULLSCREEN:
                 topContainer.setVisibility(View.VISIBLE);
                 bottomContainer.setVisibility(View.GONE);
                 setMinControlsVisiblity(true, false, false, false, true);
@@ -224,12 +216,14 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
     }
 
-    //播放
+    /**
+     * 播放
+     */
     private void changeUiToPlaying() {
         switch (currentScreen) {
-            case SCREEN_WINDOW_NORMAL:
-            case SCREEN_WINDOW_LIST:
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
+            case MediaViewType.FULLSCREEN:
                 hintContainer(!isBeforeStatePreparing && containerIsShow());
                 isBeforeStatePreparing = false;
                 setMinControlsVisiblity(false, false, false, true, false);
@@ -237,12 +231,14 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
     }
 
-    //暂停状态
+    /**
+     * 暂停状态
+     */
     private void changeUiToPause() {
         switch (currentScreen) {
-            case SCREEN_WINDOW_NORMAL:
-            case SCREEN_WINDOW_LIST:
-            case SCREEN_WINDOW_FULLSCREEN:
+            case MediaViewType.NORMAL:
+            case MediaViewType.LIST:
+            case MediaViewType.FULLSCREEN:
                 showContainer(!containerIsShow());
                 setMinControlsVisiblity(true, false, false, false, false);
                 break;
@@ -250,7 +246,15 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     }
 
 
-    //设置其他小控件
+    /**
+     * 设置其他小控件
+     *
+     * @param startBtn
+     * @param loadingPro
+     * @param thumbImg
+     * @param bottomPrp
+     * @param retryLayout
+     */
     private void setMinControlsVisiblity(boolean startBtn, boolean loadingPro,
                                          boolean thumbImg, boolean bottomPrp, boolean retryLayout) {
         startButton.setVisibility(startBtn ? View.VISIBLE : View.GONE);
@@ -260,15 +264,19 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         bottomProgressBar.setVisibility(bottomPrp ? View.VISIBLE : View.GONE);
     }
 
-    //跟新开始的按钮图片
+    /**
+     * 更新开始的按钮图片
+     *
+     * @param currentState
+     */
     private void updateStartImage(@MediaStatus.Code int currentState) {
-        if (currentState == CURRENT_STATE_PLAYING) {
+        if (currentState == MediaStatus.PLAYING) {
             startButton.setImageResource(R.drawable.easy_media_click_pause_selector);
             replayTextView.setVisibility(View.GONE);
-        } else if (currentState == MediaStatus.CURRENT_STATE_ERROR) {
+        } else if (currentState == MediaStatus.ERROR) {
             startButton.setVisibility(View.INVISIBLE);
             replayTextView.setVisibility(View.GONE);
-        } else if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
+        } else if (currentState == MediaStatus.AUTO_COMPLETE) {
             startButton.setImageResource(R.drawable.easy_media_click_replay_selector);
             replayTextView.setVisibility(View.VISIBLE);
         } else {
@@ -277,7 +285,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
     }
 
-    //清空全部ui展示
+    /**
+     * 清空全部ui展示
+     */
     @Override
     public void changeUiToClean() {
         hintContainer(true);
@@ -290,13 +300,17 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         return bottomContainer.getVisibility() == View.VISIBLE || topContainer.getVisibility() == View.VISIBLE;
     }
 
-    //开始进度定时器
+    /**
+     * 开始进度定时器
+     */
     @Override
     public void startProgressSchedule() {
         bottomContainer.startProgressSchedule();
     }
 
-    //取消进度定时器
+    /**
+     * 取消进度定时器
+     */
     @Override
     public void stopProgressSchedule() {
         bottomContainer.stopProgressSchedule();
@@ -336,10 +350,10 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
 
     //显示或者隐藏顶部和底部控制器
     @Override
-    public void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaScreenStatus.Code final int currentScreen, final boolean isShow) {
-        if (currentState != CURRENT_STATE_NORMAL
-                && currentState != CURRENT_STATE_ERROR
-                && currentState != CURRENT_STATE_AUTO_COMPLETE) {
+    public void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaViewType.Code final int currentScreen, final boolean isShow) {
+        if (currentState != MediaStatus.NORMAL
+                && currentState != MediaStatus.ERROR
+                && currentState != MediaStatus.AUTO_COMPLETE) {
 
             MediaUtils.getMainHander().post(new Runnable() {
                 @Override

@@ -3,8 +3,8 @@ package com.ashlikun.media.controller;
 import android.widget.ImageView;
 
 import com.ashlikun.media.MediaData;
-import com.ashlikun.media.status.MediaScreenStatus;
 import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.status.MediaViewType;
 
 /**
  * 作者　　: 李坤
@@ -15,30 +15,51 @@ import com.ashlikun.media.status.MediaStatus;
  */
 
 public interface IControllerViewHolder {
-    //是否可以全屏
-    public void setControllFullEnable(boolean fullEnable);
+    /**
+     * 是否可以全屏
+     *
+     * @param fullEnable
+     */
+    void setControllFullEnable(boolean fullEnable);
 
-    //根据状态改变ui
-    public void changUi(@MediaStatus.Code int currentState, @MediaScreenStatus.Code int currentScreen);
+    /**
+     * 根据状态改变ui
+     * @param currentState
+     * @param currentScreen
+     */
+    void changUi(@MediaStatus.Code int currentState, @MediaViewType.Code int currentScreen);
 
-    public void setDataSource(MediaData mediaData, int screen);
+    void setDataSource(MediaData mediaData, int screen);
 
-    //开始进度定时器
-    public void startProgressSchedule();
+    /**
+     * 开始进度定时器
+     */
+    void startProgressSchedule();
 
-    //取消进度定时器
-    public void stopProgressSchedule();
+    /**
+     * 取消进度定时器
+     */
+    void stopProgressSchedule();
 
-    //控制器是否显示
-    public boolean containerIsShow();
+    /**
+     * 控制器是否显示
+     * @return
+     */
+    boolean containerIsShow();
 
-    //显示或者隐藏顶部和底部控制器
+    /**
+     * 显示或者隐藏顶部和底部控制器
+     * @param currentState
+     * @param currentScreen
+     * @param isShow
+     */
+    void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaViewType.Code final int currentScreen, final boolean isShow);
 
-    public void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaScreenStatus.Code final int currentScreen, final boolean isShow);
 
-
-    //清空全部ui展示
-    public void changeUiToClean();
+    /**
+     * 清空全部ui展示
+     */
+    void changeUiToClean();
 
     /**
      * 设置时间
@@ -46,7 +67,7 @@ public interface IControllerViewHolder {
      * @param position 0：重置
      * @param duration 0：重置
      */
-    public void setTime(int position, int duration);
+    void setTime(int position, int duration);
 
     /**
      * 设置进度  如果2个值都是100，就会设置最大值，如果某个值<0 就不设置
@@ -54,11 +75,17 @@ public interface IControllerViewHolder {
      * @param progress          主进度
      * @param secondaryProgress 缓存进度
      */
-    public void setProgress(int progress, int secondaryProgress);
+    void setProgress(int progress, int secondaryProgress);
 
-    //获取占位图
-    public ImageView getThumbImageView();
+    /**
+     * 获取占位图
+     * @return
+     */
+    ImageView getThumbImageView();
 
-    //获取进度缓存
-    public int getBufferProgress();
+    /**
+     * 获取进度缓存
+     * @return
+     */
+    int getBufferProgress();
 }

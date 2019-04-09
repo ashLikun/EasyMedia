@@ -22,10 +22,10 @@ import com.ashlikun.media.R;
 
 import java.util.List;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
+import static com.ashlikun.media.status.MediaStatus.AUTO_COMPLETE;
+import static com.ashlikun.media.status.MediaStatus.NORMAL;
+import static com.ashlikun.media.status.MediaStatus.PAUSE;
+import static com.ashlikun.media.status.MediaStatus.PLAYING;
 
 /**
  * 作者　　: 李坤
@@ -106,20 +106,20 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
             Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT).show();
             return;
         }
-        if (currentState == CURRENT_STATE_NORMAL) {
+        if (currentState == NORMAL) {
             if (MediaUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
                 return;
             }
             startVideo();
-        } else if (currentState == CURRENT_STATE_PLAYING) {
+        } else if (currentState == PLAYING) {
             onEvent(EasyMediaAction.ON_CLICK_PAUSE);
             EasyMediaManager.pause();
             onStatePause();
-        } else if (currentState == CURRENT_STATE_PAUSE) {
+        } else if (currentState == PAUSE) {
             onEvent(EasyMediaAction.ON_CLICK_RESUME);
             EasyMediaManager.start();
             onStatePlaying();
-        } else if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
+        } else if (currentState == AUTO_COMPLETE) {
             onEvent(EasyMediaAction.ON_CLICK_START_AUTO_COMPLETE);
             startVideo();
         }
@@ -151,7 +151,11 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
     }
 
     /**
-     * 保存播放器到对应的EasyVideoPlayerManager里面
+     * 保存播放器 用于全局管理
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoTiny}
+     * 可能会多次调用
      */
     @Override
     protected void saveVideoPlayView() {

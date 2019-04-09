@@ -8,7 +8,7 @@ import com.ashlikun.media.view.BaseEasyVideoPlay;
 import com.ashlikun.media.view.EasyVideoPlayTiny;
 import com.ashlikun.media.view.EasyVideoPlayer;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
+import static com.ashlikun.media.status.MediaStatus.PAUSE;
 
 /**
  * 作者　　: 李坤
@@ -42,12 +42,12 @@ public class MediaListUtils {
         if (EasyVideoPlayerManager.getVideoTiny() == null) {
             BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
             if (videoPlayer instanceof View && ((ViewGroup) view).indexOfChild(videoPlayer) != -1) {
-                if (videoPlayer.getCurrentState() == CURRENT_STATE_PAUSE) {
+                if (videoPlayer.getCurrentState() == PAUSE) {
                     MediaUtils.releaseAllVideos();
                 } else {
                     if (MediaScreenUtils.startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.getMediaData(), videoPlayer.getCurrentUrlIndex())) {
                         //还原默认状态
-                        videoPlayer.setStatus(MediaStatus.CURRENT_STATE_NORMAL);
+                        videoPlayer.setStatus(MediaStatus.NORMAL);
                     }
                 }
             }
@@ -66,12 +66,12 @@ public class MediaListUtils {
         if (currentPlayPosition >= 0) {
             if ((currentPlayPosition < firstVisibleItem || currentPlayPosition > (lastVisibleItem - 1))) {
                 if (EasyVideoPlayerManager.getVideoTiny() == null) {
-                    if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
+                    if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == PAUSE) {
                         MediaUtils.releaseAllVideos();
                     } else {
                         BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
                         MediaScreenUtils.startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()), videoPlayer.getMediaData(), videoPlayer.getCurrentUrlIndex());
-                        videoPlayer.setStatus(MediaStatus.CURRENT_STATE_NORMAL);
+                        videoPlayer.setStatus(MediaStatus.NORMAL);
                     }
                 }
             } else {
@@ -119,12 +119,12 @@ public class MediaListUtils {
         if (isChileViewDetached) {
             if (EasyVideoPlayerManager.getVideoTiny() == null) {
                 if (EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny() != null &&
-                        EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == CURRENT_STATE_PAUSE) {
+                        EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny().getCurrentState() == PAUSE) {
                     MediaUtils.releaseAllVideos();
                 } else {
                     if (MediaScreenUtils.startWindowTiny(new EasyVideoPlayTiny(videoPlayer.getContext()),
                             videoPlayer.getMediaData(), videoPlayer.getCurrentUrlIndex())) {
-                        videoPlayer.setStatus(MediaStatus.CURRENT_STATE_NORMAL);
+                        videoPlayer.setStatus(MediaStatus.NORMAL);
                         //列表的时候如果进入小窗口，那么久把列表的view设为null,可能回收后就不对了
                         EasyVideoPlayerManager.setVideoDefault(null);
                     }

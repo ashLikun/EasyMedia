@@ -16,16 +16,15 @@ import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 import com.ashlikun.media.controller.EasyMediaController;
 import com.ashlikun.media.controller.MediaControllerInterface;
-import com.ashlikun.media.status.MediaDisplayType;
-import com.ashlikun.media.status.MediaScreenStatus;
+import com.ashlikun.media.status.MediaViewType;
 
 import java.util.List;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
+import static com.ashlikun.media.status.MediaStatus.AUTO_COMPLETE;
+import static com.ashlikun.media.status.MediaStatus.ERROR;
+import static com.ashlikun.media.status.MediaStatus.NORMAL;
+import static com.ashlikun.media.status.MediaStatus.PAUSE;
+import static com.ashlikun.media.status.MediaStatus.PLAYING;
 
 /**
  * 作者　　: 李坤
@@ -33,6 +32,9 @@ import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
  * 邮箱　　：496546144@qq.com
  * <p>
  * 功能介绍：播放器view，负责视频的播放
+ * 基于{@link BaseEasyVideoPlay} 实现带有控制器的播放器
+ * 可以重写 {@link #createController} 实现不同的控制器
+ * 可以重写 {@link #createMiddleView} 添加中间控件，比如弹幕
  */
 public class EasyVideoPlayer extends BaseEasyVideoPlay
         implements EasyOnControllEvent, IEasyVideoPlayListener {
@@ -44,8 +46,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
 
 
     public int seekToInAdvance = 0;
-    public int widthRatio = 0;
-    public int heightRatio = 0;
+    public float ratio = 0;
 
 
     public int videoRotation = 0;
@@ -60,7 +61,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     /**
      * 播放器控制器
      */
-    MediaControllerInterface mediaController;
+    protected MediaControllerInterface mediaController;
 
     public EasyVideoPlayer(Context context) {
         this(context, null);
@@ -73,14 +74,13 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public void initView(Context context, AttributeSet attrs) {
         super.initView(context, attrs);
-        currentScreen = MediaScreenStatus.SCREEN_WINDOW_NORMAL;
+        currentMediaType = MediaViewType.NORMAL;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EasyVideoPlayer);
-        if (!a.hasValue(0)) {
-            setBackgroundColor(0xff000000);
-        }
-        mFullscreenEnable = a.getBoolean(R.styleable.EasyVideoPlayer_evp_full_screen_enable, true);
+        //是否可以全屏
+        mFullscreenEnable = a.getBoolean(R.styleable.EasyVideoPlayer_video_full_screen_enable, true);
         a.recycle();
-        initController(getController());
+        createMiddleView();
+        initController(createController());
         try {
             if (isCurrentPlay()) {
                 ORIENTATION_NORMAL = MediaUtils.getActivity(context).getRequestedOrientation();
@@ -91,12 +91,46 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     }
 
     /**
+     * 这里提供给继承者的添加中间控件
+     * 在控制器与播放器中间的控件
+     * 比如弹幕
+     */
+    protected void createMiddleView() {
+    }
+
+    /**
      * 子类可以实现从写
      *
      * @return
      */
-    public MediaControllerInterface getController() {
+    protected MediaControllerInterface createController() {
         return new EasyMediaController(getContext());
+    }
+
+    /**
+     * 获取控制器
+     *
+     * @return
+     */
+    public MediaControllerInterface getMediaController() {
+        return mediaController;
+    }
+
+    /**
+     * 是否显示控制器
+     *
+     * @param isShow 是否显示
+     */
+    public void setControllerVisiable(boolean isShow) {
+        if (!isShow) {
+            if (mediaController != null) {
+                removeView((View) mediaController);
+            }
+        } else {
+            if (mediaController == null) {
+                initController(createController());
+            }
+        }
     }
 
     /**
@@ -104,28 +138,34 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      *
      * @param controller
      */
-    public final void initController(MediaControllerInterface controller) {
-        if (this.mediaController != null) {
+    protected void initController(MediaControllerInterface controller) {
+        if (mediaController != null) {
             removeView((View) mediaController);
         }
-        this.mediaController = controller;
-        addView((View) mediaController);
-        mediaController.setOnControllEvent(this);
-        mediaController.setControllFullEnable(mFullscreenEnable);
+        mediaController = controller;
+        if (mediaController != null) {
+            addView((View) mediaController);
+            mediaController.setOnControllEvent(this);
+            mediaController.setControllFullEnable(mFullscreenEnable);
+        }
     }
 
 
     @Override
     public boolean setDataSource(List<MediaData> mediaData, int defaultIndex) {
-        if (super.setDataSource(mediaData, defaultIndex)) {
-            mediaController.setCurrentScreen(getCurrentScreen());
+        if (super.setDataSource(mediaData, defaultIndex) && mediaController != null) {
+            mediaController.setCurrentScreen(getCurrentMediaType());
             mediaController.setDataSource(mediaData.get(currentUrlIndex));
         }
         return true;
     }
 
     /**
-     * 保存播放器到对应的EasyVideoPlayerManager里面
+     * 保存播放器 用于全局管理
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoDefault)}
+     * {@link EasyVideoPlayerManager#setVideoTiny}
+     * 可能会多次调用
      */
     @Override
     protected void saveVideoPlayView() {
@@ -145,21 +185,21 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             Toast.makeText(getContext(), getResources().getString(R.string.no_url), Toast.LENGTH_SHORT).show();
             return;
         }
-        if (currentState == CURRENT_STATE_NORMAL) {
+        if (currentState == NORMAL) {
             if (MediaUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
                 return;
             }
             onEvent(EasyMediaAction.ON_CLICK_START_ICON);
             startVideo();
-        } else if (currentState == CURRENT_STATE_PLAYING) {
+        } else if (currentState == PLAYING) {
             onEvent(EasyMediaAction.ON_CLICK_PAUSE);
             EasyMediaManager.pause();
             onStatePause();
-        } else if (currentState == CURRENT_STATE_PAUSE) {
+        } else if (currentState == PAUSE) {
             onEvent(EasyMediaAction.ON_CLICK_RESUME);
             EasyMediaManager.start();
             onStatePlaying();
-        } else if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
+        } else if (currentState == AUTO_COMPLETE) {
             onEvent(EasyMediaAction.ON_CLICK_START_AUTO_COMPLETE);
             startVideo();
         }
@@ -183,7 +223,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onFullscreenClick() {
-        if (currentState == CURRENT_STATE_AUTO_COMPLETE) {
+        if (currentState == AUTO_COMPLETE) {
             return;
         }
         if (isScreenFull()) {
@@ -200,10 +240,12 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onControllerClick() {
-        if (currentState == CURRENT_STATE_ERROR) {
+        if (currentState == ERROR) {
             startVideo();
         } else {
-            mediaController.startDismissControlViewSchedule();
+            if (mediaController != null) {
+                mediaController.startDismissControlViewSchedule();
+            }
         }
     }
 
@@ -211,20 +253,26 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStateNormal() {
         super.onStateNormal();
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
 
     @Override
     protected void onStatePreparing() {
         super.onStatePreparing();
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
     @Override
     protected void onStatePreparingChangingUrl(int currentUrlIndex, int seekToInAdvance) {
         super.onStatePreparingChangingUrl(currentUrlIndex, seekToInAdvance);
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
     @Override
@@ -247,7 +295,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStatePlaying() {
         super.onStatePlaying();
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
     /**
@@ -256,7 +306,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStatePause() {
         super.onStatePause();
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
     /**
@@ -265,7 +317,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStateError() {
         super.onStateError();
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
     }
 
     /**
@@ -274,8 +328,10 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStateAutoComplete() {
         super.onStateAutoComplete();
-        mediaController.setCurrentState(currentState);
-        mediaController.setMaxProgressAndTime();
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+            mediaController.setMaxProgressAndTime();
+        }
     }
 
     @Override
@@ -284,9 +340,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
         }
-        if (widthRatio != 0 && heightRatio != 0) {
+        if (ratio != 0) {
             int specWidth = MeasureSpec.getSize(widthMeasureSpec);
-            int specHeight = (int) ((specWidth * (float) heightRatio) / widthRatio);
+            int specHeight = (int) (specWidth / ratio);
             int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(specWidth, MeasureSpec.EXACTLY);
             int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(specHeight, MeasureSpec.EXACTLY);
             super.onMeasure(childWidthMeasureSpec, childHeightMeasureSpec);
@@ -311,7 +367,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public void setBufferProgress(int bufferProgress) {
         super.setBufferProgress(bufferProgress);
-        mediaController.setBufferProgress(bufferProgress);
+        if (mediaController != null) {
+            mediaController.setBufferProgress(bufferProgress);
+        }
     }
 
     /**
@@ -320,7 +378,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public void onAutoCompletion() {
         super.onAutoCompletion();
-        mediaController.onAutoCompletion();
+        if (mediaController != null) {
+            mediaController.onAutoCompletion();
+        }
         onStateAutoComplete();
         if (isScreenFull()) {
             MediaScreenUtils.backPress();
@@ -348,6 +408,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     public void onForceCompletionTo() {
         super.onForceCompletionTo();
     }
+
     /**
      * 开始全屏播放
      * 在当前activity的跟布局加一个新的最大化的EasyVideoPlayer
@@ -361,11 +422,15 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         fullPlay.setFullscreenPortrait(mFullscreenPortrait);
         fullPlay.setStatus(currentState);
         fullPlay.addTextureView();
-        fullPlay.mediaController.setBufferProgress(mediaController.getBufferProgress());
+        if (mediaController != null && fullPlay.mediaController != null) {
+            fullPlay.mediaController.setBufferProgress(mediaController.getBufferProgress());
+        }
         //还原默认的view
         onStateNormal();
         //取消定时器
-        mediaController.cancelDismissControlViewSchedule();
+        if (mediaController != null) {
+            mediaController.cancelDismissControlViewSchedule();
+        }
         MediaScreenUtils.startFullscreen(fullPlay, mediaData, currentUrlIndex);
     }
 
@@ -383,7 +448,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             currentUrlIndex = EasyVideoPlayerManager.getVideoFullscreen().getCurrentUrlIndex();
             clearFloatScreen();
         }
-        mediaController.setCurrentState(currentState);
+        if (mediaController != null) {
+            mediaController.setCurrentState(currentState);
+        }
         addTextureView();
         //2.在本Video上播放
         setStatus(currentState);
@@ -425,7 +492,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      * 请在setData之前设置
      */
     public void setCurrentPlayList() {
-        setCurrentScreen(MediaScreenStatus.SCREEN_WINDOW_LIST);
+        setCurrentMediaType(MediaViewType.LIST);
     }
 
     /**
@@ -442,7 +509,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     public void setFullscreenEnable(boolean mFullscreenEnable) {
         this.mFullscreenEnable = mFullscreenEnable;
-        mediaController.setControllFullEnable(mFullscreenEnable);
+        if (mediaController != null) {
+            mediaController.setControllFullEnable(mFullscreenEnable);
+        }
     }
 
 
@@ -458,16 +527,17 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     /**
      * 设置宽高比例
      *
-     * @param widthRatio
-     * @param heightRatio
+     * @param ratio 比例  width/height
      */
-    public void setVideoRatio(int widthRatio, int heightRatio) {
-        this.heightRatio = heightRatio;
-        this.widthRatio = widthRatio;
+    public void setVideoRatio(float ratio) {
+        this.ratio = ratio;
     }
 
     public ImageView getThumbImageView() {
-        return mediaController.getThumbImageView();
+        if (mediaController != null) {
+            return mediaController.getThumbImageView();
+        }
+        return null;
     }
 
     @Override

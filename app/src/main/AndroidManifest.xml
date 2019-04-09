@@ -32,6 +32,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme"></activity>
         <activity
+            android:name=".DouyinActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"></activity>
+        <activity
             android:name=".MiniActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait"

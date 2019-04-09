@@ -25,7 +25,10 @@ public class MediaData {
         return builder.url;
     }
 
-    //是否是本地文件
+    /**
+     * 是否是本地文件
+     * @return
+     */
     public boolean isLocal() {
         if (builder.url != null) {
             return builder.url.startsWith("file");

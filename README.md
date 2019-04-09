@@ -50,7 +50,7 @@ dependencies {
                           android:id="@+id/mediaPlay"
                           android:layout_width="match_parent"
                           android:layout_height="250dp"
-                          app:evp_full_screen_enable="false"></com.ashlikun.media.EasyVideoPlayer>
+                          app:video_full_screen_enable="false"></com.ashlikun.media.EasyVideoPlayer>
 ####    Java代码
 
         //全局初始化（applicable）

@@ -9,7 +9,7 @@ import android.hardware.SensorManager;
 import com.ashlikun.media.view.BaseEasyVideoPlay;
 import com.ashlikun.media.view.EasyVideoPlayer;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PLAYING;
+import static com.ashlikun.media.status.MediaStatus.PLAYING;
 
 /**
  * 作者　　: 李坤
@@ -47,7 +47,7 @@ public class MediaAutoFullSensorListener implements SensorEventListener {
         if (play != null) {
             if ((System.currentTimeMillis() - lastAutoFullscreenTime) > 2000
                     && play.isCurrentPlay()
-                    && play.getCurrentState() == CURRENT_STATE_PLAYING
+                    && play.getCurrentState() == PLAYING
                     && play.isScreenFull()) {
                 lastAutoFullscreenTime = System.currentTimeMillis();
                 MediaScreenUtils.backPress();
@@ -65,7 +65,7 @@ public class MediaAutoFullSensorListener implements SensorEventListener {
         if (playppp != null && playppp instanceof EasyVideoPlayer) {
             EasyVideoPlayer play = (EasyVideoPlayer) playppp;
             if (play.isCurrentPlay()
-                    && play.getCurrentState() == CURRENT_STATE_PLAYING
+                    && play.getCurrentState() == PLAYING
                     && !play.isFullscreenPortrait()) {
                 if (x > 0) {
                     MediaUtils.setRequestedOrientation(play.getContext(), ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

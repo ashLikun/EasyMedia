@@ -21,7 +21,6 @@ import android.view.Window;
 import com.ashlikun.media.status.MediaDisplayType;
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.BaseEasyVideoPlay;
-import com.ashlikun.media.view.EasyTextureView;
 import com.ashlikun.media.view.EasyVideoPlayer;
 
 import java.util.Formatter;
@@ -30,33 +29,41 @@ import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_PAUSE;
+import static com.ashlikun.media.status.MediaStatus.AUTO_COMPLETE;
+import static com.ashlikun.media.status.MediaStatus.NORMAL;
+import static com.ashlikun.media.status.MediaStatus.PAUSE;
 
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/12/13 16:03
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：
+ * 功能介绍：播放器工具
  */
 
 public class MediaUtils {
     public static Context mContext;
 
-    //当onResume的时候是否去播放
+    /**
+     * 当onResume的时候是否去播放
+     */
     private static boolean ONRESUME_TO_PLAY = true;
 
 
     public static final String EASY_MEDIA_PROGRESS = "EASY_MEDIA_PROGRESS";
-    //更新进度的定时器
+    /**
+     * 更新进度的定时器
+     */
     private static ScheduledExecutorService POOL_SCHEDULE;
     private static Handler mHandler;
 
-    //在Applicable里面初始化
-    public static void init(Context context) {
-        MediaUtils.mContext = context.getApplicationContext();
+    /**
+     * 在Applicable里面初始化
+     *
+     * @param context
+     */
+    public static void init(Application context) {
+        MediaUtils.mContext = context;
     }
 
     public static Handler getMainHander() {
@@ -294,16 +301,16 @@ public class MediaUtils {
     public static void onPause() {
         BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
         if (videoPlayer != null) {
-            if (videoPlayer.getCurrentState() == CURRENT_STATE_AUTO_COMPLETE ||
-                    videoPlayer.getCurrentState() == CURRENT_STATE_NORMAL) {
+            if (videoPlayer.getCurrentState() == AUTO_COMPLETE ||
+                    videoPlayer.getCurrentState() == NORMAL) {
                 MediaUtils.releaseAllVideos();
             } else {
-                if (videoPlayer.getCurrentState() == MediaStatus.CURRENT_STATE_PLAYING) {
+                if (videoPlayer.getCurrentState() == MediaStatus.PLAYING) {
                     ONRESUME_TO_PLAY = true;
                 } else {
                     ONRESUME_TO_PLAY = false;
                 }
-                videoPlayer.setStatus(MediaStatus.CURRENT_STATE_PAUSE);
+                videoPlayer.setStatus(MediaStatus.PAUSE);
                 EasyMediaManager.pause();
             }
         }
@@ -315,8 +322,8 @@ public class MediaUtils {
     public static void onResume() {
         BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
         if (videoPlayer != null) {
-            if (videoPlayer.getCurrentState() == CURRENT_STATE_PAUSE && ONRESUME_TO_PLAY) {
-                videoPlayer.setStatus(MediaStatus.CURRENT_STATE_PLAYING);
+            if (videoPlayer.getCurrentState() == PAUSE && ONRESUME_TO_PLAY) {
+                videoPlayer.setStatus(MediaStatus.PLAYING);
                 EasyMediaManager.start();
             }
         }
@@ -404,8 +411,8 @@ public class MediaUtils {
      * @param type
      */
     public static void setVideoImageDisplayType(@MediaDisplayType.Code int type) {
-        EasyTextureView.VIDEO_IMAGE_DISPLAY_TYPE = type;
         if (EasyMediaManager.textureView != null) {
+            EasyMediaManager.textureView.setDisplayType(type);
             EasyMediaManager.textureView.requestLayout();
         }
     }

@@ -73,9 +73,9 @@ public class EasyVideoPlayerManager {
      * @return
      */
     public static BaseEasyVideoPlay getCurrentVideoPlay() {
-        BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getVideoTiny();
+        BaseEasyVideoPlay videoPlayer = getVideoTiny();
         if (videoPlayer == null) {
-            videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
+            videoPlayer = getCurrentVideoPlayerNoTiny();
         }
         return videoPlayer;
     }

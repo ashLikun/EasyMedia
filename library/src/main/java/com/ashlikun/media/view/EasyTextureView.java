@@ -18,15 +18,16 @@ import com.ashlikun.media.status.MediaDisplayType;
  * 为了解决这个问题 Android 4.0中引入了TextureView。只能在具有硬件加速的设备中，就是gup
  */
 public class EasyTextureView extends TextureView {
-    /**
-     * 视频大小缩放规则,全局的
-     */
-    @MediaDisplayType.Code
-    public static int VIDEO_IMAGE_DISPLAY_TYPE = 0;
+
     protected static final String TAG = "JZResizeTextureView";
 
     public int currentVideoWidth = 0;
     public int currentVideoHeight = 0;
+    /**
+     * 视频大小缩放类型
+     */
+    @MediaDisplayType.Code
+    private int displayType = MediaDisplayType.ADAPTER;
 
     public EasyTextureView(Context context) {
         super(context);
@@ -38,6 +39,14 @@ public class EasyTextureView extends TextureView {
         super(context, attrs);
         currentVideoWidth = 0;
         currentVideoHeight = 0;
+    }
+
+    public int getDisplayType() {
+        return displayType;
+    }
+
+    public void setDisplayType(int displayType) {
+        this.displayType = displayType;
     }
 
     public void setVideoSize(int currentVideoWidth, int currentVideoHeight) {
@@ -64,7 +73,7 @@ public class EasyTextureView extends TextureView {
         float parentHeight = ((View) getParent()).getMeasuredHeight();
         float parentWidth = ((View) getParent()).getMeasuredWidth();
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_PARENT) {
+            if (displayType == MediaDisplayType.MATCH_PARENT) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     float tempSize = parentWidth;
                     parentWidth = parentHeight;
@@ -141,11 +150,11 @@ public class EasyTextureView extends TextureView {
             // no size yet, just adopt the given spec sizes
         }
         if (parentWidth != 0 && parentHeight != 0 && videoWidth != 0 && videoHeight != 0) {
-            if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_ORIGINAL) {
+            if (displayType == MediaDisplayType.ORIGINAL) {
                 /**原图**/
                 height = videoHeight;
                 width = videoWidth;
-            } else if (VIDEO_IMAGE_DISPLAY_TYPE == MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP) {
+            } else if (displayType == MediaDisplayType.MATCH_CROP) {
                 if (viewRotation == 90 || viewRotation == 270) {
                     float tempSize = parentWidth;
                     parentWidth = parentHeight;

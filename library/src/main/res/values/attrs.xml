@@ -1,7 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="EasyVideoPlayer">
-        <attr name="evp_full_screen_enable" format="boolean"></attr>
+        <attr name="video_full_screen_enable" format="boolean"></attr>
+    </declare-styleable>
+    <declare-styleable name="BaseEasyVideoPlay">
         <attr name="android:background"></attr>
+        <attr name="video_display_type">
+            <!--Video大小适配视频-->
+            <enum name="adapter" value="0" />
+            <!--填充整个父View-->
+            <enum name="match_parent" value="1" />
+            <!--充满剪切-->
+            <enum name="match_crop" value="2" />
+            <!--原始大小-->
+            <enum name="original" value="3" />
+        </attr>
     </declare-styleable>
 </resources>

@@ -10,11 +10,19 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
 
+import com.ashlikun.media.status.MediaDisplayType;
 import com.ashlikun.media.view.EasyTextureView;
 
 /**
- * 整个播放器的管理器，
+ * @author　　: 李坤
+ * 创建时间: 2018/11/10 16:01
+ * 邮箱　　：496546144@qq.com
+ * <p>
+ * 功能介绍：整个播放器的管理器
+ * 保证只有一个播放器
+ * 保证渲染器也是只有一个(这样实现无缝切换)
  */
+
 public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
     /**
@@ -25,29 +33,39 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public static final String TAG = "EasyMediaManager";
     /**
      * handler标识
+     * 0:准备播放
+     * 2：回收
      */
     public static final int HANDLER_PREPARE = 0;
     public static final int HANDLER_RELEASE = 2;
-
-    /**
-     * 播放器的渲染器
-     */
-    public static EasyTextureView textureView;
-    public static SurfaceTexture savedSurfaceTexture;
-    /**
-     * 设置给MediaPlay的渲染器,里面有savedSurfaceTexture
-     */
-    public static Surface surface;
     /**
      * 播放器
+     * 使用面向接口编程
      */
     public EasyMediaInterface mMediaPlay;
+    /**
+     * 播放器控件
+     */
+    public static EasyTextureView textureView;
+    /**
+     * 用来捕获视频流中的图像帧的
+     */
+    public static SurfaceTexture savedSurfaceTexture;
+    /**
+     * 设置给MediaPlay的渲染器(就是内存中的一段绘图缓冲区),里面有savedSurfaceTexture
+     * 这个是保证无缝切换的重点
+     */
+    public static Surface surface;
+
+    /**
+     * 当前播放的视频的大小
+     */
     public int currentVideoWidth = 0;
     public int currentVideoHeight = 0;
     /**
      * 播放器Handler,独立线程
      */
-    public MediaHandler mMediaHandler;
+    public MediaHandler mediaHandler;
     /**
      * 主线程的handler
      */
@@ -64,7 +82,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public EasyMediaManager() {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
         mMediaHandlerThread.start();
-        mMediaHandler = new MediaHandler(mMediaHandlerThread.getLooper());
+        mediaHandler = new MediaHandler(mMediaHandlerThread.getLooper());
         mainThreadHandler = new Handler();
     }
 
@@ -78,9 +96,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     /**
      * 初始化TextureView
      */
-    public void initTextureView(Context context) {
+    public void initTextureView(Context context, @MediaDisplayType.Code int displayType) {
         EasyMediaManager.instance().removeTextureView();
         EasyMediaManager.textureView = new EasyTextureView(context);
+        textureView.setDisplayType(displayType);
         EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.instance());
     }
 
@@ -138,10 +157,23 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         return false;
     }
 
+    /**
+     * 释放播放器
+     */
     public void releaseMediaPlayer() {
         Message msg = new Message();
         msg.what = HANDLER_RELEASE;
-        mMediaHandler.sendMessage(msg);
+        mediaHandler.sendMessage(msg);
+    }
+
+    /**
+     * 准备播放
+     */
+    public void prepare() {
+        releaseMediaPlayer();
+        Message msg = new Message();
+        msg.what = HANDLER_PREPARE;
+        mediaHandler.sendMessage(msg);
     }
 
     /**
@@ -156,13 +188,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         }
         EasyMediaManager.textureView = null;
         EasyMediaManager.savedSurfaceTexture = null;
-    }
-
-    public void prepare() {
-        releaseMediaPlayer();
-        Message msg = new Message();
-        msg.what = HANDLER_PREPARE;
-        mMediaHandler.sendMessage(msg);
     }
 
     @Override

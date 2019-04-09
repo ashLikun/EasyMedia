@@ -6,10 +6,14 @@ android {
     defaultConfig {
         applicationId "com.ashlikun.media.simple"
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion 19
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
         multiDexEnabled false
+
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
     buildTypes {
         release {
@@ -37,17 +41,19 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation rootProject.ext.designVersion
     implementation project(":library")
-    implementation 'com.github.ashLikun.CommonAdapter:adapter:1.1.9'
+    implementation 'com.github.ashLikun.CommonAdapter:adapter:2.0.5'
     //okhttp
-    implementation 'com.squareup.okhttp3:okhttp:3.8.1'
-    implementation 'com.google.code.gson:gson:2.8.0'
-    implementation 'com.github.ashLikun:OkHttpUtils:1.4.2'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.ashLikun:OkHttpUtils:1.6.5'
+    implementation 'com.github.ashLikun:LiteOrm:1.0.5'
+    implementation 'com.github.ashLikun:XLayoutManager:1.0.2'
     //图片加载
-    implementation 'com.github.bumptech.glide:glide:3.7.0'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:1.4.0@aar'
-    implementation 'jp.wasabeef:glide-transformations:2.0.1'
-    implementation 'com.github.ashLikun.frame:glideutils:2.0.1'
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    implementation 'com.github.ashLikun.frame:glideutils:2.7.4'
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
 //    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
+
 }

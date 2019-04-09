@@ -2,71 +2,88 @@ package com.ashlikun.media.simple;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 
 import com.ashlikun.adapter.ViewHolder;
 import com.ashlikun.adapter.recyclerview.CommonAdapter;
-import com.ashlikun.media.MediaListUtils;
 import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.simple.data.HuoShanData;
-import com.ashlikun.media.simple.divider.HorizontalDividerItemDecoration;
 import com.ashlikun.media.status.MediaViewType;
-import com.ashlikun.media.view.EasyVideoPlayer;
+import com.ashlikun.media.view.MiniVideoPlay;
 import com.ashlikun.okhttputils.http.OkHttpUtils;
 import com.ashlikun.okhttputils.http.callback.AbsCallback;
 import com.ashlikun.okhttputils.http.request.HttpRequest;
+import com.ashlikun.xlayoutmanage.viewpager.OnViewPagerListener;
+import com.ashlikun.xlayoutmanage.viewpager.ViewPagerLayoutManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 作者　　: 李坤
- * 创建时间: 2017/12/13　14:36
+ * @author　　: 李坤
+ * 创建时间: 2019/4/4 16:45
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：火山小视频
+ * 功能介绍：抖音
  */
 
-public class HuoSanActivity extends AppCompatActivity {
+public class DouyinActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     List<HuoShanData.FeedsData> listDatas = new ArrayList<>();
     CommonAdapter adapter;
+    ViewPagerLayoutManager manager = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        recyclerView.addItemDecoration(new HorizontalDividerItemDecoration.Builder(this)
-                .size(50)
-                .build());
-        recyclerView.setAdapter(adapter = new CommonAdapter<HuoShanData.FeedsData>(this, R.layout.item_list, listDatas) {
+        recyclerView.setLayoutManager(manager = new ViewPagerLayoutManager(this, ViewPagerLayoutManager.VERTICAL));
+        manager.setOnViewPagerListener(new OnViewPagerListener() {
+            @Override
+            public void onInitComplete() {
+            }
+
+            @Override
+            public void onPageRelease(boolean isNext, int position) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position, boolean isBottom) {
+                ViewHolder holder = (ViewHolder) recyclerView.getChildViewHolder(recyclerView.getChildAt(0));
+                MiniVideoPlay videoPlayer = holder.getView(R.id.videoPlay);
+                if (!videoPlayer.isCurrentPlay()) {
+                    videoPlayer.startVideo();
+                }
+            }
+        });
+        recyclerView.setAdapter(adapter = new CommonAdapter<HuoShanData.FeedsData>(this, R.layout.item_douyin, listDatas) {
             @Override
             public void convert(ViewHolder holder, HuoShanData.FeedsData s) {
-                EasyVideoPlayer videoPlayer = holder.getView(R.id.videoPlay);
+                MiniVideoPlay videoPlayer = holder.getView(R.id.videoPlay);
+//                videoPlayer.setControllerVisiable(false);
 //                GlideUtils.show(videoPlayer.getThumbImageView(), s.getImageUrl());
-                videoPlayer.setVideoRatio(s.getWidth() / s.getHeight());
+//                videoPlayer.setVideoRatio(1);
                 videoPlayer.setCurrentMediaType(MediaViewType.LIST);
                 videoPlayer.setDataSource(s.getUrl(), s.getText());
             }
         });
-        recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
-            @Override
-            public void onChildViewAttachedToWindow(View view) {
-                EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaListUtils.onRecyclerAutoTiny(videoPlayer, false);
-            }
-
-            @Override
-            public void onChildViewDetachedFromWindow(View view) {
-                EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaListUtils.onRecyclerAutoTiny(videoPlayer, true);
-            }
-        });
+        adapter.setOffClickEffects();
+//        recyclerView.addOnChildAttachStateChangeListener(new RecyclerView.OnChildAttachStateChangeListener() {
+//            @Override
+//            public void onChildViewAttachedToWindow(View view) {
+//                EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
+//                MediaListUtils.onRecyclerAutoTiny(videoPlayer, false);
+//            }
+//
+//            @Override
+//            public void onChildViewDetachedFromWindow(View view) {
+//                EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
+//                MediaListUtils.onRecyclerAutoTiny(videoPlayer, true);
+//            }
+//        });
         getHttpVideos();
     }
 

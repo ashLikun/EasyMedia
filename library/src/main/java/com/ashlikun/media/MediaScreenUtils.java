@@ -8,6 +8,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
+import com.ashlikun.media.status.MediaStatus;
+import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.view.BaseEasyVideoPlay;
 import com.ashlikun.media.view.EasyVideoPlayTiny;
 import com.ashlikun.media.view.EasyVideoPlayer;
@@ -15,10 +17,6 @@ import com.ashlikun.media.view.EasyVideoPlayer;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.ashlikun.media.status.MediaScreenStatus.SCREEN_WINDOW_FULLSCREEN;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_AUTO_COMPLETE;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_ERROR;
-import static com.ashlikun.media.status.MediaStatus.CURRENT_STATE_NORMAL;
 
 /**
  * 作者　　: 李坤
@@ -94,11 +92,11 @@ public class MediaScreenUtils {
         easyVideoPlayer.setAnimation(ra);
         easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
-        easyVideoPlayer.setCurrentScreen(SCREEN_WINDOW_FULLSCREEN);
+        easyVideoPlayer.setCurrentMediaType(MediaViewType.FULLSCREEN);
         int status = easyVideoPlayer.getCurrentState();
         easyVideoPlayer.setDataSource(mediaData, defaultIndex);
         easyVideoPlayer.setStatus(status);
-        if (easyVideoPlayer.getCurrentState() == CURRENT_STATE_NORMAL) {
+        if (easyVideoPlayer.getCurrentState() == MediaStatus.NORMAL) {
             easyVideoPlayer.onPlayStartClick();
         }
         CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
@@ -217,9 +215,9 @@ public class MediaScreenUtils {
      */
     public static boolean startWindowTiny(EasyVideoPlayTiny tiny, List<MediaData> mediaData, int defaultIndex) {
         BaseEasyVideoPlay videoPlayerDefault = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
-        if (videoPlayerDefault != null && (videoPlayerDefault.getCurrentState() == CURRENT_STATE_NORMAL ||
-                videoPlayerDefault.getCurrentState() == CURRENT_STATE_ERROR ||
-                videoPlayerDefault.getCurrentState() == CURRENT_STATE_AUTO_COMPLETE)) {
+        if (videoPlayerDefault != null && (videoPlayerDefault.getCurrentState() == MediaStatus.NORMAL ||
+                videoPlayerDefault.getCurrentState() == MediaStatus.ERROR ||
+                videoPlayerDefault.getCurrentState() == MediaStatus.AUTO_COMPLETE)) {
             return false;
         }
 

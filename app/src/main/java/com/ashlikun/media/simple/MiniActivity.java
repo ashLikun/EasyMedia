@@ -24,12 +24,19 @@ public class MiniActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         videoPlay = new MiniVideoPlay(this);
+        videoPlay.setDisplayType(MediaDisplayType.MATCH_CROP);
         videoPlay.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
-        MediaUtils.setVideoImageDisplayType(MediaDisplayType.VIDEO_IMAGE_DISPLAY_TYPE_FILL_SCROP);
         setContentView(videoPlay);
         videoPlay.setDataSource(new MediaData.Builder()
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        MediaUtils.setVideoImageDisplayType(MediaDisplayType.MATCH_CROP);
+        MediaUtils.releaseAllVideos();
     }
 }
