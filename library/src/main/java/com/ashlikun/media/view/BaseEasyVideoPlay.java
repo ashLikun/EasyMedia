@@ -21,7 +21,6 @@ import com.ashlikun.media.R;
 import com.ashlikun.media.play.EasyMediaSystem;
 import com.ashlikun.media.status.MediaDisplayType;
 import com.ashlikun.media.status.MediaStatus;
-import com.ashlikun.media.status.MediaViewType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,11 +61,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     protected int currentUrlIndex = 0;
 
-    /**
-     * 当前播放器类型
-     */
-    @MediaViewType.Code
-    protected int currentMediaType;
     /**
      * 视频大小缩放类型
      */
@@ -243,7 +237,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     public void setDisplayType(int displayType) {
         this.displayType = displayType;
-        if (textureViewContainer.getChildAt(0) == EasyMediaManager.textureView) {
+        if (EasyMediaManager.textureView != null && textureViewContainer.getChildAt(0) == EasyMediaManager.textureView) {
             EasyMediaManager.textureView.setDisplayType(displayType);
         }
 
@@ -429,6 +423,13 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     /**
+     * 是否是全屏播放
+     *
+     * @return
+     */
+    public abstract boolean isScreenFull();
+
+    /**
      * 播放器大小改变
      */
     @Override
@@ -487,16 +488,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
 
 
     /**
-     * 获取播放器类型
-     *
-     * @return 0:默认的，1:列表的,2全屏的，3：小窗口
-     */
-    @MediaViewType.Code
-    public int getCurrentMediaType() {
-        return currentMediaType;
-    }
-
-    /**
      * 获取播放器数据
      *
      * @return
@@ -531,51 +522,5 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     public void setCurrentState(@MediaStatus.Code int currentState) {
         this.currentState = currentState;
-    }
-
-    /**
-     * 是否是全屏的
-     *
-     * @return
-     */
-    public boolean isScreenFull() {
-        return currentMediaType == MediaViewType.FULLSCREEN;
-    }
-
-    /**
-     * 是否是默认的
-     *
-     * @return
-     */
-    public boolean isScreenNormal() {
-        return currentMediaType == MediaViewType.NORMAL;
-    }
-
-    /**
-     * 是否是列表的
-     *
-     * @return
-     */
-    public boolean isScreenList() {
-        return currentMediaType == MediaViewType.LIST;
-    }
-
-    /**
-     * 是否是小窗口的
-     *
-     * @return
-     */
-    public boolean isScreenTiny() {
-        return currentMediaType == MediaViewType.TINY;
-    }
-
-    /**
-     * 设置当前播放器View类型
-     * 请在setDataSource之前设置
-     *
-     * @param currentMediaType
-     */
-    public void setCurrentMediaType(int currentMediaType) {
-        this.currentMediaType = currentMediaType;
     }
 }

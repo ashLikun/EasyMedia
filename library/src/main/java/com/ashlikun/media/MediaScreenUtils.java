@@ -9,7 +9,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.ashlikun.media.status.MediaStatus;
-import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.view.BaseEasyVideoPlay;
 import com.ashlikun.media.view.EasyVideoPlayTiny;
 import com.ashlikun.media.view.EasyVideoPlayer;
@@ -92,7 +91,7 @@ public class MediaScreenUtils {
         easyVideoPlayer.setAnimation(ra);
         easyVideoPlayer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_FULLSCREEN);
-        easyVideoPlayer.setCurrentMediaType(MediaViewType.FULLSCREEN);
+        easyVideoPlayer.setFull(true);
         int status = easyVideoPlayer.getCurrentState();
         easyVideoPlayer.setDataSource(mediaData, defaultIndex);
         easyVideoPlayer.setStatus(status);

@@ -15,7 +15,6 @@ import android.widget.TextView;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaViewType;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -62,15 +61,19 @@ public class MediaControllerTop extends RelativeLayout implements View.OnClickLi
         backButton.setOnClickListener(this);
     }
 
-    public void setInitData(MediaData mediaData, int screen) {
+    public void setInitData(MediaData mediaData) {
         if (mediaData != null) {
             setTitle(mediaData.getTitle());
         }
-        if (screen == MediaViewType.FULLSCREEN) {
+
+    }
+
+    public void setFull(boolean isFull) {
+        if (isFull) {
             setSystemTimeAndBattery();
             setBackIsShow(true);
             setBatteryIsShow(true);
-        } else if (screen == MediaViewType.NORMAL || screen == MediaViewType.LIST) {
+        } else {
             setBackIsShow(false);
             setBatteryIsShow(false);
         }

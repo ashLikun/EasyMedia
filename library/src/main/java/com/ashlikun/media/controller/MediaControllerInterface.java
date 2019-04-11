@@ -3,7 +3,6 @@ package com.ashlikun.media.controller;
 import android.widget.ImageView;
 
 import com.ashlikun.media.MediaData;
-import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyOnControllEvent;
 
@@ -28,7 +27,7 @@ public interface MediaControllerInterface {
      */
     void setControllFullEnable(boolean fullEnable);
 
-    void setCurrentScreen(@MediaViewType.Code int currentScreen);
+    void setFull(boolean isFull);
 
     void setCurrentState(@MediaStatus.Code int currentState);
 

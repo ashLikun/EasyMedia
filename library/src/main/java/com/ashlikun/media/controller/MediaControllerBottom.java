@@ -17,7 +17,6 @@ import com.ashlikun.media.EasyVideoPlayerManager;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 import com.ashlikun.media.status.MediaStatus;
-import com.ashlikun.media.status.MediaViewType;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -78,15 +77,7 @@ public class MediaControllerBottom extends LinearLayout implements SeekBar.OnSee
         });
     }
 
-    public void setInitData(int screen) {
-        if (screen == MediaViewType.FULLSCREEN) {
-            setIsFull(true);
-        } else if (screen == MediaViewType.NORMAL || screen == MediaViewType.LIST) {
-            setIsFull(false);
-        }
-    }
-
-    public void setIsFull(boolean isFull) {
+    public void setFull(boolean isFull) {
         if (!fullEnable) {
             return;
         }

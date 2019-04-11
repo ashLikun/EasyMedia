@@ -31,6 +31,7 @@ public class MiniActivity extends AppCompatActivity {
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
+        videoPlay.startVideo();
     }
 
     @Override

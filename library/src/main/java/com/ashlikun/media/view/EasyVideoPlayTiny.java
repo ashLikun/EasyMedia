@@ -88,8 +88,13 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
     @Override
     public void onForceCompletionTo() {
         super.onForceCompletionTo();
+        cleanTiny();
     }
 
+    @Override
+    public boolean isScreenFull() {
+        return false;
+    }
 
     @Override
     public void onStatePrepared() {

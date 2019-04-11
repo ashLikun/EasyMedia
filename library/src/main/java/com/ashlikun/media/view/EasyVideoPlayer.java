@@ -16,7 +16,6 @@ import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
 import com.ashlikun.media.controller.EasyMediaController;
 import com.ashlikun.media.controller.MediaControllerInterface;
-import com.ashlikun.media.status.MediaViewType;
 
 import java.util.List;
 
@@ -59,6 +58,10 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     protected boolean mFullscreenEnable = true;
     /**
+     * 是否全屏播放
+     */
+    protected boolean isFull = false;
+    /**
      * 播放器控制器
      */
     protected MediaControllerInterface mediaController;
@@ -74,7 +77,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public void initView(Context context, AttributeSet attrs) {
         super.initView(context, attrs);
-        currentMediaType = MediaViewType.NORMAL;
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EasyVideoPlayer);
         //是否可以全屏
         mFullscreenEnable = a.getBoolean(R.styleable.EasyVideoPlayer_video_full_screen_enable, true);
@@ -153,11 +155,11 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
 
     @Override
     public boolean setDataSource(List<MediaData> mediaData, int defaultIndex) {
-        if (super.setDataSource(mediaData, defaultIndex) && mediaController != null) {
-            mediaController.setCurrentScreen(getCurrentMediaType());
+        boolean res = super.setDataSource(mediaData, defaultIndex);
+        if (mediaController != null) {
             mediaController.setDataSource(mediaData.get(currentUrlIndex));
         }
-        return true;
+        return res;
     }
 
     /**
@@ -472,6 +474,17 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         }
     }
 
+    public void setFull(boolean full) {
+        isFull = full;
+        if (mediaController != null) {
+            mediaController.setFull(full);
+        }
+    }
+
+    @Override
+    public boolean isScreenFull() {
+        return isFull;
+    }
 
     /**
      * 实现播放事件的回掉
@@ -485,14 +498,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             //如果默认的Video播放过视频,就直接在这个默认的上面播放
             playOnThisVideo();
         }
-    }
-
-    /**
-     * 设置是列表播放的
-     * 请在setData之前设置
-     */
-    public void setCurrentPlayList() {
-        setCurrentMediaType(MediaViewType.LIST);
     }
 
     /**

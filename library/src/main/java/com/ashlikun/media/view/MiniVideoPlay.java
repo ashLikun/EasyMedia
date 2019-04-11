@@ -59,4 +59,9 @@ public class MiniVideoPlay extends BaseEasyVideoPlay {
     public void setAutoRestart(boolean autoRestart) {
         isAutoRestart = autoRestart;
     }
+
+    @Override
+    public boolean isScreenFull() {
+        return false;
+    }
 }

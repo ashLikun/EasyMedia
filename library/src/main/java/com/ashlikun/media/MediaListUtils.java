@@ -100,11 +100,7 @@ public class MediaListUtils {
     }
 
     /**
-     * 作者　　: 李坤
-     * 创建时间: 2017/12/14 10:27
-     * 邮箱　　：496546144@qq.com
-     * <p>
-     * 方法功能：RecyclerView列表滑动时候自动小窗口
+     * RecyclerView列表滑动时候自动小窗口
      *
      * @param isChileViewDetached 子view是否分离 true:分离，false:添加
      */

@@ -13,7 +13,6 @@ import com.ashlikun.media.MediaScreenUtils;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.simple.data.HuoShanData;
 import com.ashlikun.media.simple.divider.HorizontalDividerItemDecoration;
-import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.view.EasyVideoPlayer;
 import com.ashlikun.okhttputils.http.OkHttpUtils;
 import com.ashlikun.okhttputils.http.callback.AbsCallback;
@@ -50,7 +49,6 @@ public class HuoSanActivity extends AppCompatActivity {
                 EasyVideoPlayer videoPlayer = holder.getView(R.id.videoPlay);
 //                GlideUtils.show(videoPlayer.getThumbImageView(), s.getImageUrl());
                 videoPlayer.setVideoRatio(s.getWidth() / s.getHeight());
-                videoPlayer.setCurrentMediaType(MediaViewType.LIST);
                 videoPlayer.setDataSource(s.getUrl(), s.getText());
             }
         });

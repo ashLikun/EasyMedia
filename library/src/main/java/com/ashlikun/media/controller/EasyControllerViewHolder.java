@@ -14,7 +14,6 @@ import android.widget.TextView;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.status.MediaStatus;
 
 
@@ -37,15 +36,14 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     public LinearLayout mRetryLayout;
     //进度条
     public ProgressBar loadingProgressBar;
+    //是否是全屏播放
+    public boolean isFull = false;
     //最下面的进度条
     ProgressBar bottomProgressBar;
     //未播放时候占位图
     public ImageView thumbImageView;
     //从新播放
     public TextView replayTextView;
-    //当前屏幕方向
-    @MediaViewType.Code
-    public int currentScreen = MediaViewType.NORMAL;
     //当前播放状态
     @MediaStatus.Code
     public int currentState = MediaStatus.NORMAL;
@@ -93,12 +91,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
 
     //根据状态改变ui
     @Override
-    public void changUi(@MediaStatus.Code int currentState, @MediaViewType.Code int currentScreen) {
-        if (this.currentState == currentState && this.currentScreen == currentScreen) {
+    public void changUi(@MediaStatus.Code int currentState) {
+        if (this.currentState == currentState) {
             return;
         }
         this.currentState = currentState;
-        this.currentScreen = currentScreen;
         if (currentState == MediaStatus.PREPARING || currentState == MediaStatus.PREPARING_CHANGING_URL) {
             isBeforeStatePreparing = true;
         }
@@ -140,14 +137,20 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     }
 
     @Override
-    public void setDataSource(MediaData mediaData, int screen) {
-        bottomContainer.setInitData(screen);
-        topContainer.setInitData(mediaData, screen);
-        if (screen == MediaViewType.FULLSCREEN) {
+    public void setFull(boolean full) {
+        isFull = full;
+        bottomContainer.setFull(isFull);
+        topContainer.setFull(isFull);
+        if (isFull) {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_fullscreen));
-        } else if (screen == MediaViewType.NORMAL || screen == MediaViewType.LIST) {
+        } else {
             changeStartButtonSize((int) viewGroup.getResources().getDimension(R.dimen.media_start_button_w_h_normal));
         }
+    }
+
+    @Override
+    public void setDataSource(MediaData mediaDatan) {
+        topContainer.setInitData(mediaDatan);
     }
 
 
@@ -161,88 +164,53 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     //准备中
     public void changeUiToPreparing() {
         bottomContainer.setTime(0, 0);
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-            case MediaViewType.FULLSCREEN:
-                hintContainer(false);
-                setMinControlsVisiblity(false, true, true, false, false);
-                break;
-        }
+        hintContainer(false);
+        setMinControlsVisiblity(false, true, true, false, false);
     }
 
 
     //改变ui到默认状态
     private void changeUiToNormal() {
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-            case MediaViewType.FULLSCREEN:
-                //这边加动画，在低版本手机会卡顿，主要是列表里每次都会走这个方法
-                hintContainer(false);
-                setMinControlsVisiblity(true, false, true, false, false);
-                break;
-        }
+        //这边加动画，在低版本手机会卡顿，主要是列表里每次都会走这个方法
+        hintContainer(false);
+        setMinControlsVisiblity(true, false, true, false, false);
     }
 
     //改变ui成完成
     private void changeUiToComplete() {
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-            case MediaViewType.FULLSCREEN:
-                topContainer.setVisibility(View.VISIBLE);
-                bottomContainer.setVisibility(View.GONE);
-                setMinControlsVisiblity(true, false, false, false, false);
-                break;
-        }
+        topContainer.setVisibility(View.VISIBLE);
+        bottomContainer.setVisibility(View.GONE);
+        setMinControlsVisiblity(true, false, false, false, false);
     }
 
     /**
      * 改变ui错误
      */
     private void changeUiToError() {
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-                hintContainer(false);
-                setMinControlsVisiblity(true, false, false, false, true);
-                break;
-            case MediaViewType.FULLSCREEN:
-                topContainer.setVisibility(View.VISIBLE);
-                bottomContainer.setVisibility(View.GONE);
-                setMinControlsVisiblity(true, false, false, false, true);
-                break;
+        if (isFull) {
+            topContainer.setVisibility(View.VISIBLE);
+            bottomContainer.setVisibility(View.GONE);
+        } else {
+            hintContainer(false);
         }
+        setMinControlsVisiblity(true, false, false, false, true);
     }
 
     /**
      * 播放
      */
     private void changeUiToPlaying() {
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-            case MediaViewType.FULLSCREEN:
-                hintContainer(!isBeforeStatePreparing && containerIsShow());
-                isBeforeStatePreparing = false;
-                setMinControlsVisiblity(false, false, false, true, false);
-                break;
-        }
+        hintContainer(!isBeforeStatePreparing && containerIsShow());
+        isBeforeStatePreparing = false;
+        setMinControlsVisiblity(false, false, false, true, false);
     }
 
     /**
      * 暂停状态
      */
     private void changeUiToPause() {
-        switch (currentScreen) {
-            case MediaViewType.NORMAL:
-            case MediaViewType.LIST:
-            case MediaViewType.FULLSCREEN:
-                showContainer(!containerIsShow());
-                setMinControlsVisiblity(true, false, false, false, false);
-                break;
-        }
+        showContainer(!containerIsShow());
+        setMinControlsVisiblity(true, false, false, false, false);
     }
 
 
@@ -348,9 +316,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         bottomContainer.setTime(position, duration);
     }
 
-    //显示或者隐藏顶部和底部控制器
+    /**
+     * 显示或者隐藏顶部和底部控制器
+     */
     @Override
-    public void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaViewType.Code final int currentScreen, final boolean isShow) {
+    public void showControllerViewAnim(@MediaStatus.Code final int currentState, final boolean isShow) {
         if (currentState != MediaStatus.NORMAL
                 && currentState != MediaStatus.ERROR
                 && currentState != MediaStatus.AUTO_COMPLETE) {

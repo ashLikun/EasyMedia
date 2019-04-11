@@ -18,7 +18,6 @@ import com.ashlikun.media.EasyMediaManager;
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.MediaUtils;
 import com.ashlikun.media.R;
-import com.ashlikun.media.status.MediaViewType;
 import com.ashlikun.media.status.MediaStatus;
 import com.ashlikun.media.view.EasyMediaDialogBright;
 import com.ashlikun.media.view.EasyMediaDialogProgress;
@@ -50,9 +49,8 @@ public class EasyMediaController extends RelativeLayout implements
     //音频管理器，改变声音大小
     protected AudioManager mAudioManager;
     protected IControllerViewHolder viewHolder;
-    //当前屏幕方向
-    @MediaViewType.Code
-    public int currentScreen = MediaViewType.NORMAL;
+    //是否是全屏播放
+    public boolean isFull = false;
     //当前播放状态
     @MediaStatus.Code
     public int currentState = MediaStatus.NORMAL;
@@ -102,7 +100,7 @@ public class EasyMediaController extends RelativeLayout implements
 
     @Override
     public void setDataSource(MediaData mediaData) {
-        viewHolder.setDataSource(mediaData, currentScreen);
+        viewHolder.setDataSource(mediaData);
     }
 
     /**
@@ -131,6 +129,7 @@ public class EasyMediaController extends RelativeLayout implements
         viewHolder = getControllerViewHolder();
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         setOnClickListener(this);
+        setFull(isFull);
     }
 
     //开始触摸进度条
@@ -156,7 +155,7 @@ public class EasyMediaController extends RelativeLayout implements
         EasyMediaManager.seekTo(time);
         cancelDismissControlViewSchedule();
         if (viewHolder.containerIsShow()) {
-            viewHolder.showControllerViewAnim(currentState, currentScreen, true);
+            viewHolder.showControllerViewAnim(currentState, true);
             showControllerFuture = MediaUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
         }
     }
@@ -205,7 +204,7 @@ public class EasyMediaController extends RelativeLayout implements
         if (currentState == ERROR) {
             return false;
         }
-        if (currentScreen != MediaViewType.FULLSCREEN) {
+        if (!isFull) {
             return res;
         }
         float x = event.getX();
@@ -334,6 +333,7 @@ public class EasyMediaController extends RelativeLayout implements
 
     /**
      * 显示音量对话框
+     *
      * @param deltaY
      * @param volumePercent
      */
@@ -348,6 +348,7 @@ public class EasyMediaController extends RelativeLayout implements
 
     /**
      * 显示亮度对话框
+     *
      * @param brightnessPercent
      */
     public void showBrightnessDialog(int brightnessPercent) {
@@ -423,10 +424,10 @@ public class EasyMediaController extends RelativeLayout implements
         cancelDismissControlViewSchedule();
         if (viewHolder.containerIsShow()) {
             //隐藏
-            viewHolder.showControllerViewAnim(currentState, currentScreen, false);
+            viewHolder.showControllerViewAnim(currentState, false);
         } else {
             //显示
-            viewHolder.showControllerViewAnim(currentState, currentScreen, true);
+            viewHolder.showControllerViewAnim(currentState, true);
             showControllerFuture = MediaUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
         }
     }
@@ -445,20 +446,21 @@ public class EasyMediaController extends RelativeLayout implements
 
         @Override
         public void run() {
-            viewHolder.showControllerViewAnim(currentState, currentScreen, false);
+            viewHolder.showControllerViewAnim(currentState, false);
         }
     }
 
     @Override
-    public void setCurrentScreen(@MediaViewType.Code int currentScreen) {
-        this.currentScreen = currentScreen;
+    public void setFull(boolean full) {
+        isFull = full;
+        viewHolder.setFull(full);
     }
 
     @Override
     public void setCurrentState(@MediaStatus.Code int currentState) {
         this.currentState = currentState;
         //跟新ui
-        viewHolder.changUi(currentState, currentScreen);
+        viewHolder.changUi(currentState);
     }
 
     /**

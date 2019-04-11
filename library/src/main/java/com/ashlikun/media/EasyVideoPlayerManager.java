@@ -31,6 +31,9 @@ public class EasyVideoPlayerManager {
     }
 
     public static void setVideoDefault(BaseEasyVideoPlay jzVideoPlayer) {
+        if (jzVideoPlayer != null && (SECOND_FLOOR_VIDEO_PLAY != null || SECOND_FLOOR_VIDEO_PLAY_TINY != null)) {
+            MediaScreenUtils.backPress();
+        }
         FIRST_FLOOR_VIDEO_PLAY = jzVideoPlayer;
     }
 
@@ -39,6 +42,9 @@ public class EasyVideoPlayerManager {
     }
 
     public static void setVideoFullscreen(EasyVideoPlayer jzVideoPlayer) {
+        if (jzVideoPlayer != null && SECOND_FLOOR_VIDEO_PLAY != null) {
+            MediaScreenUtils.backPress();
+        }
         SECOND_FLOOR_VIDEO_PLAY = jzVideoPlayer;
     }
 
@@ -52,6 +58,9 @@ public class EasyVideoPlayerManager {
     }
 
     public static void setVideoTiny(EasyVideoPlayTiny jzVideoPlayer) {
+        if (jzVideoPlayer != null && SECOND_FLOOR_VIDEO_PLAY_TINY != null) {
+            MediaScreenUtils.backPress();
+        }
         SECOND_FLOOR_VIDEO_PLAY_TINY = jzVideoPlayer;
     }
 

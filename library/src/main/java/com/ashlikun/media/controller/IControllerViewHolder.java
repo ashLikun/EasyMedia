@@ -4,7 +4,6 @@ import android.widget.ImageView;
 
 import com.ashlikun.media.MediaData;
 import com.ashlikun.media.status.MediaStatus;
-import com.ashlikun.media.status.MediaViewType;
 
 /**
  * 作者　　: 李坤
@@ -24,12 +23,12 @@ public interface IControllerViewHolder {
 
     /**
      * 根据状态改变ui
+     *
      * @param currentState
-     * @param currentScreen
      */
-    void changUi(@MediaStatus.Code int currentState, @MediaViewType.Code int currentScreen);
+    void changUi(@MediaStatus.Code int currentState);
 
-    void setDataSource(MediaData mediaData, int screen);
+    void setDataSource(MediaData mediaData);
 
     /**
      * 开始进度定时器
@@ -43,17 +42,18 @@ public interface IControllerViewHolder {
 
     /**
      * 控制器是否显示
+     *
      * @return
      */
     boolean containerIsShow();
 
     /**
      * 显示或者隐藏顶部和底部控制器
+     *
      * @param currentState
-     * @param currentScreen
      * @param isShow
      */
-    void showControllerViewAnim(@MediaStatus.Code final int currentState, @MediaViewType.Code final int currentScreen, final boolean isShow);
+    void showControllerViewAnim(@MediaStatus.Code final int currentState, final boolean isShow);
 
 
     /**
@@ -79,13 +79,17 @@ public interface IControllerViewHolder {
 
     /**
      * 获取占位图
+     *
      * @return
      */
     ImageView getThumbImageView();
 
     /**
      * 获取进度缓存
+     *
      * @return
      */
     int getBufferProgress();
+
+    void setFull(boolean full);
 }
