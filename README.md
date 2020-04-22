@@ -22,10 +22,10 @@ dependencies {
     implementation 'com.github.ashLikun:EasyMedia:{latest version}'
     //使用Ijkplay
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-    //so文件
-    implementation 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
-    implementation 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
-    implementation 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
+    //so文件  后缀带  https 表示支持https  如lite_https
+    implementation 'com.github.ashLikun.ijkplayer:lite:1.0.0'//最小库
+    implementation 'com.github.ashLikun.ijkplayer:lite_hevc:1.0.0'//最小库（带hevc）
+    implementation 'com.github.ashLikun.ijkplayer:default:1.0.0'//最大库（支持格式多）
 }
 ```
         
