@@ -1,15 +1,16 @@
 package com.ashlikun.media.simple;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashlikun.adapter.ViewHolder;
 import com.ashlikun.adapter.recyclerview.CommonAdapter;
-import com.ashlikun.media.MediaScreenUtils;
-import com.ashlikun.media.MediaUtils;
-import com.ashlikun.media.simple.data.HuoShanData;
-import com.ashlikun.media.view.MiniVideoPlay;
+import com.ashlikun.media.simple.data.DouyingData;
+import com.ashlikun.media.video.VideoScreenUtils;
+import com.ashlikun.media.video.VideoUtils;
+import com.ashlikun.media.video.view.MiniVideoPlay;
 import com.ashlikun.okhttputils.http.OkHttpUtils;
 import com.ashlikun.okhttputils.http.callback.AbsCallback;
 import com.ashlikun.okhttputils.http.request.HttpRequest;
@@ -29,7 +30,7 @@ import java.util.List;
 
 public class DouyinActivity extends AppCompatActivity {
     RecyclerView recyclerView;
-    List<HuoShanData.FeedsData> listDatas = new ArrayList<>();
+    List<DouyingData.AwemeListData> listDatas = new ArrayList<>();
     CommonAdapter adapter;
     ViewPagerLayoutManager manager = null;
 
@@ -58,9 +59,9 @@ public class DouyinActivity extends AppCompatActivity {
                 }
             }
         });
-        recyclerView.setAdapter(adapter = new CommonAdapter<HuoShanData.FeedsData>(this, R.layout.item_douyin, listDatas) {
+        recyclerView.setAdapter(adapter = new CommonAdapter<DouyingData.AwemeListData>(this, R.layout.item_douyin, listDatas) {
             @Override
-            public void convert(ViewHolder holder, HuoShanData.FeedsData s) {
+            public void convert(ViewHolder holder, DouyingData.AwemeListData s) {
                 MiniVideoPlay videoPlayer = holder.getView(R.id.videoPlay);
 //                videoPlayer.setControllerVisiable(false);
 //                GlideUtils.show(videoPlayer.getThumbImageView(), s.getImageUrl());
@@ -88,7 +89,7 @@ public class DouyinActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (MediaScreenUtils.backPress()) {
+        if (VideoScreenUtils.backPress()) {
             return;
         }
         super.onBackPressed();
@@ -97,47 +98,33 @@ public class DouyinActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        MediaUtils.onPause();
+        VideoUtils.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        MediaUtils.onResume();
+        VideoUtils.onResume();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MediaUtils.releaseAllVideos();
+        VideoUtils.releaseAllVideos();
     }
 
     public void getHttpVideos() {
-        AbsCallback<HuoShanData> callback = new AbsCallback<HuoShanData>() {
+        AbsCallback<DouyingData> callback = new AbsCallback<DouyingData>() {
             @Override
-            public void onSuccess(HuoShanData responseBody) {
-                if (responseBody.result == 1) {
+            public void onSuccess(DouyingData responseBody) {
+                if (responseBody.status_code == 0) {
                     listDatas.clear();
-                    listDatas.addAll(responseBody.feeds);
+                    listDatas.addAll(responseBody.aweme_list);
                     adapter.notifyDataSetChanged();
                 }
             }
         };
-        HttpRequest param = new HttpRequest(VideoUrl.HUOSAHN);
-        param.addParam("type", 7);
-        param.addParam("page", 1);
-        param.addParam("coldStart", false);
-        param.addParam("count", "20");
-        param.addParam("pv", false);
-        param.addParam("id", 22);
-        param.addParam("refreshTimes", "19");
-        param.addParam("pcursor", "");
-        param.addParam("source", "1");
-        param.addParam("os", "android");
-        param.addParam("__NStokensig", "dfdce17677d391c9cc1938be5cc71d831289523c3b669d9316abb3b49bfe33fc");
-        param.addParam("token", "6f1730ea9c77425ab1ab622fea69ce37-1068800036");
-        param.addParam("sig", "26737bcea65596c1f71d9243f45b690b");
-        param.addParam("client_key", "3c2cd3f3");
+        HttpRequest param = HttpRequest.get(VideoUrl.DOYYIN);
         OkHttpUtils.request(param).execute(callback);
     }
 }

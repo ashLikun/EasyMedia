@@ -8,17 +8,18 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
-import com.ashlikun.media.MediaData;
-import com.ashlikun.media.MediaScreenUtils;
-import com.ashlikun.media.MediaUtils;
-import com.ashlikun.media.play.EasyMediaIjkplayer;
-import com.ashlikun.media.view.EasyVideoPlayer;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import com.ashlikun.media.video.VideoData;
+import com.ashlikun.media.video.VideoScreenUtils;
+import com.ashlikun.media.video.VideoUtils;
+import com.ashlikun.media.video.play.EasyVideoIjkplayer;
+import com.ashlikun.media.video.view.EasyVideoPlayer;
 import com.ashlikun.okhttputils.http.OkHttpUtils;
 import com.ashlikun.orm.LiteOrmUtil;
 
@@ -36,8 +37,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //数据库
         LiteOrmUtil.init(getApplication());
         OkHttpUtils.init(null);
-        MediaUtils.init(getApplication());
-        MediaUtils.setMediaInterface(new EasyMediaIjkplayer());
+        VideoUtils.init(getApplication(), EasyVideoIjkplayer.class);
+
+
 //        GlideUtils.init(new GlideUtils.OnNeedListener() {
 //            @Override
 //            public Application getApplication() {
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        });
         setContentView(R.layout.activity_main);
         mediaPlay = (EasyVideoPlayer) findViewById(R.id.mediaPlay);
-        mediaPlay.setDataSource(new MediaData.Builder()
+        mediaPlay.setDataSource(new VideoData.Builder()
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
@@ -77,11 +79,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(this, DouyinActivity.class);
             startActivity(intent);
         } else if (v.getId() == R.id.fullScreenButton) {
-            MediaScreenUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.meinv2, "标题");
+            VideoScreenUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.fullScreenButton2) {
             EasyVideoPlayer easyVideoPlayer = new EasyVideoPlayer(this);
             easyVideoPlayer.setFullscreenPortrait(false);
-            MediaScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv2, "标题");
+            VideoScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.miniButton) {
             Intent intent = new Intent(this, MiniActivity.class);
             startActivity(intent);

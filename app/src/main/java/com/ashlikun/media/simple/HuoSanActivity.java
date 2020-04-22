@@ -1,19 +1,20 @@
 package com.ashlikun.media.simple;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ashlikun.adapter.ViewHolder;
 import com.ashlikun.adapter.recyclerview.CommonAdapter;
-import com.ashlikun.media.MediaListUtils;
-import com.ashlikun.media.MediaScreenUtils;
-import com.ashlikun.media.MediaUtils;
+import com.ashlikun.media.video.VideoListUtils;
+import com.ashlikun.media.video.VideoScreenUtils;
+import com.ashlikun.media.video.VideoUtils;
 import com.ashlikun.media.simple.data.HuoShanData;
 import com.ashlikun.media.simple.divider.HorizontalDividerItemDecoration;
-import com.ashlikun.media.view.EasyVideoPlayer;
+import com.ashlikun.media.video.view.EasyVideoPlayer;
 import com.ashlikun.okhttputils.http.OkHttpUtils;
 import com.ashlikun.okhttputils.http.callback.AbsCallback;
 import com.ashlikun.okhttputils.http.request.HttpRequest;
@@ -56,13 +57,13 @@ public class HuoSanActivity extends AppCompatActivity {
             @Override
             public void onChildViewAttachedToWindow(View view) {
                 EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaListUtils.onRecyclerAutoTiny(videoPlayer, false);
+                VideoListUtils.onRecyclerAutoTiny(videoPlayer, false);
             }
 
             @Override
             public void onChildViewDetachedFromWindow(View view) {
                 EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                MediaListUtils.onRecyclerAutoTiny(videoPlayer, true);
+                VideoListUtils.onRecyclerAutoTiny(videoPlayer, true);
             }
         });
         getHttpVideos();
@@ -71,7 +72,7 @@ public class HuoSanActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (MediaScreenUtils.backPress()) {
+        if (VideoScreenUtils.backPress()) {
             return;
         }
         super.onBackPressed();
@@ -80,19 +81,19 @@ public class HuoSanActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        MediaUtils.onPause();
+        VideoUtils.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        MediaUtils.onResume();
+        VideoUtils.onResume();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MediaUtils.releaseAllVideos();
+        VideoUtils.releaseAllVideos();
     }
 
     public void getHttpVideos() {

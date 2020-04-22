@@ -19,13 +19,13 @@ allprojects {
 ```gradle
 dependencies {
     //核心库
-    compile 'com.github.ashLikun:EasyMedia:{latest version}'
+    implementation 'com.github.ashLikun:EasyMedia:{latest version}'
     //使用Ijkplay
-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.4'
+    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
     //so文件
-    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
-    compile 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
-    compile 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
+    implementation 'com.github.ashLikun.ijkplayer:lite:0.0.1'//最小库
+    implementation 'com.github.ashLikun.ijkplayer:lite_hevc:0.0.1'//最小库（带hevc）
+    implementation 'com.github.ashLikun.ijkplayer:default:0.0.1'//最大库（支持格式多）
 }
 ```
         

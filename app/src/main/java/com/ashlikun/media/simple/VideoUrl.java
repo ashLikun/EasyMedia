@@ -11,7 +11,8 @@ package com.ashlikun.media.simple;
 public class VideoUrl {
     //    String videoUrl2 = "http://p2.suibianyuming.com.cn/1524714504video_341679.mp4";
 //    String videoUrl = "http://fs.mv.web.kugou.com/201712191633/784d23335957e44b18e748187f7726a9/G107/M02/16/13/S5QEAFl5rxCAaVBHAXjrv4kCk4A283.mp4";
-    public static String meinv2 = "http://jsmov2.a.yximgs.com/upic/2018/08/19/17/BMjAxODA4MTkxNzQxMDBfMTE4OTkwMV83NjcxMTEyNTcwXzFfMw==_hd3_B9725b809535516c402d3cfc81d8c1e13.mp4?tag=1-1534821741-h-1-u54cnxzbkp-aee2b10cb2eaea47";
+    public static String meinv2 = "https://jsmov2.a.yximgs.com/upic/2018/08/19/17/BMjAxODA4MTkxNzQxMDBfMTE4OTkwMV83NjcxMTEyNTcwXzFfMw==_hd3_B9725b809535516c402d3cfc81d8c1e13.mp4?tag=1-1534821741-h-1-u54cnxzbkp-aee2b10cb2eaea47";
+    public static String meinv3 = "http://v9-dy-z.ixigua.com/a112f63f762b6a6ac22ff7ed0b8ff6be/5e9ebe93/video/m/22072b5013886a24638b4748aa757c349981162f5bcf000092e70a280ed6/?a=1128&br=0&bt=1268&cr=0&cs=0&dr=0&ds=3&er=&l=202004211636090100190170911A00A3F4&lr=aweme&qs=0&rc=M3BkPDd5c2Z3bjMzOWkzM0ApNzg7ZjNnNztoNzU4aWVkZGdvZm1wM25nLW5fLS01LS9zcy4vNl4uNl9iL2AxYDIzXy86Yw%3D%3D&vl=&vr=";
     /**
      * 内涵首页视屏接口
      */
@@ -24,6 +25,7 @@ public class VideoUrl {
 
     /**
      * 抖音视频
+     * 破解地址 https://cloud.tencent.com/developer/article/1131879
      */
-    public static String DOYYIN = "https://api-hl.amemv.com/aweme/v1/aweme/post/?max_cursor=0&user_id=97078359588&count=20&retry_type=no_retry&mcc_mnc=46003&iid=55777141457&device_id=61058447325&ac=wifi&channel=xiaomi&aid=1128&app_name=aweme&version_code=380&version_name=3.8.0&device_platform=android&ssmix=a&device_type=MI+5&device_brand=Xiaomi&language=zh&os_api=26&os_version=8.0.0&uuid=862585037457659&openudid=4b35fe0092dd154f&manifest_version_code=380&resolution=1080*1920&dpi=480&update_version_code=3802&_rticket=1554357818037&ts=1554357818&js_sdk_version=1.6.4&as=a1c5996a3a039cbee54899&cp=9438c651a45da4e7e1Sw%5Ba&mas=016e096ea75536a2d5d1bf098bf0088da89c9c1c2caca6a646c69c";
+    public static String DOYYIN = "https://www.iesdouyin.com/web/api/v2/challenge/aweme/?ch_id=1574030716416014&count=9&cursor=0&aid=1128&screen_limit=3&download_click_limit=0&_signature=lfGy5hAcy3tyhkrgCMKAr5Xxsv";
 }

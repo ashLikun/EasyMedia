@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -13,12 +13,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.ashlikun.media.view.EasyVideoPlayer
+            <com.ashlikun.media.video.view.EasyVideoPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 app:video_display_type="adapter"
-                app:video_full_screen_enable="true"></com.ashlikun.media.view.EasyVideoPlayer>
+                app:video_full_screen_enable="true"></com.ashlikun.media.video.view.EasyVideoPlayer>
 
             <Button
                 android:id="@+id/douyinButton"
@@ -56,6 +56,6 @@
                 android:text="迷你播放器" />
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>

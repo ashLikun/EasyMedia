@@ -3,12 +3,12 @@ package com.ashlikun.media.simple.divider;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.DimenRes;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+
+import androidx.annotation.DimenRes;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 
 /**
@@ -26,8 +26,8 @@ public class HorizontalDividerItemDecoration extends FlexibleDividerDecoration {
     @Override
     protected Rect getDividerBound(int position, RecyclerView parent, View child) {
         Rect bounds = new Rect(0, 0, 0, 0);
-        int transitionX = (int) ViewCompat.getTranslationX(child);
-        int transitionY = (int) ViewCompat.getTranslationY(child);
+        int transitionX = (int) child.getTranslationX();
+        int transitionY = (int) child.getTranslationY();
         int dividerSize = getDividerSize(position, parent);
         RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
         bounds.left = child.getLeft() - params.leftMargin + mMarginProvider.dividerLeftMargin(position, parent);
@@ -171,7 +171,7 @@ public class HorizontalDividerItemDecoration extends FlexibleDividerDecoration {
             return this;
         }
 
-        public HorizontalDividerItemDecoration build() {
+        public RecyclerView.ItemDecoration build() {
             checkBuilderParams();
             return new HorizontalDividerItemDecoration(this);
         }

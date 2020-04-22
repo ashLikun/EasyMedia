@@ -1,14 +1,15 @@
 package com.ashlikun.media.simple;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import com.ashlikun.media.MediaData;
-import com.ashlikun.media.MediaUtils;
-import com.ashlikun.media.status.MediaDisplayType;
-import com.ashlikun.media.view.MiniVideoPlay;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.ashlikun.media.video.VideoData;
+import com.ashlikun.media.video.VideoUtils;
+import com.ashlikun.media.video.status.VideoDisplayType;
+import com.ashlikun.media.video.view.MiniVideoPlay;
 
 /**
  * 作者　　: 李坤
@@ -24,10 +25,10 @@ public class MiniActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         videoPlay = new MiniVideoPlay(this);
-        videoPlay.setDisplayType(MediaDisplayType.MATCH_CROP);
+        videoPlay.setDisplayType(VideoDisplayType.MATCH_CROP);
         videoPlay.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
         setContentView(videoPlay);
-        videoPlay.setDataSource(new MediaData.Builder()
+        videoPlay.setDataSource(new VideoData.Builder()
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
@@ -37,7 +38,7 @@ public class MiniActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MediaUtils.setVideoImageDisplayType(MediaDisplayType.MATCH_CROP);
-        MediaUtils.releaseAllVideos();
+        VideoUtils.setVideoImageDisplayType(VideoDisplayType.MATCH_CROP);
+        VideoUtils.releaseAllVideos();
     }
 }

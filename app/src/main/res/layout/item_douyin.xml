@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.ashlikun.media.view.MiniVideoPlay
+    <com.ashlikun.media.video.view.MiniVideoPlay
         android:id="@+id/videoPlay"
         android:layout_width="match_parent"
         app:video_display_type="match_crop"
-        android:layout_height="match_parent"></com.ashlikun.media.view.MiniVideoPlay>
+        android:layout_height="match_parent"></com.ashlikun.media.video.view.MiniVideoPlay>
 </LinearLayout>
