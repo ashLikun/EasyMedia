@@ -34,6 +34,9 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.start();
     }
 
+    public IjkMediaPlayer getIjkMediaPlayer() {
+        return ijkMediaPlayer;
+    }
 
     @Override
     public void prepare() {
@@ -46,6 +49,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+
+
         ijkMediaPlayer.setOnPreparedListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnVideoSizeChangedListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnCompletionListener(EasyVideoIjkplayer.this);
