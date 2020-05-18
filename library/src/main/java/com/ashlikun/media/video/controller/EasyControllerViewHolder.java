@@ -392,4 +392,13 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             animatorSet.start();
         }
     }
+
+    /**
+     * 非全屏时候返回键是否显示
+     *
+     * @param defaultBackShow
+     */
+    public void setDefaultBackShow(boolean defaultBackShow) {
+        topContainer.setDefaultBackShow(defaultBackShow);
+    }
 }

@@ -36,6 +36,11 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     public ImageView backButton;
     public ViewGroup batteryTimeLayout;
 
+    /**
+     * 非全屏时候返回键是否显示
+     */
+    private boolean defaultBackShow = true;
+
     public VideoControllerTop(Context context) {
         this(context, null);
     }
@@ -100,7 +105,11 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     }
 
     public void setBackIsShow(boolean isShow) {
-        backButton.setVisibility(isShow ? VISIBLE : GONE);
+        if (defaultBackShow) {
+            backButton.setVisibility(VISIBLE);
+        } else {
+            backButton.setVisibility(isShow ? VISIBLE : GONE);
+        }
     }
 
     public void setBatteryIsShow(boolean isShow) {
@@ -135,6 +144,14 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
         }
     };
 
+    /**
+     * 非全屏时候返回键是否显示
+     *
+     * @param defaultBackShow
+     */
+    public void setDefaultBackShow(boolean defaultBackShow) {
+        this.defaultBackShow = defaultBackShow;
+    }
 
     @Override
     public void onClick(View v) {
