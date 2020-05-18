@@ -394,11 +394,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     }
 
     /**
-     * 非全屏时候返回键是否显示
+     * 非全屏时候返回键隐藏的时候预留左边空间
      *
-     * @param defaultBackShow
+     * @param backGoneLeftSize
      */
-    public void setDefaultBackShow(boolean defaultBackShow) {
-        topContainer.setDefaultBackShow(defaultBackShow);
+    public void setBackGoneLeftSize(int backGoneLeftSize) {
+        topContainer.setBackGoneLeftSize(backGoneLeftSize);
     }
 }
