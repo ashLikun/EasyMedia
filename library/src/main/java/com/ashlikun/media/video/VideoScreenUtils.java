@@ -201,7 +201,7 @@ public class VideoScreenUtils {
                     //直接退出全屏或者小窗口
                     VideoScreenUtils.quitFullscreenOrTinyWindow();
                 }
-                return true;
+                return false;
             } else {
                 VideoScreenUtils.quitFullscreenOrTinyWindow();
                 return true;
