@@ -40,7 +40,7 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     /**
      * 非全屏时候返回键隐藏的时候预留左边空间
      */
-    private int backGoneLeftSize = VideoUtils.dip2px(getContext(), 45);
+    private int backGoneLeftSize = VideoUtils.dip2px(getContext(), 12);
 
     public VideoControllerTop(Context context) {
         this(context, null);
@@ -108,6 +108,7 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     public void setBackIsShow(boolean isShow) {
         if (isShow) {
             backButton.setVisibility(VISIBLE);
+            ((LayoutParams) titleView.getLayoutParams()).leftMargin = VideoUtils.dip2px(getContext(), 12);
         } else {
             ((LayoutParams) titleView.getLayoutParams()).leftMargin = backGoneLeftSize;
             backButton.setVisibility(GONE);
