@@ -12,10 +12,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
-import com.ashlikun.media.R;
-import com.ashlikun.media.video.VideoUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -40,7 +39,8 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     /**
      * 非全屏时候返回键隐藏的时候预留左边空间
      */
-    private int backGoneLeftSize = VideoUtils.dip2px(getContext(), 12);
+    private int backGoneLeftSize = 0;
+    private int defaultBackGoneLeftSize = 0;
 
     public VideoControllerTop(Context context) {
         this(context, null);
@@ -63,6 +63,8 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
         titleView = findViewById(R.id.title);
         backButton = findViewById(R.id.back);
         batteryTimeLayout = findViewById(R.id.battery_time_layout);
+        defaultBackGoneLeftSize = ((MarginLayoutParams) backButton.getLayoutParams()).leftMargin;
+        backGoneLeftSize = defaultBackGoneLeftSize;
 
         backButton.setOnClickListener(this);
     }
@@ -108,7 +110,7 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
     public void setBackIsShow(boolean isShow) {
         if (isShow) {
             backButton.setVisibility(VISIBLE);
-            ((LayoutParams) titleView.getLayoutParams()).leftMargin = VideoUtils.dip2px(getContext(), 12);
+            ((LayoutParams) titleView.getLayoutParams()).leftMargin = defaultBackGoneLeftSize;
         } else {
             ((LayoutParams) titleView.getLayoutParams()).leftMargin = backGoneLeftSize;
             backButton.setVisibility(GONE);
