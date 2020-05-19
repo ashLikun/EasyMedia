@@ -63,9 +63,8 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
         titleView = findViewById(R.id.title);
         backButton = findViewById(R.id.back);
         batteryTimeLayout = findViewById(R.id.battery_time_layout);
-        defaultBackGoneLeftSize = ((MarginLayoutParams) backButton.getLayoutParams()).leftMargin;
+        defaultBackGoneLeftSize = ((MarginLayoutParams) titleView.getLayoutParams()).leftMargin;
         backGoneLeftSize = defaultBackGoneLeftSize;
-
         backButton.setOnClickListener(this);
     }
 
@@ -156,6 +155,7 @@ public class VideoControllerTop extends RelativeLayout implements View.OnClickLi
      */
     public void setBackGoneLeftSize(int backGoneLeftSize) {
         this.backGoneLeftSize = backGoneLeftSize;
+        setBackIsShow(backButton.getVisibility() == VISIBLE);
     }
 
     @Override

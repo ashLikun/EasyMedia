@@ -7,13 +7,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.ashlikun.media.video.EasyVideoAction;
+import androidx.annotation.Nullable;
+
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.EasyMediaManager;
+import com.ashlikun.media.video.EasyVideoAction;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.R;
 import com.ashlikun.media.video.controller.EasyVideoController;
 import com.ashlikun.media.video.controller.VideoControllerInterface;
 
@@ -50,9 +52,13 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
 
     public int videoRotation = 0;
     /**
-     * 全屏后是否可以竖屏
+     * 全屏后是否可以竖屏，默认动态计算，当视频是竖屏的时候  可以竖屏
+     * 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     * 3:只能单一横屏
      */
-    protected boolean mFullscreenPortrait = true;
+    protected int mFullscreenPortrait = 0;
     /**
      * 是否可以全屏
      */
@@ -71,15 +77,19 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     }
 
     public EasyVideoPlayer(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
-    @Override
+    public EasyVideoPlayer(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        initView(context, attrs);
+    }
+
     public void initView(Context context, AttributeSet attrs) {
-        super.initView(context, attrs);
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.EasyVideoPlayer);
         //是否可以全屏
-        mFullscreenEnable = a.getBoolean(R.styleable.EasyVideoPlayer_video_full_screen_enable, true);
+        mFullscreenEnable = a.getBoolean(R.styleable.EasyVideoPlayer_video_full_screen_enable, mFullscreenEnable);
+        mFullscreenPortrait = a.getInt(R.styleable.EasyVideoPlayer_video_full_screen_portrait, mFullscreenPortrait);
         a.recycle();
         createMiddleView();
         initController(createController());
@@ -448,7 +458,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         } else if (EasyVideoPlayerManager.getVideoFullscreen() != null) {
             currentState = EasyVideoPlayerManager.getVideoFullscreen().getCurrentState();
             currentUrlIndex = EasyVideoPlayerManager.getVideoFullscreen().getCurrentUrlIndex();
-            clearFloatScreen();
+            VideoScreenUtils.clearFloatScreen(getContext());
         }
         if (mediaController != null) {
             mediaController.setCurrentState(currentState);
@@ -458,21 +468,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         setStatus(currentState);
     }
 
-    /**
-     * 清空全屏
-     */
-    public void clearFloatScreen() {
-        VideoUtils.setRequestedOrientation(getContext(), ORIENTATION_NORMAL);
-        VideoScreenUtils.setActivityFullscreen(getContext(), false);
-        BaseEasyVideoPlay currentPlay = EasyVideoPlayerManager.getVideoFullscreen();
-        if (currentPlay != null) {
-            currentPlay.removeTextureView();
-            if (currentPlay instanceof View) {
-                VideoUtils.getDecorView(getContext()).removeView(currentPlay);
-            }
-            EasyVideoPlayerManager.setVideoFullscreen(null);
-        }
-    }
 
     public void setFull(boolean full) {
         isFull = full;
@@ -502,8 +497,12 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
 
     /**
      * 全屏后是否可以竖屏
+     * 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     * 3:只能单一横屏
      */
-    public void setFullscreenPortrait(boolean mFullscreenPortrait) {
+    public void setFullscreenPortrait(int mFullscreenPortrait) {
         this.mFullscreenPortrait = mFullscreenPortrait;
     }
 
@@ -523,9 +522,12 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     /**
      * 是否可以竖屏
      *
-     * @return
+     * @return 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     * 3:只能单一横屏
      */
-    public boolean isFullscreenPortrait() {
+    public int getFullscreenPortrait() {
         return mFullscreenPortrait;
     }
 

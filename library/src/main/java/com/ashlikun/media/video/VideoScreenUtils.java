@@ -68,6 +68,31 @@ public class VideoScreenUtils {
     }
 
     /**
+     * 计算全屏方向
+     * 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     *
+     * @return
+     */
+    public static int calculateOrientation(int fullscreenPortrait) {
+        int orientation = EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR;
+        if (fullscreenPortrait == 0) {
+            if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.isSizeOk()) {
+                orientation = EasyMediaManager.textureView.isPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR :
+                        EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE;
+            }
+        } else if (fullscreenPortrait == 1) {
+            orientation = EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR;
+        } else if (fullscreenPortrait == 2) {
+            orientation = EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE;
+        } else if (fullscreenPortrait == 3) {
+            orientation = EasyVideoPlayer.ORIENTATION_FULLSCREEN_LANDSCAPE;
+        }
+        return orientation;
+    }
+
+    /**
      * 直接开始全屏播放
      *
      * @param easyVideoPlayer 请实例化一个播放器
@@ -77,8 +102,8 @@ public class VideoScreenUtils {
     public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, List<VideoData> mediaData, int defaultIndex) {
         VideoUtils.releaseAllVideos();
         setActivityFullscreen(easyVideoPlayer.getContext(), true);
-        VideoUtils.setRequestedOrientation(easyVideoPlayer.getContext(),
-                easyVideoPlayer.isFullscreenPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR : EasyVideoPlayer.ORIENTATION_FULLSCREEN_LANDSCAPE);
+
+        VideoUtils.setRequestedOrientation(easyVideoPlayer.getContext(), calculateOrientation(easyVideoPlayer.getFullscreenPortrait()));
         ViewGroup vp = VideoUtils.getDecorView(easyVideoPlayer.getContext());
         View old = vp.findViewById(R.id.easy_video_fullscreen_id);
         if (old != null) {

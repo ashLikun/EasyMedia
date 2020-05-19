@@ -36,15 +36,19 @@ import java.util.List;
  */
 public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVideoPlayListener {
     /**
-     * Activity 全屏Flag
+     * Activity 全屏Flag，重力感应(2个横屏，一个竖屏)
      */
     public static int ORIENTATION_FULLSCREEN_SENSOR = ActivityInfo.SCREEN_ORIENTATION_SENSOR;
     /**
-     * 默认的activty的方向Flag
+     * Activity 全屏Flag，重力感应(2个横屏)
+     */
+    public static int ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+    /**
+     * 默认的activty的方向 Flag(竖屏)
      */
     public static int ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
     /**
-     * Activity 竖屏Flag
+     * Activity 竖屏Flag(1个横屏)
      */
     public static int ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
 
@@ -81,10 +85,6 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
 
     public BaseEasyVideoPlay(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView(context, attrs);
-    }
-
-    protected void initView(Context context, AttributeSet attrs) {
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BaseEasyVideoPlay);
         if (!a.hasValue(0)) {
             setBackgroundColor(0xff000000);

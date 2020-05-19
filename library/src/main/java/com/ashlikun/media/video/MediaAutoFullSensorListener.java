@@ -65,8 +65,7 @@ public class MediaAutoFullSensorListener implements SensorEventListener {
         if (playppp != null && playppp instanceof EasyVideoPlayer) {
             EasyVideoPlayer play = (EasyVideoPlayer) playppp;
             if (play.isCurrentPlay()
-                    && play.getCurrentState() == PLAYING
-                    && !play.isFullscreenPortrait()) {
+                    && play.getCurrentState() == PLAYING) {
                 if (x > 0) {
                     VideoUtils.setRequestedOrientation(play.getContext(), ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 } else {

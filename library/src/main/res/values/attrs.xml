@@ -2,6 +2,17 @@
 <resources>
     <declare-styleable name="EasyVideoPlayer">
         <attr name="video_full_screen_enable" format="boolean"></attr>
+        <!--全屏后是否可以竖屏-->
+        <attr name="video_full_screen_portrait">
+            <!--自动判断(宽高比是否可以竖屏)-->
+            <enum name="auto" value="0" />
+            <!--可以竖屏(2个横屏，一个竖屏)-->
+            <enum name="yes" value="1" />
+            <!--不可以竖屏(2个横屏)-->
+            <enum name="no" value="2" />
+            <!--只能单一横屏 -->
+            <enum name="only" value="3" />
+        </attr>
     </declare-styleable>
     <declare-styleable name="BaseEasyVideoPlay">
         <attr name="android:background"></attr>

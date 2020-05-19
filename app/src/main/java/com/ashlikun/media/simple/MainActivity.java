@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             VideoScreenUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.fullScreenButton2) {
             EasyVideoPlayer easyVideoPlayer = new EasyVideoPlayer(this);
-            easyVideoPlayer.setFullscreenPortrait(false);
+            easyVideoPlayer.setFullscreenPortrait(2);
             VideoScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv2, "标题");
         } else if (v.getId() == R.id.miniButton) {
             Intent intent = new Intent(this, MiniActivity.class);

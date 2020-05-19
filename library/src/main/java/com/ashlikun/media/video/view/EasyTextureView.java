@@ -21,8 +21,8 @@ public class EasyTextureView extends TextureView {
 
     protected static final String TAG = "JZResizeTextureView";
 
-    public int currentVideoWidth = 0;
-    public int currentVideoHeight = 0;
+    private int currentVideoWidth = 0;
+    private int currentVideoHeight = 0;
     /**
      * 视频大小缩放类型
      */
@@ -57,6 +57,27 @@ public class EasyTextureView extends TextureView {
         }
     }
 
+    public int getCurrentVideoWidth() {
+        return currentVideoWidth;
+    }
+
+    public int getCurrentVideoHeight() {
+        return currentVideoHeight;
+    }
+
+    /**
+     * 视频是否高度大于宽度,可能获取不到
+     *
+     * @return
+     */
+    public boolean isPortrait() {
+        return currentVideoHeight > currentVideoWidth;
+    }
+
+    public boolean isSizeOk() {
+        return currentVideoHeight != 0 && currentVideoWidth != 0;
+    }
+
     @Override
     public void setRotation(float rotation) {
         if (rotation != getRotation()) {
@@ -64,6 +85,7 @@ public class EasyTextureView extends TextureView {
             requestLayout();
         }
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

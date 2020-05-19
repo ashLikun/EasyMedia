@@ -62,12 +62,15 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
     }
 
     public EasyVideoPlayTiny(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        this(context, attrs, 0);
     }
 
-    @Override
+    public EasyVideoPlayTiny(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs);
+        initView(context, attrs);
+    }
+
     protected void initView(Context context, AttributeSet attrs) {
-        super.initView(context, attrs);
         statusHeight = getStatusBarHeight();
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(R.drawable.easy_video_click_back_tiny_selector);
