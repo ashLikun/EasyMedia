@@ -64,7 +64,7 @@ public class VideoUtils {
      * 在Applicable里面初始化
      *
      * @param context
-     * @param mediaPlayClass  设置播放器,默认为系统播放器
+     * @param mediaPlayClass 设置播放器,默认为系统播放器
      */
     public static void init(Application context, Class<? extends EasyMediaInterface> mediaPlayClass) {
         VideoUtils.mContext = context;
@@ -306,8 +306,10 @@ public class VideoUtils {
                 } else {
                     ONRESUME_TO_PLAY = false;
                 }
-                videoPlayer.setStatus(VideoStatus.PAUSE);
-                EasyMediaManager.pause();
+                if (videoPlayer.getCurrentState() == VideoStatus.PLAYING) {
+                    videoPlayer.setStatus(VideoStatus.PAUSE);
+                    EasyMediaManager.pause();
+                }
             }
         }
     }
