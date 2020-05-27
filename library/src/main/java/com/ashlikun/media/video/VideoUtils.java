@@ -327,6 +327,18 @@ public class VideoUtils {
         }
     }
 
+    /**
+     * 对应activity得生命周期
+     */
+    public static void onDestroy() {
+        //把之前的设置到完成状态
+        EasyVideoPlayerManager.completeAll();
+        //释放播放器
+        EasyMediaManager.getInstance().releaseMediaPlayer();
+        //释放渲染器
+        EasyMediaManager.getInstance().releaseAllSufaceView();
+    }
+
     public static void setAudioFocus(Context context, boolean isFocus) {
         AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         if (isFocus) {

@@ -109,7 +109,7 @@ dependencies {
          //生命周期
            @Override
              public void onBackPressed() {
-                 if (MediaUtils.backPress()) {
+                 if (VideoUtils.backPress()) {
                      return;
                  }
                  super.onBackPressed();
@@ -118,19 +118,19 @@ dependencies {
              @Override
              protected void onPause() {
                  super.onPause();
-                 MediaUtils.onPause();
+                 VideoUtils.onPause();
              }
 
              @Override
              protected void onResume() {
                  super.onResume();
-                 MediaUtils.onResume();
+                 VideoUtils.onResume();
              }
 
              @Override
              protected void onDestroy() {
                  super.onDestroy();
-                 MediaUtils.releaseAllVideos();
+                 VideoUtils.onDestroy();
              }
 
         //之定义播放器样式

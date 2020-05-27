@@ -110,7 +110,7 @@ public class DouyinActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        VideoUtils.releaseAllVideos();
+        VideoUtils.onDestroy();
     }
 
     public void getHttpVideos() {

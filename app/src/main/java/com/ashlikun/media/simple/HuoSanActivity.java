@@ -93,7 +93,7 @@ public class HuoSanActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        VideoUtils.releaseAllVideos();
+        VideoUtils.onDestroy();
     }
 
     public void getHttpVideos() {
