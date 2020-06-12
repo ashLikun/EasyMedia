@@ -198,9 +198,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             return;
         }
         if (currentState == NORMAL) {
-            if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
-                return;
-            }
             onEvent(EasyVideoAction.ON_CLICK_START_ICON);
             startVideo();
         } else if (currentState == PLAYING) {

@@ -76,9 +76,9 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      */
     public static EasyVideoAction MEDIA_EVENT;
     /**
-     * 是否允许过非wifi播放视频
+     * 是否允许过非wifi播放视频,生命周期内，默认只提示一次
      */
-    public static boolean WIFI_ALLOW_PLAY = true;
+    public static boolean WIFI_ALLOW_PLAY = false;
 
     public EasyMediaManager() {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);

@@ -364,10 +364,10 @@ public class VideoUtils {
             builder.setPositiveButton(context.getResources().getString(R.string.easy_video_tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    EasyMediaManager.WIFI_ALLOW_PLAY = true;
                     dialog.dismiss();
                     play.onEvent(EasyVideoAction.ON_CLICK_START_NO_WIFI_GOON);
                     play.startVideo();
-                    EasyMediaManager.WIFI_ALLOW_PLAY = true;
                 }
             });
             builder.setNegativeButton(context.getResources().getString(R.string.easy_video_tips_not_wifi_cancel), new DialogInterface.OnClickListener() {

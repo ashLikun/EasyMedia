@@ -175,6 +175,9 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * 必须在设置完数据源后
      */
     public void startVideo() {
+        if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this) && currentState == VideoStatus.NORMAL) {
+            return;
+        }
         //销毁其他播放的视频
         VideoUtils.releaseAllVideos();
         EasyMediaManager.getInstance().initTextureView(getContext(), displayType);
@@ -256,6 +259,9 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     protected void onStatePreparingChangingUrl(int currentUrlIndex, int seekToInAdvance) {
+        if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
+            return;
+        }
         currentState = VideoStatus.PREPARING_CHANGING_URL;
         this.currentUrlIndex = currentUrlIndex;
         EasyMediaManager.setCurrentDataSource(getCurrentData());
