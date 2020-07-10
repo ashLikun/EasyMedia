@@ -38,6 +38,8 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     public ProgressBar loadingProgressBar;
     //是否是全屏播放
     public boolean isFull = false;
+    //是否只在全屏的时候显示标题和顶部
+    public boolean isOnlyFullShowTitle = false;
     //最下面的进度条
     ProgressBar bottomProgressBar;
     //未播放时候占位图
@@ -149,6 +151,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     }
 
     @Override
+    public void setOnlyFullShowTitle(boolean onlyFullShowTitle) {
+        isOnlyFullShowTitle = onlyFullShowTitle;
+    }
+
+    @Override
     public void setDataSource(VideoData mediaDatan) {
         topContainer.setInitData(mediaDatan);
     }
@@ -178,7 +185,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
 
     //改变ui成完成
     private void changeUiToComplete() {
-        topContainer.setVisibility(View.VISIBLE);
+        if (isOnlyFullShowTitle && !isFull) {
+            topContainer.setVisibility(View.GONE);
+        } else {
+            topContainer.setVisibility(View.VISIBLE);
+        }
         bottomContainer.setVisibility(View.GONE);
         setMinControlsVisiblity(true, false, false, false, false);
     }
@@ -379,7 +390,11 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
 
     private void showContainer(boolean isAnim) {
         if (!isAnim) {
-            topContainer.setVisibility(View.VISIBLE);
+            if (isOnlyFullShowTitle && !isFull) {
+                topContainer.setVisibility(View.GONE);
+            } else {
+                topContainer.setVisibility(View.VISIBLE);
+            }
             bottomContainer.setVisibility(View.VISIBLE);
         } else {
             animatorSet.cancel();

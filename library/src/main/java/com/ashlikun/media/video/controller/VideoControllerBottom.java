@@ -20,6 +20,7 @@ import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
 /**
  * 作者　　: 李坤
  * 创建时间: 2017/12/7　15:25
@@ -39,6 +40,8 @@ public class VideoControllerBottom extends LinearLayout implements SeekBar.OnSee
 
     public OnEventListener onEventListener;
     boolean fullEnable = true;
+    //是否是全屏状态
+    boolean isFull = false;
 
     public void setOnEventListener(OnEventListener onEventListener) {
         this.onEventListener = onEventListener;
@@ -81,6 +84,7 @@ public class VideoControllerBottom extends LinearLayout implements SeekBar.OnSee
         if (!fullEnable) {
             return;
         }
+        this.isFull = isFull;
         if (isFull) {
             fullscreenButton.setImageResource(R.drawable.easy_video_shrink);
         } else {
@@ -182,6 +186,10 @@ public class VideoControllerBottom extends LinearLayout implements SeekBar.OnSee
     public void startProgressSchedule() {
         stopProgressSchedule();
         progressFuture = VideoUtils.POOL_SCHEDULE().scheduleWithFixedDelay(new ProgressRunnable(), 0, 300, TimeUnit.MILLISECONDS);
+    }
+
+    public boolean isFull() {
+        return isFull;
     }
 
     /**

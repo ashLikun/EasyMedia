@@ -92,4 +92,9 @@ public interface IControllerViewHolder {
     int getBufferProgress();
 
     void setFull(boolean full);
+
+    /**
+     * 是否只在全屏的时候显示标题和顶部
+     */
+    public void setOnlyFullShowTitle(boolean onlyFullShowTitle);
 }

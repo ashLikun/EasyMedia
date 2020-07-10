@@ -2,6 +2,7 @@ package com.ashlikun.media.video;
 
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import android.text.TextUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class VideoData {
 
     /**
      * 是否是本地文件
+     *
      * @return
      */
     public boolean isLocal() {
@@ -83,6 +85,13 @@ public class VideoData {
             return false;
         }
         return super.equals(obj) || toString().equals(obj.toString());
+    }
+
+    public boolean equalsUrl(VideoData obj) {
+        if (obj == null) {
+            return false;
+        }
+        return TextUtils.equals(getUri().toString(), obj.getUri().toString()) || TextUtils.equals(getUrl(), obj.getUrl()) || TextUtils.equals(getFileDescriptor().toString(), obj.getFileDescriptor().toString());
     }
 
     public static class Builder {

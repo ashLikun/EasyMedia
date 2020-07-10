@@ -263,4 +263,35 @@ public class VideoScreenUtils {
         return true;
 
     }
+
+    /**
+     * 从一个视频替换到另一个视频
+     * 前提两个视频播放的是同一个
+     * 一般用于页面跳转
+     */
+    public static void startCacheVideo(BaseEasyVideoPlay newVideoPlay) {
+        BaseEasyVideoPlay oldVideo = EasyVideoPlayerManager.getCurrentVideoPlay();
+        if (oldVideo != null && (newVideoPlay.getCurrentData() == null ||
+                newVideoPlay.getCurrentData().equalsUrl(oldVideo.getCurrentData()))) {
+
+            oldVideo.removeTextureView();
+            newVideoPlay.setStatus(oldVideo.getCurrentState());
+            newVideoPlay.addTextureView();
+            if (oldVideo instanceof EasyVideoPlayer && newVideoPlay instanceof EasyVideoPlayer) {
+                if (((EasyVideoPlayer) oldVideo).getMediaController() != null && ((EasyVideoPlayer) newVideoPlay).getMediaController() != null) {
+                    ((EasyVideoPlayer) newVideoPlay).getMediaController().setBufferProgress(((EasyVideoPlayer) oldVideo).getMediaController().getBufferProgress());
+                }
+            }
+            //还原默认的view
+            oldVideo.setStatus(VideoStatus.NORMAL);
+            //取消定时器
+            if (oldVideo instanceof EasyVideoPlayer && ((EasyVideoPlayer) oldVideo).getMediaController() != null) {
+                ((EasyVideoPlayer) oldVideo).getMediaController().cancelDismissControlViewSchedule();
+            }
+            if (newVideoPlay.getMediaData() == null && oldVideo.getMediaData() != null) {
+                newVideoPlay.setDataSource(newVideoPlay.getMediaData(), newVideoPlay.getCurrentUrlIndex());
+            }
+            EasyVideoPlayerManager.setVideoDefault(newVideoPlay);
+        }
+    }
 }
