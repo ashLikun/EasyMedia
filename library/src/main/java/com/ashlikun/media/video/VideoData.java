@@ -93,9 +93,9 @@ public class VideoData implements Parcelable {
         if (obj == null) {
             return false;
         }
-        return TextUtils.equals(getUri() == null ? "" : getUri().toString(), obj.getUri() == null ? "" : obj.getUri().toString()) ||
-                TextUtils.equals(getUrl(), obj.getUrl()) ||
-                TextUtils.equals(getFileDescriptor() == null ? "" : getFileDescriptor().toString(), obj.getFileDescriptor() == null ? "" : obj.getFileDescriptor().toString());
+        return TextUtils.equals(getUri() == null ? "noCurr" : getUri().toString(), obj.getUri() == null ? "noObj" : obj.getUri().toString()) ||
+                TextUtils.equals(getUrl() == null ? "noCurr" : getUrl(), obj.getUrl() == null ? "noObj" : obj.getUrl()) ||
+                TextUtils.equals(getFileDescriptor() == null ? "noCurr" : getFileDescriptor().toString(), obj.getFileDescriptor() == null ? "noObj" : obj.getFileDescriptor().toString());
     }
 
 
