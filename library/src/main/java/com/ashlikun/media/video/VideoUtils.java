@@ -248,6 +248,9 @@ public class VideoUtils {
      * 从播放数组里面获取当前播放的
      */
     public static VideoData getCurrentMediaData(List<VideoData> dataSource, int index) {
+        if (dataSource == null || index < 0) {
+            return null;
+        }
         if (dataSource.size() > index) {
             return dataSource.get(index);
         }
