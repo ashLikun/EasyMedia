@@ -289,7 +289,7 @@ public class VideoScreenUtils {
                 ((EasyVideoPlayer) oldVideo).getMediaController().cancelDismissControlViewSchedule();
             }
             if (newVideoPlay.getMediaData() == null && oldVideo.getMediaData() != null) {
-                newVideoPlay.setDataSource(newVideoPlay.getMediaData(), newVideoPlay.getCurrentUrlIndex());
+                newVideoPlay.setDataSource(oldVideo.getMediaData(), oldVideo.getCurrentUrlIndex());
             }
             EasyVideoPlayerManager.setVideoDefault(newVideoPlay);
         }

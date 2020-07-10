@@ -166,7 +166,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public boolean setDataSource(List<VideoData> mediaData, int defaultIndex) {
         boolean res = super.setDataSource(mediaData, defaultIndex);
-        if (mediaController != null) {
+        if (mediaController != null && mediaData != null && defaultIndex >= 0 && mediaData.size() > defaultIndex) {
             mediaController.setDataSource(mediaData.get(currentUrlIndex));
         }
         return res;

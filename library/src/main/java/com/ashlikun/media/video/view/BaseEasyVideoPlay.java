@@ -129,7 +129,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     public boolean setDataSource(List<VideoData> mediaData, int defaultIndex) {
         this.mediaData = mediaData;
         //如果这个已经在播放就不管
-        if (getMediaData() != null && getMediaData().size() > defaultIndex &&
+        if (getMediaData() != null && defaultIndex >= 0 && getMediaData().size() > defaultIndex &&
                 VideoUtils.isContainsUri(getMediaData(),
                         EasyMediaManager.getCurrentDataSource())) {
             saveVideoPlayView();
