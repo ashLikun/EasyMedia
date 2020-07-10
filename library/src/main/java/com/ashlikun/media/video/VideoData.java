@@ -86,7 +86,7 @@ public class VideoData implements Parcelable {
         if (obj == null) {
             return false;
         }
-        return super.equals(obj) || toString().equals(obj.toString());
+        return super.equals(obj) || (obj instanceof VideoData && equalsUrl((VideoData) obj));
     }
 
     public boolean equalsUrl(VideoData obj) {
