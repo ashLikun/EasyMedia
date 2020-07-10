@@ -32,6 +32,11 @@ public interface VideoControllerInterface {
     void setCurrentState(@VideoStatus.Code int currentState);
 
     /**
+     * 是否只在全屏的时候显示标题和顶部
+     */
+    void setOnlyFullShowTitle(boolean onlyFullShowTitle);
+
+    /**
      * 开始显示控制器的定时器
      */
     void startDismissControlViewSchedule();
