@@ -157,6 +157,7 @@ public class VideoData implements Parcelable {
             dest.writeString(this.title);
             dest.writeParcelable(this.uri, flags);
             dest.writeParcelable(this.fileDescriptor, flags);
+            this.headers = new HashMap<>();
             dest.writeInt(this.headers.size());
             for (Map.Entry<String, String> entry : this.headers.entrySet()) {
                 dest.writeString(entry.getKey());
@@ -173,7 +174,7 @@ public class VideoData implements Parcelable {
             this.uri = in.readParcelable(Uri.class.getClassLoader());
             this.fileDescriptor = in.readParcelable(AssetFileDescriptor.class.getClassLoader());
             int headersSize = in.readInt();
-            this.headers = new HashMap<String, String>(headersSize);
+            this.headers = new HashMap(headersSize);
             for (int i = 0; i < headersSize; i++) {
                 String key = in.readString();
                 String value = in.readString();
