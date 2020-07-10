@@ -309,16 +309,14 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         Gravity.CENTER);
-        if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.getContext() == getContext()) {
-            textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
-        } else {
+        if (EasyMediaManager.textureView == null || EasyMediaManager.textureView.getContext() != getContext()) {
             //根据新的newVideoPlay 创建新的EasyTextureView View 防止内存泄漏
             EasyMediaManager.textureView = new EasyTextureView(getContext());
             EasyMediaManager.textureView.setDisplayType(getDisplayType());
             //用之前已经存在的savedSurfaceTexture，实现无差别播放
             EasyMediaManager.textureView.setSurfaceTexture(EasyMediaManager.savedSurfaceTexture);
-            textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
         }
+        textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
     }
 
     /**
