@@ -275,6 +275,7 @@ public class VideoScreenUtils {
                 newVideoPlay.getCurrentData().equalsUrl(oldVideo.getCurrentData()))) {
 
             oldVideo.removeTextureView();
+
             newVideoPlay.setStatus(oldVideo.getCurrentState());
             newVideoPlay.addTextureView();
             if (oldVideo instanceof EasyVideoPlayer && newVideoPlay instanceof EasyVideoPlayer) {
