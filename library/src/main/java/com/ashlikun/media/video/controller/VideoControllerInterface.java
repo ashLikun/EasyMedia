@@ -31,7 +31,6 @@ public interface VideoControllerInterface {
 
     void setCurrentState(@VideoStatus.Code int currentState);
 
-
     /**
      * 开始显示控制器的定时器
      */

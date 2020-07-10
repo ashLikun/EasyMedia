@@ -153,6 +153,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     @Override
     public void setOnlyFullShowTitle(boolean onlyFullShowTitle) {
         isOnlyFullShowTitle = onlyFullShowTitle;
+        if (isOnlyFullShowTitle && !isFull) {
+            topContainer.setVisibility(View.GONE);
+        }
     }
 
     @Override

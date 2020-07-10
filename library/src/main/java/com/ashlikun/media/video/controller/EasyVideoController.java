@@ -456,6 +456,13 @@ public class EasyVideoController extends RelativeLayout implements
         viewHolder.setFull(full);
     }
 
+    /**
+     * 是否只在全屏的时候显示标题和顶部
+     */
+    public void setOnlyFullShowTitle(boolean onlyFullShowTitle) {
+        viewHolder.setOnlyFullShowTitle(onlyFullShowTitle);
+    }
+
     @Override
     public void setCurrentState(@VideoStatus.Code int currentState) {
         this.currentState = currentState;
