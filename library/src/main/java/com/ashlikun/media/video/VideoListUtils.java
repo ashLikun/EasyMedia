@@ -128,7 +128,7 @@ public class VideoListUtils {
             }
         } else if (EasyVideoPlayerManager.getVideoTiny() != null) {
             //回来的时候再把这个保存,对应于上面的设为null
-            EasyVideoPlayerManager.setVideoDefault(videoPlayer);
+            videoPlayer.saveVideoPlayView();
             VideoScreenUtils.backPress();
         }
     }

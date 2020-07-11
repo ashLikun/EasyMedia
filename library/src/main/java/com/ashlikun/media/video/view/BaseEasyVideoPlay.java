@@ -25,6 +25,10 @@ import com.ashlikun.media.video.status.VideoStatus;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.ashlikun.media.video.status.VideoStatus.AUTO_COMPLETE;
+import static com.ashlikun.media.video.status.VideoStatus.NORMAL;
+import static com.ashlikun.media.video.status.VideoStatus.PAUSE;
+
 
 /**
  * 作者　　: 李坤
@@ -74,6 +78,14 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * 播放视频的渲染控件，一般为TextureView
      */
     public ViewGroup textureViewContainer;
+    /**
+     * 播放事件的回掉
+     */
+    private ArrayList<EasyVideoAction> videoActions;
+    /**
+     * 当onResume的时候是否去播放
+     */
+    private boolean ONRESUME_TO_PLAY = true;
 
     public BaseEasyVideoPlay(@NonNull Context context) {
         this(context, null);
@@ -134,7 +146,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                         EasyMediaManager.getCurrentDataSource())) {
             saveVideoPlayView();
             if (currentState == VideoStatus.NORMAL) {
-                onStateNormal();
+                setStatus(VideoStatus.NORMAL);
             }
             return false;
         }
@@ -157,7 +169,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             }
         }
         this.currentUrlIndex = defaultIndex;
-        onStateNormal();
+        setStatus(VideoStatus.NORMAL);
         return true;
     }
 
@@ -168,7 +180,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * {@link EasyVideoPlayerManager#setVideoTiny}
      * 可能会多次调用
      */
-    protected abstract void saveVideoPlayView();
+    public abstract void saveVideoPlayView();
 
     /**
      * 开始播放
@@ -185,42 +197,44 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         VideoUtils.setAudioFocus(getContext(), true);
         VideoUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         EasyMediaManager.setCurrentDataSource(getCurrentData());
-        onStatePreparing();
         saveVideoPlayView();
+        setStatus(VideoStatus.PREPARING);
+
     }
 
 
     /**
      * 设置当前播放器状态
-     *
-     * @param status
      */
-    public void setStatus(int status) {
-        setStatus(status, 0, 0);
-    }
-
-    public void setStatus(int state, int currentUrlIndex, int seekToInAdvance) {
+    public void setStatus(int state) {
+        if (currentState == state) {
+            return;
+        }
+        VideoUtils.d(String.valueOf(state));
         switch (state) {
             case VideoStatus.NORMAL:
                 onStateNormal();
+                onEvent(EasyVideoAction.ON_STATUS_NORMAL);
                 break;
             case VideoStatus.PREPARING:
                 onStatePreparing();
-                break;
-            case VideoStatus.PREPARING_CHANGING_URL:
-                onStatePreparingChangingUrl(currentUrlIndex, seekToInAdvance);
+                onEvent(EasyVideoAction.ON_STATUS_PREPARING);
                 break;
             case VideoStatus.PLAYING:
                 onStatePlaying();
+                onEvent(EasyVideoAction.ON_STATUS_PLAYING);
                 break;
             case VideoStatus.PAUSE:
                 onStatePause();
+                onEvent(EasyVideoAction.ON_STATUS_PAUSE);
                 break;
             case VideoStatus.ERROR:
                 onStateError();
+                onEvent(EasyVideoAction.ON_STATUS_ERROR);
                 break;
             case VideoStatus.AUTO_COMPLETE:
                 onStateAutoComplete();
+                onEvent(EasyVideoAction.ON_STATUS_AUTO_COMPLETE);
                 break;
         }
     }
@@ -252,21 +266,12 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     /**
-     * 当准备好了时候
+     * 当准备时候
      */
     protected void onStatePreparing() {
         currentState = VideoStatus.PREPARING;
     }
 
-    protected void onStatePreparingChangingUrl(int currentUrlIndex, int seekToInAdvance) {
-        if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
-            return;
-        }
-        currentState = VideoStatus.PREPARING_CHANGING_URL;
-        this.currentUrlIndex = currentUrlIndex;
-        EasyMediaManager.setCurrentDataSource(getCurrentData());
-        EasyMediaManager.getInstance().prepare();
-    }
 
     protected void onStatePrepared() {
         //因为这个紧接着就会进入播放状态，所以不设置state
@@ -277,13 +282,18 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     protected void onStatePlaying() {
         currentState = VideoStatus.PLAYING;
+        EasyMediaManager.start();
     }
 
     /**
      * 暂停
      */
     protected void onStatePause() {
+        if (currentState == VideoStatus.PREPARING) {
+            EasyMediaManager.getInstance().getMediaPlay().setPreparedPause(true);
+        }
         currentState = VideoStatus.PAUSE;
+        EasyMediaManager.pause();
     }
 
     /**
@@ -350,7 +360,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     @Override
     public void onPrepared() {
         onStatePrepared();
-        onStatePlaying();
+        setStatus(VideoStatus.PLAYING);
     }
 
     /**
@@ -381,7 +391,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     @Override
     public void onError(int what, int extra) {
         if (what != 38 && what != -38 && extra != -38) {
-            onStateError();
+            setStatus(VideoStatus.ERROR);
             if (isCurrentPlay()) {
                 EasyMediaManager.getInstance().releaseMediaPlayer();
             }
@@ -414,7 +424,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             VideoUtils.saveProgress(getContext(), getCurrentData(), position);
         }
         //还原默认状态
-        onStateNormal();
+        setStatus(VideoStatus.NORMAL);
         removeTextureView();
         EasyMediaManager.getInstance().currentVideoWidth = 0;
         EasyMediaManager.getInstance().currentVideoHeight = 0;
@@ -458,11 +468,27 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
 
     }
 
+    /**
+     * 播放事件的回掉
+     *
+     * @param type {@link EasyVideoAction}
+     */
     @Override
     public void onEvent(int type) {
-        if (EasyMediaManager.MEDIA_EVENT != null && isCurrentPlay()) {
-            EasyMediaManager.MEDIA_EVENT.onEvent(type);
+        VideoUtils.d(String.valueOf(type));
+        if (isCurrentPlay()) {
+            //本实例的回调
+            if (videoActions != null) {
+                for (EasyVideoAction action : videoActions) {
+                    action.onEvent(type);
+                }
+            }
+            //全局的地方回调
+            if (EasyMediaManager.MEDIA_EVENT != null) {
+                EasyMediaManager.MEDIA_EVENT.onEvent(type);
+            }
         }
+
     }
 
     /********************************************************************************************
@@ -531,5 +557,71 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     public void setCurrentState(@VideoStatus.Code int currentState) {
         this.currentState = currentState;
+    }
+
+    /**
+     * 移除播放事件的回掉
+     *
+     * @param action
+     */
+    public boolean removeVideoAction(EasyVideoAction action) {
+        if (videoActions != null && action != null) {
+            return videoActions.remove(action);
+        }
+        return false;
+    }
+
+    /**
+     * 添加播放事件的回掉
+     *
+     * @param action
+     */
+    public void addVideoAction(EasyVideoAction action) {
+        if (action != null) {
+            if (videoActions == null) {
+                videoActions = new ArrayList<>();
+            }
+            if (!videoActions.contains(action)) {
+                videoActions.add(action);
+            }
+        }
+
+    }
+
+    /**
+     * 对应activity得生命周期
+     */
+    public void onPause() {
+        if (getCurrentState() == AUTO_COMPLETE ||
+                getCurrentState() == NORMAL) {
+            VideoUtils.releaseAllVideos();
+        } else {
+            if (getCurrentState() == VideoStatus.PLAYING) {
+                ONRESUME_TO_PLAY = true;
+            } else {
+                ONRESUME_TO_PLAY = false;
+            }
+            if (getCurrentState() == VideoStatus.PLAYING || getCurrentState() == VideoStatus.PREPARING) {
+                setStatus(VideoStatus.PAUSE);
+            }
+        }
+    }
+
+
+    /**
+     * 对应activity得生命周期
+     */
+    public void onResume() {
+        if (getCurrentState() == PAUSE && ONRESUME_TO_PLAY) {
+            setStatus(VideoStatus.PLAYING);
+        }
+    }
+
+
+    /**
+     * 对应activity得生命周期
+     */
+    public void onDestroy() {
+        VideoUtils.onDestroy();
     }
 }

@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.ashlikun.media.video.EasyVideoAction;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
@@ -62,6 +63,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
+        mediaPlay.addVideoAction(new EasyVideoAction() {
+            @Override
+            public void onEvent(int type) {
+                if (type == EasyVideoAction.ON_STATUS_PREPARING) {
+                    VideoUtils.onPause();
+                }
+            }
+        });
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
         findViewById(R.id.listButton).setOnClickListener(this);
         findViewById(R.id.fullScreenButton).setOnClickListener(this);
@@ -136,5 +145,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "没有权限", Toast.LENGTH_LONG).show();
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlay.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mediaPlay.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mediaPlay.onDestroy();
     }
 }

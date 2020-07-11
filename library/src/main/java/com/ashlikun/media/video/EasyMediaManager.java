@@ -142,11 +142,11 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      * @return
      */
     public static VideoData getCurrentDataSource() {
-        return getInstance().getMediaPlay().currentDataSource;
+        return getInstance().getMediaPlay().getCurrentDataSource();
     }
 
     public static void setCurrentDataSource(VideoData currentDataSource) {
-        getInstance().getMediaPlay().currentDataSource = currentDataSource;
+        getInstance().getMediaPlay().setCurrentDataSource(currentDataSource);
     }
 
     public static int getCurrentPosition() {

@@ -53,7 +53,7 @@ public class MiniVideoPlay extends BaseEasyVideoPlay {
      * 可能会多次调用
      */
     @Override
-    protected void saveVideoPlayView() {
+    public void saveVideoPlayView() {
         EasyVideoPlayerManager.setVideoDefault(this);
     }
 

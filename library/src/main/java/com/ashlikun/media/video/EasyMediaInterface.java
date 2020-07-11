@@ -14,7 +14,7 @@ public abstract class EasyMediaInterface {
     /**
      * 视频数据
      */
-    public VideoData currentDataSource;
+    private VideoData currentDataSource;
 
     /**
      * 开始播放
@@ -67,4 +67,14 @@ public abstract class EasyMediaInterface {
      * @param surface
      */
     public abstract void setSurface(Surface surface);
+
+    public VideoData getCurrentDataSource() {
+        return currentDataSource;
+    }
+
+    public void setCurrentDataSource(VideoData currentDataSource) {
+        this.currentDataSource = currentDataSource;
+    }
+
+    public abstract void setPreparedPause(boolean isPreparedPause);
 }

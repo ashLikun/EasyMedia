@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.ViewGroup;
 import android.view.Window;
 
@@ -21,7 +22,6 @@ import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.ashlikun.media.R;
 import com.ashlikun.media.video.status.VideoDisplayType;
-import com.ashlikun.media.video.status.VideoStatus;
 import com.ashlikun.media.video.view.BaseEasyVideoPlay;
 import com.ashlikun.media.video.view.EasyVideoPlayer;
 
@@ -30,10 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-
-import static com.ashlikun.media.video.status.VideoStatus.AUTO_COMPLETE;
-import static com.ashlikun.media.video.status.VideoStatus.NORMAL;
-import static com.ashlikun.media.video.status.VideoStatus.PAUSE;
 
 /**
  * 作者　　: 李坤
@@ -45,12 +41,8 @@ import static com.ashlikun.media.video.status.VideoStatus.PAUSE;
 
 public class VideoUtils {
     public static Context mContext;
+    public static boolean isDebug = true;
     public static Class<? extends EasyMediaInterface> mMediaPlayClass;
-
-    /**
-     * 当onResume的时候是否去播放
-     */
-    private static boolean ONRESUME_TO_PLAY = true;
 
 
     public static final String EASY_MEDIA_PROGRESS = "EASY_MEDIA_PROGRESS";
@@ -69,6 +61,10 @@ public class VideoUtils {
     public static void init(Application context, Class<? extends EasyMediaInterface> mediaPlayClass) {
         VideoUtils.mContext = context;
         VideoUtils.mMediaPlayClass = mediaPlayClass;
+    }
+
+    public static void setIsDebug(boolean isDebug) {
+        VideoUtils.isDebug = isDebug;
     }
 
     public static Handler getMainHander() {
@@ -300,20 +296,7 @@ public class VideoUtils {
     public static void onPause() {
         BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
         if (videoPlayer != null) {
-            if (videoPlayer.getCurrentState() == AUTO_COMPLETE ||
-                    videoPlayer.getCurrentState() == NORMAL) {
-                VideoUtils.releaseAllVideos();
-            } else {
-                if (videoPlayer.getCurrentState() == VideoStatus.PLAYING) {
-                    ONRESUME_TO_PLAY = true;
-                } else {
-                    ONRESUME_TO_PLAY = false;
-                }
-                if (videoPlayer.getCurrentState() == VideoStatus.PLAYING) {
-                    videoPlayer.setStatus(VideoStatus.PAUSE);
-                    EasyMediaManager.pause();
-                }
-            }
+            videoPlayer.onPause();
         }
     }
 
@@ -323,10 +306,7 @@ public class VideoUtils {
     public static void onResume() {
         BaseEasyVideoPlay videoPlayer = EasyVideoPlayerManager.getCurrentVideoPlayerNoTiny();
         if (videoPlayer != null) {
-            if (videoPlayer.getCurrentState() == PAUSE && ONRESUME_TO_PLAY) {
-                videoPlayer.setStatus(VideoStatus.PLAYING);
-                EasyMediaManager.start();
-            }
+            videoPlayer.onResume();
         }
     }
 
@@ -439,5 +419,28 @@ public class VideoUtils {
         if (EasyMediaManager.textureView != null) {
             EasyMediaManager.textureView.setRotation(rotation);
         }
+    }
+
+
+    public static void d(String content) {
+        if (!isDebug) {
+            return;
+        }
+        String tag = generateTag();
+        Log.d(tag, content);
+    }
+
+    /**
+     * 得到标签,log标签+类名+方法名+第几行
+     *
+     * @return
+     */
+    private static String generateTag() {
+        StackTraceElement caller = new Throwable().getStackTrace()[2];
+        String tag = "%s.%s(L:%d)";
+        String callerClazzName = caller.getClassName();
+        callerClazzName = callerClazzName.substring(callerClazzName.lastIndexOf(".") + 1);
+        tag = String.format(tag, callerClazzName, caller.getMethodName(), caller.getLineNumber());
+        return tag;
     }
 }

@@ -98,7 +98,7 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             return;
         }
         this.currentState = currentState;
-        if (currentState == VideoStatus.PREPARING || currentState == VideoStatus.PREPARING_CHANGING_URL) {
+        if (currentState == VideoStatus.PREPARING) {
             isBeforeStatePreparing = true;
         }
         //默认
@@ -109,11 +109,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         //准备
         else if (currentState == VideoStatus.PREPARING) {
             changeUiToPreparing();
-        }
-        //准备改变播放的url
-        else if (currentState == VideoStatus.PREPARING_CHANGING_URL) {
-            loadingProgressBar.setVisibility(View.VISIBLE);
-            startButton.setVisibility(View.GONE);
         }
         //播放中
         else if (currentState == VideoStatus.PLAYING) {

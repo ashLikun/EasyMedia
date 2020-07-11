@@ -18,6 +18,7 @@ import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
 import com.ashlikun.media.video.controller.EasyVideoController;
 import com.ashlikun.media.video.controller.VideoControllerInterface;
+import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.List;
 
@@ -180,7 +181,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      * 可能会多次调用
      */
     @Override
-    protected void saveVideoPlayView() {
+    public void saveVideoPlayView() {
         if (isScreenFull()) {
             EasyVideoPlayerManager.setVideoFullscreen(this);
         } else {
@@ -202,12 +203,10 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             startVideo();
         } else if (currentState == PLAYING) {
             onEvent(EasyVideoAction.ON_CLICK_PAUSE);
-            EasyMediaManager.pause();
-            onStatePause();
+            setStatus(VideoStatus.PAUSE);
         } else if (currentState == PAUSE) {
             onEvent(EasyVideoAction.ON_CLICK_RESUME);
-            EasyMediaManager.start();
-            onStatePlaying();
+            setStatus(PLAYING);
         } else if (currentState == AUTO_COMPLETE) {
             onEvent(EasyVideoAction.ON_CLICK_START_AUTO_COMPLETE);
             startVideo();
@@ -276,13 +275,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         }
     }
 
-    @Override
-    protected void onStatePreparingChangingUrl(int currentUrlIndex, int seekToInAdvance) {
-        super.onStatePreparingChangingUrl(currentUrlIndex, seekToInAdvance);
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
-    }
 
     @Override
     protected void onStatePrepared() {//因为这个紧接着就会进入播放状态，所以不设置state
@@ -390,7 +382,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         if (mediaController != null) {
             mediaController.onAutoCompletion();
         }
-        onStateAutoComplete();
+        setStatus(VideoStatus.AUTO_COMPLETE);
         if (isScreenFull()) {
             VideoScreenUtils.backPress();
         }
@@ -435,7 +427,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             fullPlay.mediaController.setBufferProgress(mediaController.getBufferProgress());
         }
         //还原默认的view
-        onStateNormal();
+        setStatus(VideoStatus.NORMAL);
         //取消定时器
         if (mediaController != null) {
             mediaController.cancelDismissControlViewSchedule();

@@ -6,11 +6,11 @@ import android.text.TextUtils;
 import android.view.Surface;
 import android.widget.Toast;
 
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.EasyMediaInterface;
 import com.ashlikun.media.video.EasyMediaManager;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.R;
 
 import java.io.IOException;
 
@@ -28,19 +28,22 @@ import tv.danmaku.ijk.media.player.IjkTimedText;
 
 public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlayer.OnPreparedListener, IMediaPlayer.OnVideoSizeChangedListener, IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener, IMediaPlayer.OnBufferingUpdateListener, IMediaPlayer.OnSeekCompleteListener, IMediaPlayer.OnTimedTextListener {
     IjkMediaPlayer ijkMediaPlayer;
-
-    @Override
-    public void start() {
-        ijkMediaPlayer.start();
-    }
+    /**
+     * 是否调用过暂定，调用后在准备好的时候不能直接播放
+     */
+    private boolean isPreparedPause = false;
 
     public IjkMediaPlayer getIjkMediaPlayer() {
         return ijkMediaPlayer;
     }
 
     @Override
-    public void prepare() {
+    public void setPreparedPause(boolean preparedPause) {
+        isPreparedPause = preparedPause;
+    }
 
+    @Override
+    public void prepare() {
         ijkMediaPlayer = new IjkMediaPlayer();
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
@@ -61,22 +64,22 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnTimedTextListener(EasyVideoIjkplayer.this);
 
         try {
-            if (currentDataSource == null) {
+            if (getCurrentDataSource() == null) {
                 Toast.makeText(VideoUtils.mContext, VideoUtils.mContext.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
-            } else if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
-                if (currentDataSource.getHeaders() != null) {
-                    ijkMediaPlayer.setDataSource(currentDataSource.getUrl(), currentDataSource.getHeaders());
+            } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
+                if (getCurrentDataSource().getHeaders() != null) {
+                    ijkMediaPlayer.setDataSource(getCurrentDataSource().getUrl(), getCurrentDataSource().getHeaders());
                 } else {
-                    ijkMediaPlayer.setDataSource(currentDataSource.getUrl());
+                    ijkMediaPlayer.setDataSource(getCurrentDataSource().getUrl());
                 }
-            } else if (currentDataSource.getUri() != null && !TextUtils.isEmpty(currentDataSource.getUri().toString())) {
-                if (currentDataSource.getHeaders() != null) {
-                    ijkMediaPlayer.setDataSource(VideoUtils.mContext, currentDataSource.getUri(), currentDataSource.getHeaders());
+            } else if (getCurrentDataSource().getUri() != null && !TextUtils.isEmpty(getCurrentDataSource().getUri().toString())) {
+                if (getCurrentDataSource().getHeaders() != null) {
+                    ijkMediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri(), getCurrentDataSource().getHeaders());
                 } else {
-                    ijkMediaPlayer.setDataSource(VideoUtils.mContext, currentDataSource.getUri());
+                    ijkMediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri());
                 }
-            } else if (currentDataSource.getFileDescriptor() != null) {
-                ijkMediaPlayer.setDataSource(currentDataSource.getFileDescriptor().getFileDescriptor());
+            } else if (getCurrentDataSource().getFileDescriptor() != null) {
+                ijkMediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor().getFileDescriptor());
             } else {
                 Toast.makeText(VideoUtils.mContext, VideoUtils.mContext.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
             }
@@ -90,8 +93,17 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     }
 
     @Override
+    public void start() {
+        if (ijkMediaPlayer != null) {
+            ijkMediaPlayer.start();
+        }
+    }
+
+    @Override
     public void pause() {
-        ijkMediaPlayer.pause();
+        if (ijkMediaPlayer != null) {
+            ijkMediaPlayer.pause();
+        }
     }
 
     @Override
@@ -111,6 +123,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     public void release() {
         if (ijkMediaPlayer != null) {
             ijkMediaPlayer.release();
+            ijkMediaPlayer = null;
         }
     }
 
@@ -151,8 +164,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         if (ijkMediaPlayer == null) {
             return;
         }
-        ijkMediaPlayer.start();
-        if (currentDataSource.toString().toLowerCase().contains("mp3")) {
+        if (!isPreparedPause) {
+            ijkMediaPlayer.start();
             EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -161,6 +174,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
                     }
                 }
             });
+        } else {
+            isPreparedPause = false;
         }
     }
 
@@ -185,7 +200,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
-                    currentDataSource = null;
+                    setCurrentDataSource(null);
                 }
             }
         });

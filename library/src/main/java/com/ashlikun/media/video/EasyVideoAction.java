@@ -42,6 +42,30 @@ public interface EasyVideoAction {
      */
     int ON_TOUCH_SCREEN_SEEK_POSITION = 12;
     /**
+     * 播放状态 startVideo 调用的时候,准备过后调用的
+     */
+    int ON_STATUS_PREPARING = 13;
+    /**
+     * 默认状态
+     */
+    int ON_STATUS_NORMAL = 14;
+    /**
+     * 播放状态
+     */
+    int ON_STATUS_PLAYING = 15;
+    /**
+     * 暂停状态
+     */
+    int ON_STATUS_PAUSE = 16;
+    /**
+     * 错误状态
+     */
+    int ON_STATUS_ERROR = 17;
+    /**
+     * 自动完成状态
+     */
+    int ON_STATUS_AUTO_COMPLETE = 18;
+    /**
      * 没有网络时候点击继续播放
      */
     int ON_CLICK_START_NO_WIFI_GOON = 101;

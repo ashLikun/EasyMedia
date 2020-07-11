@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.ashlikun.media.video.EasyMediaInterface;
 import com.ashlikun.media.video.EasyMediaManager;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
+import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoUtils;
 import com.ashlikun.media.R;
 
@@ -31,23 +32,34 @@ public class EasyVideoSystem extends EasyMediaInterface
         MediaPlayer.OnInfoListener,
         MediaPlayer.OnSeekCompleteListener,
         MediaPlayer.OnVideoSizeChangedListener {
-
+    /**
+     * 是否调用过暂定，调用后在准备好的时候不能直接播放
+     */
+    private boolean isPreparedPause = false;
     public MediaPlayer mediaPlayer;
 
     @Override
+    public void setPreparedPause(boolean preparedPause) {
+        isPreparedPause = preparedPause;
+    }
+
+    @Override
     public void start() {
-        if (mediaPlayer == null) {
-            return;
+        if (mediaPlayer != null) {
+            mediaPlayer.start();
         }
-        mediaPlayer.start();
     }
 
     @Override
     public void stop() {
-        if (mediaPlayer == null) {
-            return;
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
         }
-        mediaPlayer.stop();
+    }
+
+    @Override
+    public void setCurrentDataSource(VideoData currentDataSource) {
+        super.setCurrentDataSource(currentDataSource);
     }
 
     @Override
@@ -64,23 +76,23 @@ public class EasyVideoSystem extends EasyMediaInterface
             mediaPlayer.setOnInfoListener(EasyVideoSystem.this);
             mediaPlayer.setOnVideoSizeChangedListener(EasyVideoSystem.this);
             mediaPlayer.setOnSeekCompleteListener(this);
-            if (!TextUtils.isEmpty(currentDataSource.getUrl())) {
-                if (currentDataSource.getHeaders() != null) {
+            if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
+                if (getCurrentDataSource().getHeaders() != null) {
                     Class<MediaPlayer> clazz = MediaPlayer.class;
                     Method method = clazz.getDeclaredMethod("setDataSource", String.class, Map.class);
-                    method.invoke(mediaPlayer, currentDataSource.getUrl(), currentDataSource.getHeaders());
+                    method.invoke(mediaPlayer, getCurrentDataSource().getUrl(), getCurrentDataSource().getHeaders());
                 } else {
-                    mediaPlayer.setDataSource(currentDataSource.getUrl());
+                    mediaPlayer.setDataSource(getCurrentDataSource().getUrl());
                 }
-            } else if (currentDataSource.getUri() != null && !TextUtils.isEmpty(currentDataSource.getUri().toString())) {
-                if (currentDataSource.getHeaders() != null) {
-                    mediaPlayer.setDataSource(VideoUtils.mContext, currentDataSource.getUri(), currentDataSource.getHeaders());
+            } else if (getCurrentDataSource().getUri() != null && !TextUtils.isEmpty(getCurrentDataSource().getUri().toString())) {
+                if (getCurrentDataSource().getHeaders() != null) {
+                    mediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri(), getCurrentDataSource().getHeaders());
                 } else {
-                    mediaPlayer.setDataSource(VideoUtils.mContext, currentDataSource.getUri());
+                    mediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri());
                 }
-            } else if (currentDataSource.getFileDescriptor() != null) {
-                mediaPlayer.setDataSource(currentDataSource.getFileDescriptor().getFileDescriptor(),
-                        currentDataSource.getFileDescriptor().getStartOffset(), currentDataSource.getFileDescriptor().getDeclaredLength());
+            } else if (getCurrentDataSource().getFileDescriptor() != null) {
+                mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor().getFileDescriptor(),
+                        getCurrentDataSource().getFileDescriptor().getStartOffset(), getCurrentDataSource().getFileDescriptor().getDeclaredLength());
             } else {
                 Toast.makeText(VideoUtils.mContext, VideoUtils.mContext.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
             }
@@ -94,10 +106,9 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public void pause() {
-        if (mediaPlayer == null) {
-            return;
+        if (mediaPlayer != null) {
+            mediaPlayer.pause();
         }
-        mediaPlayer.pause();
     }
 
     @Override
@@ -123,6 +134,7 @@ public class EasyVideoSystem extends EasyMediaInterface
     public void release() {
         if (mediaPlayer != null) {
             mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
@@ -155,8 +167,8 @@ public class EasyVideoSystem extends EasyMediaInterface
         if (mediaPlayer == null) {
             return;
         }
-        mediaPlayer.start();
-        if (currentDataSource.toString().toLowerCase().contains("mp3")) {
+        if (!isPreparedPause) {
+            mediaPlayer.start();
             EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -165,6 +177,8 @@ public class EasyVideoSystem extends EasyMediaInterface
                     }
                 }
             });
+        } else {
+            isPreparedPause = false;
         }
     }
 
@@ -175,7 +189,7 @@ public class EasyVideoSystem extends EasyMediaInterface
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
                     EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion();
-                    currentDataSource = null;
+                    setCurrentDataSource(null);
                 }
             }
         });

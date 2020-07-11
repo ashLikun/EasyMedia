@@ -292,7 +292,7 @@ public class VideoScreenUtils {
             if (newVideoPlay.getMediaData() == null && oldVideo.getMediaData() != null) {
                 newVideoPlay.setDataSource(oldVideo.getMediaData(), oldVideo.getCurrentUrlIndex());
             }
-            EasyVideoPlayerManager.setVideoDefault(newVideoPlay);
+            newVideoPlay.saveVideoPlayView();
         }
     }
 }

@@ -13,13 +13,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ashlikun.media.video.EasyVideoAction;
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.EasyMediaManager;
+import com.ashlikun.media.video.EasyVideoAction;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.R;
+import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.List;
 
@@ -123,11 +124,11 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         } else if (currentState == PLAYING) {
             onEvent(EasyVideoAction.ON_CLICK_PAUSE);
             EasyMediaManager.pause();
-            onStatePause();
+            setStatus(VideoStatus.PAUSE);
         } else if (currentState == PAUSE) {
             onEvent(EasyVideoAction.ON_CLICK_RESUME);
             EasyMediaManager.start();
-            onStatePlaying();
+            setStatus(PLAYING);
         } else if (currentState == AUTO_COMPLETE) {
             onEvent(EasyVideoAction.ON_CLICK_START_AUTO_COMPLETE);
             startVideo();
@@ -167,7 +168,7 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
      * 可能会多次调用
      */
     @Override
-    protected void saveVideoPlayView() {
+    public void saveVideoPlayView() {
         EasyVideoPlayerManager.setVideoTiny(this);
     }
 

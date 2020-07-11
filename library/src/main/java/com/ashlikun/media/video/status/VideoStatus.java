@@ -24,10 +24,6 @@ public interface VideoStatus {
      */
     int PREPARING = 1;
     /**
-     * 准备中uil改变
-     */
-    int PREPARING_CHANGING_URL = 2;
-    /**
      * 播放中
      */
     int PLAYING = 3;
@@ -44,8 +40,7 @@ public interface VideoStatus {
      */
     int ERROR = 7;
 
-    @IntDef(value = {NORMAL, PREPARING
-            , PREPARING_CHANGING_URL, PLAYING,
+    @IntDef(value = {NORMAL, PREPARING, PLAYING,
             PAUSE, AUTO_COMPLETE, ERROR})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Code {

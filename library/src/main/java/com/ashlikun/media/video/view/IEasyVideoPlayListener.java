@@ -15,6 +15,7 @@ public interface IEasyVideoPlayListener extends EasyVideoAction {
      */
     void onPrepared();
 
+
     /**
      * 播放信息
      *
@@ -57,7 +58,6 @@ public interface IEasyVideoPlayListener extends EasyVideoAction {
      * @param bufferProgress
      */
     void setBufferProgress(int bufferProgress);
-
 
 
 }
