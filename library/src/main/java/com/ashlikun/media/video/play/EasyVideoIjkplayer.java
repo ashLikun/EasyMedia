@@ -33,6 +33,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
      */
     private boolean isPreparedPause = false;
 
+    private OnCreateIjkplay onCreateIjkplay;
+
     public IjkMediaPlayer getIjkMediaPlayer() {
         return ijkMediaPlayer;
     }
@@ -48,10 +50,22 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
+        //跳帧处理,放CPU处理较慢时，进行跳帧处理，保证播放流程，画面和声音同步
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
+        //设置是否开启环路过滤: 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
+        //设置播放前的最大探测时间
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L);
+        //设置播放前的探测时间 1,达到首屏秒开效果
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1);
+        //播放前的探测Size，默认是1M, 改小一点会出画面更快
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 10240L);
+        //每处理一个packet之后刷新io上下文
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L);
+        //是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0L);
 
 
         ijkMediaPlayer.setOnPreparedListener(EasyVideoIjkplayer.this);
@@ -62,6 +76,9 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnBufferingUpdateListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnSeekCompleteListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnTimedTextListener(EasyVideoIjkplayer.this);
+        if (onCreateIjkplay != null) {
+            onCreateIjkplay.onCreate(ijkMediaPlayer);
+        }
 
         try {
             if (getCurrentDataSource() == null) {
@@ -263,5 +280,18 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     @Override
     public void onTimedText(IMediaPlayer iMediaPlayer, IjkTimedText ijkTimedText) {
 
+    }
+
+    public void setOnCreateIjkplay(OnCreateIjkplay onCreateIjkplay) {
+        this.onCreateIjkplay = onCreateIjkplay;
+    }
+
+    public interface OnCreateIjkplay {
+        /**
+         * 对IjkPlayer的一些其他配置
+         *
+         * @param ijkMediaPlayer
+         */
+        public void onCreate(IjkMediaPlayer ijkMediaPlayer);
     }
 }

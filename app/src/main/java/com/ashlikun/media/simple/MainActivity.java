@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onEvent(int type) {
                 if (type == EasyVideoAction.ON_STATUS_PREPARING) {
-                    VideoUtils.onPause();
+//                    VideoUtils.onPause();
                 }
             }
         });
