@@ -47,7 +47,7 @@ dependencies {
     implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation 'com.github.ashLikun.frame:glideutils:2.7.4'
     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-    implementation 'com.github.ashLikun.ijkPlayer:lib_lite_https:1.0.0'
+    implementation 'com.shuyu:gsyVideoPlayer-ex_so:7.1.4'
 //    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'
 //    implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
 

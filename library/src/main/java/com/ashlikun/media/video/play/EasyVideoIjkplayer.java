@@ -53,20 +53,25 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         //跳帧处理,放CPU处理较慢时，进行跳帧处理，保证播放流程，画面和声音同步
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0);
-        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0);
         //设置是否开启环路过滤: 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48);
-        //设置播放前的最大探测时间
-        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L);
         //设置播放前的探测时间 1,达到首屏秒开效果
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1);
         //播放前的探测Size，默认是1M, 改小一点会出画面更快
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 10240L);
         //每处理一个packet之后刷新io上下文
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "reconnect", 1);
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-hevc", 1);//支持高清
+        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0);//是否开启预缓冲
         //是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验
-        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0L);
-
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0L);
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_clear", 1);
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "timeout", 20000);
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "buffer_size", 1316);
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "infbuf", 1);  // 无限读
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L);
+//        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "dns_cache_timeout", -1);
 
         ijkMediaPlayer.setOnPreparedListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnVideoSizeChangedListener(EasyVideoIjkplayer.this);
@@ -76,6 +81,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnBufferingUpdateListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnSeekCompleteListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnTimedTextListener(EasyVideoIjkplayer.this);
+        ijkMediaPlayer.setLogEnabled(true);
         if (onCreateIjkplay != null) {
             onCreateIjkplay.onCreate(ijkMediaPlayer);
         }
@@ -95,8 +101,10 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
                 } else {
                     ijkMediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri());
                 }
+            } else if (getCurrentDataSource().getIMediaDataSource() != null) {
+                ijkMediaPlayer.setDataSource(getCurrentDataSource().getIMediaDataSource());
             } else if (getCurrentDataSource().getFileDescriptor() != null) {
-                ijkMediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor().getFileDescriptor());
+                ijkMediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(VideoUtils.mContext, VideoUtils.mContext.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
             }

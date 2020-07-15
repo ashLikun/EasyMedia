@@ -1,13 +1,16 @@
 package com.ashlikun.media.video;
 
-import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.text.TextUtils;
 
+import java.io.FileDescriptor;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+
+import tv.danmaku.ijk.media.player.misc.IMediaDataSource;
 
 /**
  * 作者　　: 李坤
@@ -17,7 +20,7 @@ import java.util.Map;
  * 功能介绍：视频播放数据源
  */
 
-public class VideoData implements Parcelable {
+public class VideoData implements Serializable {
     Builder builder;
 
     protected VideoData(Builder builder) {
@@ -52,8 +55,12 @@ public class VideoData implements Parcelable {
         return builder.uri;
     }
 
-    public AssetFileDescriptor getFileDescriptor() {
+    public FileDescriptor getFileDescriptor() {
         return builder.fileDescriptor;
+    }
+
+    public IMediaDataSource getIMediaDataSource() {
+        return builder.source;
     }
 
     public Map<String, String> getHeaders() {
@@ -99,11 +106,12 @@ public class VideoData implements Parcelable {
     }
 
 
-    public static class Builder implements Parcelable {
+    public static class Builder implements Serializable {
         protected String url;
         protected String title;
         protected Uri uri;
-        protected AssetFileDescriptor fileDescriptor;
+        protected IMediaDataSource source;
+        protected FileDescriptor fileDescriptor;
         protected Map<String, String> headers;
 
         public Builder url(String url) {
@@ -121,8 +129,13 @@ public class VideoData implements Parcelable {
             return this;
         }
 
-        public Builder fileDescriptor(AssetFileDescriptor fileDescriptor) {
+        public Builder fileDescriptor(FileDescriptor fileDescriptor) {
             this.fileDescriptor = fileDescriptor;
+            return this;
+        }
+
+        public Builder mediaDataSource(IMediaDataSource source) {
+            this.source = source;
             return this;
         }
 
@@ -147,79 +160,5 @@ public class VideoData implements Parcelable {
             return new VideoData(this);
         }
 
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.url);
-            dest.writeString(this.title);
-            dest.writeParcelable(this.uri, flags);
-            dest.writeParcelable(this.fileDescriptor, flags);
-            this.headers = new HashMap<>();
-            dest.writeInt(this.headers.size());
-            for (Map.Entry<String, String> entry : this.headers.entrySet()) {
-                dest.writeString(entry.getKey());
-                dest.writeString(entry.getValue());
-            }
-        }
-
-        public Builder() {
-        }
-
-        protected Builder(Parcel in) {
-            this.url = in.readString();
-            this.title = in.readString();
-            this.uri = in.readParcelable(Uri.class.getClassLoader());
-            this.fileDescriptor = in.readParcelable(AssetFileDescriptor.class.getClassLoader());
-            int headersSize = in.readInt();
-            this.headers = new HashMap(headersSize);
-            for (int i = 0; i < headersSize; i++) {
-                String key = in.readString();
-                String value = in.readString();
-                this.headers.put(key, value);
-            }
-        }
-
-        public static final Creator<Builder> CREATOR = new Creator<Builder>() {
-            @Override
-            public Builder createFromParcel(Parcel source) {
-                return new Builder(source);
-            }
-
-            @Override
-            public Builder[] newArray(int size) {
-                return new Builder[size];
-            }
-        };
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeParcelable(this.builder, flags);
-    }
-
-    protected VideoData(Parcel in) {
-        this.builder = in.readParcelable(Builder.class.getClassLoader());
-    }
-
-    public static final Creator<VideoData> CREATOR = new Creator<VideoData>() {
-        @Override
-        public VideoData createFromParcel(Parcel source) {
-            return new VideoData(source);
-        }
-
-        @Override
-        public VideoData[] newArray(int size) {
-            return new VideoData[size];
-        }
-    };
 }

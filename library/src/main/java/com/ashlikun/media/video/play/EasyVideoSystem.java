@@ -91,8 +91,7 @@ public class EasyVideoSystem extends EasyMediaInterface
                     mediaPlayer.setDataSource(VideoUtils.mContext, getCurrentDataSource().getUri());
                 }
             } else if (getCurrentDataSource().getFileDescriptor() != null) {
-                mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor().getFileDescriptor(),
-                        getCurrentDataSource().getFileDescriptor().getStartOffset(), getCurrentDataSource().getFileDescriptor().getDeclaredLength());
+                mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(VideoUtils.mContext, VideoUtils.mContext.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
             }
