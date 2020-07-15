@@ -81,7 +81,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnBufferingUpdateListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnSeekCompleteListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnTimedTextListener(EasyVideoIjkplayer.this);
-        ijkMediaPlayer.setLogEnabled(true);
+//        ijkMediaPlayer.setLogEnabled(true);
         if (onCreateIjkplay != null) {
             onCreateIjkplay.onCreate(ijkMediaPlayer);
         }
