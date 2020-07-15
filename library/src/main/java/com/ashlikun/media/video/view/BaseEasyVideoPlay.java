@@ -326,6 +326,9 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             //用之前已经存在的savedSurfaceTexture，实现无差别播放
             EasyMediaManager.textureView.setSurfaceTexture(EasyMediaManager.savedSurfaceTexture);
         }
+        if (EasyMediaManager.textureView.getParent() != null) {
+            ((ViewGroup) (EasyMediaManager.textureView.getParent())).removeView(EasyMediaManager.textureView);
+        }
         textureViewContainer.addView(EasyMediaManager.textureView, layoutParams);
     }
 

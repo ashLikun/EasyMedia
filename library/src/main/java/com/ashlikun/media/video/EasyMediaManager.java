@@ -10,7 +10,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
 
-import com.ashlikun.media.video.play.EasyVideoSystem;
+import com.ashlikun.media.video.play.EasyVideoIjkplayer;
 import com.ashlikun.media.video.status.VideoDisplayType;
 import com.ashlikun.media.video.view.EasyTextureView;
 
@@ -118,7 +118,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
                     }
                 }
                 if (mMediaPlay == null) {
-                    mMediaPlay = new EasyVideoSystem();
+                    mMediaPlay = new EasyVideoIjkplayer();
                 }
             }
         }
