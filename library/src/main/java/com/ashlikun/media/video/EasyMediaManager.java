@@ -129,8 +129,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     /**
      * 初始化TextureView
      */
-    public void initTextureView(Context context, @VideoDisplayType.Code int displayType) {
-        EasyMediaManager.getInstance().removeTextureView();
+    public void initTextureView(Context context, @VideoDisplayType.Code int displayType, boolean isRemoveTextureView) {
+        if (isRemoveTextureView) {
+            EasyMediaManager.getInstance().removeTextureView();
+        }
         EasyMediaManager.textureView = new EasyTextureView(context);
         textureView.setDisplayType(displayType);
         EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.getInstance());
