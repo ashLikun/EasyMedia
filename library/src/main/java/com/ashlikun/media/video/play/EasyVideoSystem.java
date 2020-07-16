@@ -122,11 +122,11 @@ public class EasyVideoSystem extends EasyMediaInterface
     }
 
     @Override
-    public void seekTo(int time) {
+    public void seekTo(long time) {
         if (mediaPlayer == null) {
             return;
         }
-        mediaPlayer.seekTo(time);
+        mediaPlayer.seekTo((int) time);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class EasyVideoSystem extends EasyMediaInterface
         }
         if (!isPreparedPause) {
             mediaPlayer.start();
-            EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+            EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -183,7 +183,7 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -196,7 +196,7 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public void onBufferingUpdate(MediaPlayer mediaPlayer, final int percent) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -208,7 +208,7 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, final int what, final int extra) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -221,7 +221,7 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public boolean onInfo(MediaPlayer mediaPlayer, final int what, final int extra) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -240,7 +240,7 @@ public class EasyVideoSystem extends EasyMediaInterface
     public void onVideoSizeChanged(MediaPlayer mediaPlayer, int width, int height) {
         EasyMediaManager.getInstance().currentVideoWidth = width;
         EasyMediaManager.getInstance().currentVideoHeight = height;
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -252,7 +252,7 @@ public class EasyVideoSystem extends EasyMediaInterface
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {

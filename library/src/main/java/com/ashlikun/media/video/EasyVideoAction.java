@@ -66,7 +66,7 @@ public interface EasyVideoAction {
      */
     int ON_STATUS_AUTO_COMPLETE = 18;
     /**
-     * 没有网络时候点击继续播放
+     * 没有无线网络时候点击继续播放
      */
     int ON_CLICK_START_NO_WIFI_GOON = 101;
 

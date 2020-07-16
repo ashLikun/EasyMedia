@@ -44,19 +44,20 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      * 使用面向接口编程
      */
     private EasyMediaInterface mMediaPlay;
+    private Context appContext;
     /**
      * 播放器控件
      */
-    public static EasyTextureView textureView;
+    private EasyTextureView textureView;
     /**
      * 用来捕获视频流中的图像帧的
      */
-    public static SurfaceTexture savedSurfaceTexture;
+    private SurfaceTexture savedSurfaceTexture;
     /**
      * 设置给MediaPlay的渲染器(就是内存中的一段绘图缓冲区),里面有savedSurfaceTexture
      * 这个是保证无缝切换的重点
      */
-    public static Surface surface;
+    private Surface surface;
 
     /**
      * 当前播放的视频的大小
@@ -66,19 +67,21 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     /**
      * 播放器Handler,独立线程
      */
-    public MediaHandler mediaHandler;
+    private MediaHandler mediaHandler;
     /**
      * 主线程的handler
      */
-    public Handler mainThreadHandler;
+    private Handler mainThreadHandler;
     /**
      * 播放事件的回掉
      */
-    public static EasyVideoAction MEDIA_EVENT;
+    public EasyVideoAction MEDIA_EVENT;
     /**
      * 是否允许过非wifi播放视频,生命周期内，默认只提示一次
      */
-    public static boolean WIFI_ALLOW_PLAY = false;
+    public boolean WIFI_ALLOW_PLAY = false;
+    //网络状态 准备的时候
+    public String mNetSate = "NORMAL";
 
     public EasyMediaManager() {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
@@ -101,6 +104,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         }
         //返回一个实例
         return instance;
+    }
+
+    public static EasyTextureView getTextureView() {
+        return getInstance().textureView;
     }
 
     public EasyMediaInterface getMediaPlay() {
@@ -129,13 +136,17 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     /**
      * 初始化TextureView
      */
-    public void initTextureView(Context context, @VideoDisplayType.Code int displayType, boolean isRemoveTextureView) {
-        if (isRemoveTextureView) {
-            EasyMediaManager.getInstance().removeTextureView();
+    public void initTextureView(Context context, @VideoDisplayType.Code int displayType) {
+        if (appContext == null) {
+            appContext = context.getApplicationContext();
         }
-        EasyMediaManager.textureView = new EasyTextureView(context);
+        textureView = new EasyTextureView(context);
         textureView.setDisplayType(displayType);
-        EasyMediaManager.textureView.setSurfaceTextureListener(EasyMediaManager.getInstance());
+        textureView.setSurfaceTextureListener(EasyMediaManager.getInstance());
+        //用之前已经存在的savedSurfaceTexture，实现无差别播放
+        if (savedSurfaceTexture != null && savedSurfaceTexture != textureView.getSurfaceTexture()) {
+            textureView.setSurfaceTexture(savedSurfaceTexture);
+        }
     }
 
     /**
@@ -165,7 +176,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         return getInstance().getMediaPlay().getDuration();
     }
 
-    public static void seekTo(int time) {
+    public static void seekTo(long time) {
         if (getInstance().getMediaPlay() == null) {
             return;
         }
@@ -206,6 +217,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      */
     public void prepare() {
         releaseMediaPlayer();
+        mNetSate = NetworkUtils.getNetWorkTypeName(appContext);
         Message msg = new Message();
         msg.what = HANDLER_PREPARE;
         mediaHandler.sendMessage(msg);
@@ -215,14 +227,14 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      * 释放渲染器和保存的SurfaceTexture，textureView
      */
     public void releaseAllSufaceView() {
-        if (EasyMediaManager.surface != null) {
-            EasyMediaManager.surface.release();
+        if (EasyMediaManager.getInstance().surface != null) {
+            EasyMediaManager.getInstance().surface.release();
         }
-        if (EasyMediaManager.savedSurfaceTexture != null) {
-            EasyMediaManager.savedSurfaceTexture.release();
+        if (EasyMediaManager.getInstance().savedSurfaceTexture != null) {
+            EasyMediaManager.getInstance().savedSurfaceTexture.release();
         }
-        EasyMediaManager.textureView = null;
-        EasyMediaManager.savedSurfaceTexture = null;
+        textureView = null;
+        EasyMediaManager.getInstance().savedSurfaceTexture = null;
     }
 
     @Override
@@ -255,12 +267,13 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      * 移除TextureView
      */
     public void removeTextureView() {
-        if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.getParent() != null) {
-            EasyMediaManager.textureView.setSurfaceTextureListener(null);
-            ((ViewGroup) EasyMediaManager.textureView.getParent()).removeView(EasyMediaManager.textureView);
+        TextureView textureView = EasyMediaManager.getInstance().textureView;
+        if (textureView != null && textureView.getParent() != null) {
+            textureView.setSurfaceTextureListener(null);
+            ((ViewGroup) textureView.getParent()).removeView(textureView);
         }
-        EasyMediaManager.savedSurfaceTexture = null;
-        EasyMediaManager.textureView = null;
+        EasyMediaManager.getInstance().savedSurfaceTexture = null;
+        EasyMediaManager.getInstance().textureView = null;
     }
 
     public class MediaHandler extends Handler {
@@ -292,5 +305,9 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
                     break;
             }
         }
+    }
+
+    public Handler getMediaHandler() {
+        return mainThreadHandler;
     }
 }

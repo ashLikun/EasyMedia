@@ -78,8 +78,8 @@ public class VideoScreenUtils {
     public static int calculateOrientation(int fullscreenPortrait) {
         int orientation = EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR;
         if (fullscreenPortrait == 0) {
-            if (EasyMediaManager.textureView != null && EasyMediaManager.textureView.isSizeOk()) {
-                orientation = EasyMediaManager.textureView.isPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR :
+            if (EasyMediaManager.getTextureView() != null && EasyMediaManager.getTextureView().isSizeOk()) {
+                orientation = EasyMediaManager.getTextureView().isPortrait() ? EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR :
                         EasyVideoPlayer.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE;
             }
         } else if (fullscreenPortrait == 1) {

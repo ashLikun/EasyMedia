@@ -16,13 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.ashlikun.media.video.EasyVideoAction;
+import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.video.play.EasyVideoIjkplayer;
 import com.ashlikun.media.video.view.EasyVideoPlayer;
-import com.ashlikun.okhttputils.http.OkHttpUtils;
-import com.ashlikun.orm.LiteOrmUtil;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -35,10 +33,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         quanxian();
-        //数据库
-        LiteOrmUtil.init(getApplication());
-        OkHttpUtils.init(null);
-        VideoUtils.init(getApplication(), EasyVideoIjkplayer.class);
 
 
 //        GlideUtils.init(new GlideUtils.OnNeedListener() {
@@ -72,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
+        findViewById(R.id.detailsButton).setOnClickListener(this);
         findViewById(R.id.listButton).setOnClickListener(this);
         findViewById(R.id.fullScreenButton).setOnClickListener(this);
         findViewById(R.id.fullScreenButton2).setOnClickListener(this);
@@ -81,7 +76,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.listButton) {
+        if (v.getId() == R.id.detailsButton) {
+            Intent intent = new Intent(this, MainDetailsActivity.class);
+            intent.putExtra("data", mediaPlay.getCurrentData());
+            startActivity(intent);
+        } else if (v.getId() == R.id.listButton) {
             Intent intent = new Intent(this, HuoSanActivity.class);
             startActivity(intent);
         } else if (v.getId() == R.id.douyinButton) {
@@ -156,7 +155,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        mediaPlay.onResume();
+        if (EasyVideoPlayerManager.getCurrentVideoPlay() != null &&
+                mediaPlay != EasyVideoPlayerManager.getCurrentVideoPlay() &&
+                mediaPlay.getCurrentData().equalsUrl(EasyVideoPlayerManager.getCurrentVideoPlay().getCurrentData())) {
+            //从其他播放的地方再次播放
+            VideoScreenUtils.startCacheVideo(mediaPlay);
+        } else {
+            VideoUtils.onResume();
+        }
     }
 
     @Override

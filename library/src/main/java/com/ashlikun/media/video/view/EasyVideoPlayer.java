@@ -394,9 +394,9 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     public void onVideoSizeChanged() {
         super.onVideoSizeChanged();
-        if (EasyMediaManager.textureView != null) {
+        if (EasyMediaManager.getTextureView() != null) {
             if (videoRotation != 0) {
-                EasyMediaManager.textureView.setRotation(videoRotation);
+                EasyMediaManager.getTextureView().setRotation(videoRotation);
             }
         }
     }

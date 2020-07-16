@@ -8,8 +8,6 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -21,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 
 import com.ashlikun.media.R;
+import com.ashlikun.media.video.play.EasyVideoIjkplayer;
 import com.ashlikun.media.video.status.VideoDisplayType;
 import com.ashlikun.media.video.view.BaseEasyVideoPlay;
 import com.ashlikun.media.video.view.EasyVideoPlayer;
@@ -43,6 +42,7 @@ public class VideoUtils {
     public static Context mContext;
     public static boolean isDebug = true;
     public static Class<? extends EasyMediaInterface> mMediaPlayClass;
+    private static EasyVideoIjkplayer.OnCreateIjkplay onCreateIjkplay;
 
 
     public static final String EASY_MEDIA_PROGRESS = "EASY_MEDIA_PROGRESS";
@@ -61,6 +61,14 @@ public class VideoUtils {
     public static void init(Application context, Class<? extends EasyMediaInterface> mediaPlayClass) {
         VideoUtils.mContext = context;
         VideoUtils.mMediaPlayClass = mediaPlayClass;
+    }
+
+    public static void setOnCreateIjkplay(EasyVideoIjkplayer.OnCreateIjkplay onCreateIjkplay) {
+        VideoUtils.onCreateIjkplay = onCreateIjkplay;
+    }
+
+    public static EasyVideoIjkplayer.OnCreateIjkplay getOnCreateIjkplay() {
+        return onCreateIjkplay;
     }
 
     public static void setIsDebug(boolean isDebug) {
@@ -107,23 +115,7 @@ public class VideoUtils {
     }
 
     /**
-     * 是否有wifi
-     *
-     * @param context
-     * @return
-     */
-    public static boolean isWifiConnected(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
-    }
-
-
-    /**
      * 获取activity
-     *
-     * @param context
-     * @return
      */
     public static Activity getActivity(Context context) {
         if (context == null) {
@@ -273,7 +265,7 @@ public class VideoUtils {
      */
     public static void setEasyMediaAction(EasyVideoAction easyMediaAction) {
         if (easyMediaAction instanceof Application) {
-            EasyMediaManager.MEDIA_EVENT = easyMediaAction;
+            EasyMediaManager.getInstance().MEDIA_EVENT = easyMediaAction;
         }
     }
 
@@ -341,13 +333,13 @@ public class VideoUtils {
      */
     public static boolean showWifiDialog(Context context, VideoData data, final BaseEasyVideoPlay play) {
         if (!data.isLocal() &&
-                !VideoUtils.isWifiConnected(context) && !EasyMediaManager.WIFI_ALLOW_PLAY) {
+                !NetworkUtils.isWifiConnected(context) && !EasyMediaManager.getInstance().WIFI_ALLOW_PLAY) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setMessage(context.getResources().getString(R.string.easy_video_tips_not_wifi));
             builder.setPositiveButton(context.getResources().getString(R.string.easy_video_tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    EasyMediaManager.WIFI_ALLOW_PLAY = true;
+                    EasyMediaManager.getInstance().WIFI_ALLOW_PLAY = true;
                     dialog.dismiss();
                     play.onEvent(EasyVideoAction.ON_CLICK_START_NO_WIFI_GOON);
                     play.startVideo();
@@ -404,9 +396,9 @@ public class VideoUtils {
      * @param type
      */
     public static void setVideoImageDisplayType(@VideoDisplayType.Code int type) {
-        if (EasyMediaManager.textureView != null) {
-            EasyMediaManager.textureView.setDisplayType(type);
-            EasyMediaManager.textureView.requestLayout();
+        if (EasyMediaManager.getTextureView() != null) {
+            EasyMediaManager.getTextureView().setDisplayType(type);
+            EasyMediaManager.getTextureView().requestLayout();
         }
     }
 
@@ -416,8 +408,8 @@ public class VideoUtils {
      * @param rotation
      */
     public static void setTextureViewRotation(int rotation) {
-        if (EasyMediaManager.textureView != null) {
-            EasyMediaManager.textureView.setRotation(rotation);
+        if (EasyMediaManager.getTextureView() != null) {
+            EasyMediaManager.getTextureView().setRotation(rotation);
         }
     }
 

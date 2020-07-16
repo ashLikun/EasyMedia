@@ -155,8 +155,8 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
 
     @Override
     public void removeTextureView() {
-        if (EasyMediaManager.textureView != null) {
-            textureViewContainer.removeView(EasyMediaManager.textureView);
+        if (EasyMediaManager.getTextureView() != null) {
+            textureViewContainer.removeView(EasyMediaManager.getTextureView());
         }
     }
 

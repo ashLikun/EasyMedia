@@ -44,7 +44,7 @@ public abstract class EasyMediaInterface {
     /**
      * 快进到指定的时间
      */
-    public abstract void seekTo(int time);
+    public abstract void seekTo(long time);
 
     /**
      * 释放播放器

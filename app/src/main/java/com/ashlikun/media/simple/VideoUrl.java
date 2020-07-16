@@ -11,8 +11,8 @@ public class VideoUrl {
     //    String videoUrl2 = "http://p2.suibianyuming.com.cn/1524714504video_341679.mp4";
 //    String videoUrl = "http://fs.mv.web.kugou.com/201712191633/784d23335957e44b18e748187f7726a9/G107/M02/16/13/S5QEAFl5rxCAaVBHAXjrv4kCk4A283.mp4";
 //    public static String meinv2 = "https://jsmov2.a.yximgs.com/upic/2018/08/19/17/BMjAxODA4MTkxNzQxMDBfMTE4OTkwMV83NjcxMTEyNTcwXzFfMw==_hd3_B9725b809535516c402d3cfc81d8c1e13.mp4?tag=1-1534821741-h-1-u54cnxzbkp-aee2b10cb2eaea47";
-//    public static String meinv2 = "http://webvideo.sipac.gov.cn/lbsz/2020/20200513.mp4";
-    public static String meinv2 = "http://webvideo.sipac.gov.cn/other/2014/20140108sps.mp4";
+    public static String meinv2 = "http://webvideo.sipac.gov.cn/lbsz/2020/20200513.mp4";
+//    public static String meinv2 = "http://webvideo.sipac.gov.cn/other/2014/20140108sps.mp4";
     //    public static String meinv2 = "rtmp://pili-publish.www.0gow.com/0gow-live/5eaa983620a05d654f227b8d?key=aaa0e68cb026613a";
 //    public static String meinv2 = "rtmp://pili-publish.www.0gow.com/0gow-live/5ea4eb91a3d5ec5f3062bdf8?key=b52ea07be24d792d";
 //    public static String meinv2 = "rtmp://wxalivepush.weixin.qq.com/live/wx6252d8212328fe00_58?txSecret=9145d6535db78669c98d96e21d1705ab&txTime=5ea6c940";

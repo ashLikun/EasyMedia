@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.ashlikun.media.video.view.EasyVideoPlayer
+                android:id="@+id/mediaPlay"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:video_display_type="adapter"
+                app:video_full_screen_enable="true"
+                app:video_full_screen_portrait="auto"></com.ashlikun.media.video.view.EasyVideoPlayer>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="我是详情页面我是详情页面我是详情页面我是详情页面我是详情页面我是详情页面我是详情页面"
+                android:textSize="50dp"></TextView>
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</FrameLayout>

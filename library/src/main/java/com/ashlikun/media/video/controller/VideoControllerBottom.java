@@ -11,11 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.ashlikun.media.video.EasyVideoAction;
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.EasyMediaManager;
+import com.ashlikun.media.video.EasyVideoAction;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.R;
 import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.concurrent.ScheduledFuture;
@@ -218,7 +218,7 @@ public class VideoControllerBottom extends LinearLayout implements SeekBar.OnSee
                         }
                         int duration = getDuration();
                         int progress = (int) (position * 100f / (duration == 0 ? 1 : duration));
-                        if (progress != 0) {
+                        if (progress >= 0) {
                             if (onEventListener != null) {
                                 onEventListener.onProgressChang(progress);
                             } else {
@@ -230,6 +230,12 @@ public class VideoControllerBottom extends LinearLayout implements SeekBar.OnSee
                 });
             }
         }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        stopProgressSchedule();
     }
 
     public interface OnEventListener {

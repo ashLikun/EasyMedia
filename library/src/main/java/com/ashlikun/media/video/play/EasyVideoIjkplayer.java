@@ -1,8 +1,8 @@
 package com.ashlikun.media.video.play;
 
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Surface;
 import android.widget.Toast;
 
@@ -32,8 +32,6 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
      * 是否调用过暂定，调用后在准备好的时候不能直接播放
      */
     private boolean isPreparedPause = false;
-
-    private OnCreateIjkplay onCreateIjkplay;
 
     public IjkMediaPlayer getIjkMediaPlayer() {
         return ijkMediaPlayer;
@@ -85,8 +83,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         ijkMediaPlayer.setOnSeekCompleteListener(EasyVideoIjkplayer.this);
         ijkMediaPlayer.setOnTimedTextListener(EasyVideoIjkplayer.this);
 //        ijkMediaPlayer.setLogEnabled(true);
-        if (onCreateIjkplay != null) {
-            onCreateIjkplay.onCreate(ijkMediaPlayer);
+        if (VideoUtils.getOnCreateIjkplay() != null) {
+            VideoUtils.getOnCreateIjkplay().onCreate(ijkMediaPlayer);
         }
 
         try {
@@ -143,7 +141,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     }
 
     @Override
-    public void seekTo(int time) {
+    public void seekTo(long time) {
         ijkMediaPlayer.seekTo(time);
     }
 
@@ -194,7 +192,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         }
         if (!isPreparedPause) {
             ijkMediaPlayer.start();
-            EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+            EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -211,7 +209,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
         EasyMediaManager.getInstance().currentVideoWidth = iMediaPlayer.getVideoWidth();
         EasyMediaManager.getInstance().currentVideoHeight = iMediaPlayer.getVideoHeight();
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -223,7 +221,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -236,7 +234,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, final int what, final int extra) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        Log.e("onError", "what = " + what + "    extra = " + extra);
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -249,11 +248,12 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, final int what, final int extra) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        Log.e("onInfo", "what = " + what + "    extra = " + extra);
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+                    if (what == IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
                         EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
                     } else {
                         EasyVideoPlayerManager.getCurrentVideoPlay().onInfo(what, extra);
@@ -266,7 +266,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, final int percent) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -278,7 +278,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-        EasyMediaManager.getInstance().mainThreadHandler.post(new Runnable() {
+        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
             @Override
             public void run() {
                 if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
@@ -293,9 +293,6 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     }
 
-    public void setOnCreateIjkplay(OnCreateIjkplay onCreateIjkplay) {
-        this.onCreateIjkplay = onCreateIjkplay;
-    }
 
     public interface OnCreateIjkplay {
         /**
