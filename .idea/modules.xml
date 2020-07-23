@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseMedia/BaseMedia.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseMedia/BaseMedia.iml" group="EasyMedia/BaseMedia" />
       <module fileurl="file://$PROJECT_DIR$/EasyMedia.iml" filepath="$PROJECT_DIR$/EasyMedia.iml" group="EasyMedia" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay2/ExoPlay2.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay2/ExoPlay2.iml" group="EasyMedia/ExoPlay2" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" group="EasyMedia/app" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" group="EasyMedia/library" />
     </modules>
   </component>
 </project>

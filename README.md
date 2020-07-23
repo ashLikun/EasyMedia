@@ -26,6 +26,14 @@ dependencies {
     implementation 'com.github.ashLikun.ijkplayer:lite:1.0.0'//最小库
     implementation 'com.github.ashLikun.ijkplayer:lite_hevc:1.0.0'//最小库（带hevc）
     implementation 'com.github.ashLikun.ijkplayer:default:1.0.0'//最大库（支持格式多）
+
+
+
+    //使用Exo2Play,这个依赖于ijkplayer-java
+    // VideoUtils.init(this, EasyVideoExo2.class);
+     implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
+     implementation 'com.google.android.exoplayer:extension-rtmp:2.11.7'
+     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
 }
 ```
         

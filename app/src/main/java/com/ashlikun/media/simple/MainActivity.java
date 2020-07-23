@@ -22,6 +22,9 @@ import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
 import com.ashlikun.media.video.view.EasyVideoPlayer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EasyVideoPlayer mediaPlay;
@@ -53,10 +56,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        });
         setContentView(R.layout.activity_main);
         mediaPlay = (EasyVideoPlayer) findViewById(R.id.mediaPlay);
-        mediaPlay.setDataSource(new VideoData.Builder()
+        List<VideoData> datas = new ArrayList<>();
+        datas.add(new VideoData.Builder()
                 .title("标题")
                 .url(VideoUrl.meinv2)
                 .builder());
+        datas.add(new VideoData.Builder()
+                .title("标题2")
+                .url(VideoUrl.meinv5)
+                .builder());
+        mediaPlay.setDataSource(datas);
         mediaPlay.addVideoAction(new EasyVideoAction() {
             @Override
             public void onEvent(int type) {
