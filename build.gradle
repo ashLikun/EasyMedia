@@ -7,10 +7,10 @@ buildscript {
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.15'
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
     }
 }
 
@@ -26,7 +26,7 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 ext {
-    superVersion = "1.0.0"
+    superVersion = "1.1.+"
     compileSdkVersion = 28
     buildToolsVersion = "28.0.3"
     designVersion = "com.google.android.material:material:" + superVersion
