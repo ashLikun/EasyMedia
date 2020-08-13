@@ -82,6 +82,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
         try {
             if (getCurrentDataSource() == null) {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                return;
             } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
                 if (getCurrentDataSource().getHeaders() != null) {
                     mediaPlayer.setDataSource(context, Uri.parse(getCurrentDataSource().getUrl()), getCurrentDataSource().getHeaders());
@@ -100,6 +101,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
                 mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                return;
             }
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setScreenOnWhilePlaying(true);

@@ -88,6 +88,7 @@ public class EasyVideoSystem extends EasyMediaInterface
                 mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                return;
             }
 
 
