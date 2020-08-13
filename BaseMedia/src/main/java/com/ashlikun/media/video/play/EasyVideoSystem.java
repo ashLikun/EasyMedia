@@ -88,6 +88,7 @@ public class EasyVideoSystem extends EasyMediaInterface
                 mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(mediaPlayer, -2, -2);
                 return;
             }
 
@@ -95,6 +96,8 @@ public class EasyVideoSystem extends EasyMediaInterface
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+            onError(mediaPlayer, -2, -2);
         }
     }
 

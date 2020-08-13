@@ -82,6 +82,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
         try {
             if (getCurrentDataSource() == null) {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(mediaPlayer, -2, -2);
                 return;
             } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
                 if (getCurrentDataSource().getHeaders() != null) {
@@ -101,6 +102,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
                 mediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(mediaPlayer, -2, -2);
                 return;
             }
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -110,6 +112,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+            onError(mediaPlayer, -2, -2);
         }
     }
 

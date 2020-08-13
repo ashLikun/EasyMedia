@@ -90,6 +90,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         try {
             if (getCurrentDataSource() == null) {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(ijkMediaPlayer, -2, -2);
                 return;
             } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
                 if (getCurrentDataSource().getHeaders() != null) {
@@ -109,6 +110,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
                 ijkMediaPlayer.setDataSource(getCurrentDataSource().getFileDescriptor());
             } else {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(ijkMediaPlayer, -2, -2);
                 return;
             }
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -117,6 +119,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+            onError(ijkMediaPlayer, -2, -2);
         }
     }
 

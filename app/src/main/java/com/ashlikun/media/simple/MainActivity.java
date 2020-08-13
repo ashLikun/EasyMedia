@@ -59,11 +59,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         List<VideoData> datas = new ArrayList<>();
         datas.add(new VideoData.Builder()
                 .title("标题")
-                .url(VideoUrl.meinv2)
                 .builder());
         datas.add(new VideoData.Builder()
                 .title("标题2")
-                .url(VideoUrl.meinv5)
                 .builder());
         mediaPlay.setDataSource(datas);
         mediaPlay.addVideoAction(new EasyVideoAction() {
