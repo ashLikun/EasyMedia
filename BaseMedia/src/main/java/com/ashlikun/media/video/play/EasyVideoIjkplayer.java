@@ -45,6 +45,12 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
     @Override
     public void prepare() {
         ijkMediaPlayer = new IjkMediaPlayer();
+        if (getCurrentDataSource() == null) {
+            Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+            onError(ijkMediaPlayer, -2, -2);
+            return;
+        }
+
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
         ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
@@ -88,11 +94,7 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         }
         ijkMediaPlayer.setLooping(getCurrentDataSource().isLooping());
         try {
-            if (getCurrentDataSource() == null) {
-                Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
-                onError(ijkMediaPlayer, -2, -2);
-                return;
-            } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
+            if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
                 if (getCurrentDataSource().getHeaders() != null) {
                     ijkMediaPlayer.setDataSource(getCurrentDataSource().getUrl(), getCurrentDataSource().getHeaders());
                 } else {

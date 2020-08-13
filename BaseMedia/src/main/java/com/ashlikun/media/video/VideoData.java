@@ -114,11 +114,17 @@ public class VideoData implements Serializable {
         if (obj == null) {
             return false;
         }
-        return TextUtils.equals(getUri() == null ? "noCurr" : getUri().toString(), obj.getUri() == null ? "noObj" : obj.getUri().toString()) ||
-                TextUtils.equals(getUrl() == null ? "noCurr" : getUrl(), obj.getUrl() == null ? "noObj" : obj.getUrl()) ||
-                TextUtils.equals(getFileDescriptor() == null ? "noCurr" : getFileDescriptor().toString(), obj.getFileDescriptor() == null ? "noObj" : obj.getFileDescriptor().toString());
+        return TextUtils.equals(isEmpty(getUri()) ? "noCurr" : getUri().toString(), isEmpty(obj.getUri()) ? "noObj" : obj.getUri().toString()) ||
+                TextUtils.equals(isEmpty(getUrl()) ? "noCurr" : getUrl(), isEmpty(obj.getUrl()) ? "noObj" : obj.getUrl()) ||
+                TextUtils.equals(isEmpty(getFileDescriptor()) ? "noCurr" : getFileDescriptor().toString(), isEmpty(obj.getFileDescriptor()) ? "noObj" : obj.getFileDescriptor().toString());
     }
 
+    public boolean isEmpty(Object text) {
+        if (text == null) {
+            return false;
+        }
+        return TextUtils.isEmpty(text.toString());
+    }
 
     public static class Builder implements Serializable {
         protected String url;

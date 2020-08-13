@@ -59,6 +59,11 @@ public class EasyVideoSystem extends EasyMediaInterface
     public void prepare() {
         try {
             mediaPlayer = new MediaPlayer();
+            if (getCurrentDataSource() == null) {
+                Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+                onError(mediaPlayer, -2, -2);
+                return;
+            }
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             //  mediaPlayer.setLooping((boolean) dataSource[1]);
             mediaPlayer.setOnPreparedListener(EasyVideoSystem.this);

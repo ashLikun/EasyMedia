@@ -60,6 +60,13 @@ public class EasyVideoExo2 extends EasyMediaInterface
     @Override
     public void prepare() {
         mediaPlayer = new IjkExo2MediaPlayer(context);
+
+        if (getCurrentDataSource() == null) {
+            Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
+            onError(mediaPlayer, -2, -2);
+            return;
+        }
+
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mediaPlayer.setOnPreparedListener(EasyVideoExo2.this);
         mediaPlayer.setOnCompletionListener(EasyVideoExo2.this);
@@ -80,11 +87,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
         mediaPlayer.setOverrideExtension(getCurrentDataSource().overrideExtension());
 
         try {
-            if (getCurrentDataSource() == null) {
-                Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
-                onError(mediaPlayer, -2, -2);
-                return;
-            } else if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
+            if (!TextUtils.isEmpty(getCurrentDataSource().getUrl())) {
                 if (getCurrentDataSource().getHeaders() != null) {
                     mediaPlayer.setDataSource(context, Uri.parse(getCurrentDataSource().getUrl()), getCurrentDataSource().getHeaders());
                 } else {
