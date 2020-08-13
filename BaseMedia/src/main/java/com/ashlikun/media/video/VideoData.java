@@ -121,7 +121,7 @@ public class VideoData implements Serializable {
 
     public boolean isEmpty(Object text) {
         if (text == null) {
-            return false;
+            return true;
         }
         return TextUtils.isEmpty(text.toString());
     }
