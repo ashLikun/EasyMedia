@@ -269,30 +269,24 @@ public class VideoScreenUtils {
      * 前提两个视频播放的是同一个
      * 一般用于页面跳转
      */
-    public static void startCacheVideo(BaseEasyVideoPlay newVideoPlay) {
-        BaseEasyVideoPlay oldVideo = EasyVideoPlayerManager.getCurrentVideoPlay();
-        if (oldVideo != null && (newVideoPlay.getCurrentData() == null ||
-                newVideoPlay.getCurrentData().equalsUrl(oldVideo.getCurrentData()))) {
-
-            oldVideo.removeTextureView();
-
-            newVideoPlay.setStatus(oldVideo.getCurrentState());
-            newVideoPlay.addTextureView();
-            if (oldVideo instanceof EasyVideoPlayer && newVideoPlay instanceof EasyVideoPlayer) {
-                if (((EasyVideoPlayer) oldVideo).getMediaController() != null && ((EasyVideoPlayer) newVideoPlay).getMediaController() != null) {
-                    ((EasyVideoPlayer) newVideoPlay).getMediaController().setBufferProgress(((EasyVideoPlayer) oldVideo).getMediaController().getBufferProgress());
-                }
-            }
-            //还原默认的view
-            oldVideo.setStatus(VideoStatus.NORMAL);
-            //取消定时器
-            if (oldVideo instanceof EasyVideoPlayer && ((EasyVideoPlayer) oldVideo).getMediaController() != null) {
-                ((EasyVideoPlayer) oldVideo).getMediaController().cancelDismissControlViewSchedule();
-            }
-            if (newVideoPlay.getMediaData() == null && oldVideo.getMediaData() != null) {
-                newVideoPlay.setDataSource(oldVideo.getMediaData(), oldVideo.getCurrentUrlIndex());
-            }
-            newVideoPlay.saveVideoPlayView();
+    public static boolean startCacheVideo(BaseEasyVideoPlay newVideoPlay) {
+        if (newVideoPlay == null) {
+            return false;
         }
+        return startCacheVideo(newVideoPlay, newVideoPlay.getCurrentData());
+    }
+
+    public static boolean startCacheVideo(BaseEasyVideoPlay newVideoPlay, VideoData newPlayData) {
+        BaseEasyVideoPlay oldVideo = EasyVideoPlayerManager.getCurrentVideoPlay();
+        if (oldVideo != null &&
+                newVideoPlay != oldVideo && newPlayData != null &&
+                newPlayData.equalsUrl(oldVideo.getCurrentData())) {
+            oldVideo.removeTextureView();
+            newVideoPlay.addTextureView();
+            newVideoPlay.copyPlay(oldVideo);
+            newVideoPlay.saveVideoPlayView();
+            return true;
+        }
+        return false;
     }
 }

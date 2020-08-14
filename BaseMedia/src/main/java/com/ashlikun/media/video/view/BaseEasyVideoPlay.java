@@ -707,6 +707,21 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     }
 
     /**
+     * 转到另外一个View播放
+     */
+    public void copyPlay(BaseEasyVideoPlay oldVideo) {
+        //复制一些标志位
+        mBackUpPlayingBufferState = oldVideo.mBackUpPlayingBufferState;
+        mHadPlay = oldVideo.mHadPlay;
+        setStatus(oldVideo.getCurrentState());
+        //还原默认的view
+        oldVideo.setStatus(VideoStatus.NORMAL);
+        if (getMediaData() == null && oldVideo.getMediaData() != null) {
+            setDataSource(oldVideo.getMediaData(), oldVideo.getCurrentUrlIndex());
+        }
+    }
+
+    /**
      * 对应activity得生命周期
      */
     public void onPause() {

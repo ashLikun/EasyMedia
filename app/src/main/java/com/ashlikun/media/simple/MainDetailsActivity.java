@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.ashlikun.media.video.EasyMediaManager;
 import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
@@ -34,10 +33,7 @@ public class MainDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main_details);
         mediaPlay = (EasyVideoPlayer) findViewById(R.id.mediaPlay);
         if (oldPlayData != null) {
-            if (EasyMediaManager.getCurrentDataSource() != null &&
-                    EasyMediaManager.getCurrentDataSource().equalsUrl(oldPlayData)) {
-                VideoScreenUtils.startCacheVideo(mediaPlay);
-            } else {
+            if (!VideoScreenUtils.startCacheVideo(mediaPlay, oldPlayData)) {
                 mediaPlay.setDataSource(oldPlayData);
                 mediaPlay.startVideo();
             }

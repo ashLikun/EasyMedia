@@ -396,7 +396,7 @@ public class EasyControllerViewHolder {
             topContainer.setVisibility(View.GONE);
             bottomContainer.setVisibility(View.GONE);
         } else {
-            if (!isCurrentAnimHint) {
+            if (topContainer.getVisibility() == View.VISIBLE || bottomContainer.getVisibility() == View.VISIBLE) {
                 animatorSet.cancel();
                 isCurrentAnimHint = true;
                 ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",
@@ -418,7 +418,7 @@ public class EasyControllerViewHolder {
             }
             bottomContainer.setVisibility(View.VISIBLE);
         } else {
-            if (isCurrentAnimHint) {
+            if (topContainer.getVisibility() == View.GONE || bottomContainer.getVisibility() == View.GONE) {
                 animatorSet.cancel();
                 isCurrentAnimHint = false;
                 ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",

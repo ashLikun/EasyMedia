@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.ashlikun.media.video.EasyVideoAction;
-import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
@@ -160,12 +159,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onResume() {
         super.onResume();
-        if (EasyVideoPlayerManager.getCurrentVideoPlay() != null &&
-                mediaPlay != EasyVideoPlayerManager.getCurrentVideoPlay() &&
-                mediaPlay.getCurrentData().equalsUrl(EasyVideoPlayerManager.getCurrentVideoPlay().getCurrentData())) {
+        if (!VideoScreenUtils.startCacheVideo(mediaPlay)) {
             //从其他播放的地方再次播放
-            VideoScreenUtils.startCacheVideo(mediaPlay);
-        } else {
             VideoUtils.onResume();
         }
     }

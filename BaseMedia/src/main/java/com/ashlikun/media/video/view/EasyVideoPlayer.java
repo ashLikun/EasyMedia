@@ -532,6 +532,23 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         }
     }
 
+    /**
+     * 转到另外一个View播放
+     */
+    @Override
+    public void copyPlay(BaseEasyVideoPlay oldVideo) {
+        super.copyPlay(oldVideo);
+        //复制缓存进度
+        if (oldVideo instanceof EasyVideoPlayer) {
+            if (((EasyVideoPlayer) oldVideo).getMediaController() != null && getMediaController() != null) {
+                getMediaController().setBufferProgress(((EasyVideoPlayer) oldVideo).getMediaController().getBufferProgress());
+            }
+        }
+        //取消定时器
+        if (oldVideo instanceof EasyVideoPlayer && ((EasyVideoPlayer) oldVideo).getMediaController() != null) {
+            ((EasyVideoPlayer) oldVideo).getMediaController().cancelDismissControlViewSchedule();
+        }
+    }
 
     /**
      * 是否可以竖屏
