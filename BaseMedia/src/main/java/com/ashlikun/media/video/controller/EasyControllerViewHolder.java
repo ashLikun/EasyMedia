@@ -11,10 +11,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.ashlikun.media.R;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoUtils;
-import com.ashlikun.media.R;
 import com.ashlikun.media.video.status.VideoStatus;
+import com.ashlikun.media.video.view.EasyLoaddingView;
 
 
 /**
@@ -25,7 +26,7 @@ import com.ashlikun.media.video.status.VideoStatus;
  * 功能介绍：控制器的holder
  */
 
-public class EasyControllerViewHolder implements IControllerViewHolder {
+public class EasyControllerViewHolder {
     ViewGroup viewGroup;
     //开始按钮
     public ImageView startButton;
@@ -35,7 +36,7 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     //重新加载view
     public LinearLayout mRetryLayout;
     //进度条
-    public ProgressBar loadingProgressBar;
+    public View easyLoaddingView;
     //是否是全屏播放
     public boolean isFull = false;
     //是否只在全屏的时候显示标题和顶部
@@ -50,7 +51,7 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     @VideoStatus.Code
     public int currentState = VideoStatus.NORMAL;
     AnimatorSet animatorSet = new AnimatorSet();
-    boolean isCurrentAnimHint;
+    boolean isCurrentAnimHint = true;
     //之前是否是准备状态
     private boolean isBeforeStatePreparing = false;
 
@@ -61,7 +62,7 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         bottomContainer = viewGroup.findViewById(R.id.controllerBottom);
         topContainer = viewGroup.findViewById(R.id.controllerTop);
         mRetryLayout = viewGroup.findViewById(R.id.retry_layout);
-        loadingProgressBar = viewGroup.findViewById(R.id.loading);
+        easyLoaddingView = viewGroup.findViewById(R.id.loading);
         thumbImageView = viewGroup.findViewById(R.id.thumb);
         replayTextView = viewGroup.findViewById(R.id.replay_text);
         bottomProgressBar = viewGroup.findViewById(R.id.bottom_progress);
@@ -71,28 +72,18 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         viewGroup.findViewById(R.id.retry_btn).setOnClickListener(clickListener);
         changeUiToNormal();
         bottomContainer.stopProgressSchedule();
-//        backTiny.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (EasyVideoPlayerManager.getFirstFloor().currentScreen == SCREEN_WINDOW_LIST) {
-//                    //只清空小窗口
-//                    MediaUtils.quitFullscreenOrTinyWindow();
-//                } else {
-//                    //退出小窗口并且之前的继续播放
-//                    MediaUtils.backPress();
-//                }
-//            }
-//        });
     }
 
 
-    @Override
     public void setControllFullEnable(boolean fullEnable) {
         bottomContainer.setFullEnable(fullEnable);
     }
 
-    //根据状态改变ui
-    @Override
+    /**
+     * 根据状态改变ui
+     *
+     * @param currentState
+     */
     public void changUi(@VideoStatus.Code int currentState) {
         if (this.currentState == currentState) {
             return;
@@ -125,6 +116,10 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             changeUiToComplete();
             bottomContainer.stopProgressSchedule();
         }
+        //开始缓冲
+        else if (currentState == VideoStatus.BUFFERING_START) {
+            changeUiToBufferStart();
+        }
         //错误
         else if (currentState == VideoStatus.ERROR) {
             changeUiToError();
@@ -133,7 +128,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         updateStartImage(currentState);
     }
 
-    @Override
     public void setFull(boolean full) {
         isFull = full;
         bottomContainer.setFull(isFull);
@@ -145,7 +139,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
     }
 
-    @Override
     public void setOnlyFullShowTitle(boolean onlyFullShowTitle) {
         isOnlyFullShowTitle = onlyFullShowTitle;
         if (isOnlyFullShowTitle && !isFull) {
@@ -153,35 +146,63 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
     }
 
-    @Override
     public void setDataSource(VideoData mediaDatan) {
         topContainer.setInitData(mediaDatan);
     }
 
 
-    //改变播放按钮的大小
+    /**
+     * 改变播放按钮的大小
+     */
     public void changeStartButtonSize(int size) {
         startButton.setMinimumWidth(size);
         startButton.setMinimumHeight(size);
     }
 
 
-    //准备中
+    /**
+     * 准备中
+     */
     public void changeUiToPreparing() {
         bottomContainer.setTime(0, 0);
         hintContainer(false);
         setMinControlsVisiblity(false, true, true, false, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            EasyLoaddingView view = (EasyLoaddingView) easyLoaddingView;
+            if (view.getCurrentState() == EasyLoaddingView.STATE_PRE) {
+                view.start();
+            }
+        }
     }
 
+    /**
+     * 开始缓冲
+     */
+    public void changeUiToBufferStart() {
+        setMinControlsVisiblity(false, true, false, true, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            EasyLoaddingView view = (EasyLoaddingView) easyLoaddingView;
+            if (view.getCurrentState() == EasyLoaddingView.STATE_PRE) {
+                view.start();
+            }
+        }
+    }
 
-    //改变ui到默认状态
+    /**
+     * 改变ui到默认状态
+     */
     private void changeUiToNormal() {
         //这边加动画，在低版本手机会卡顿，主要是列表里每次都会走这个方法
         hintContainer(false);
         setMinControlsVisiblity(true, false, true, false, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            ((EasyLoaddingView) easyLoaddingView).reset();
+        }
     }
 
-    //改变ui成完成
+    /**
+     * 改变ui成完成
+     */
     private void changeUiToComplete() {
         if (isOnlyFullShowTitle && !isFull) {
             topContainer.setVisibility(View.GONE);
@@ -190,6 +211,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         }
         bottomContainer.setVisibility(View.GONE);
         setMinControlsVisiblity(true, false, false, false, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            ((EasyLoaddingView) easyLoaddingView).reset();
+        }
     }
 
     /**
@@ -212,6 +236,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         hintContainer(!isBeforeStatePreparing && containerIsShow());
         isBeforeStatePreparing = false;
         setMinControlsVisiblity(false, false, false, true, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            ((EasyLoaddingView) easyLoaddingView).reset();
+        }
     }
 
     /**
@@ -220,6 +247,9 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     private void changeUiToPause() {
         showContainer(!containerIsShow());
         setMinControlsVisiblity(true, false, false, false, false);
+        if (easyLoaddingView instanceof EasyLoaddingView) {
+            ((EasyLoaddingView) easyLoaddingView).reset();
+        }
     }
 
 
@@ -235,7 +265,7 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     private void setMinControlsVisiblity(boolean startBtn, boolean loadingPro,
                                          boolean thumbImg, boolean bottomPrp, boolean retryLayout) {
         startButton.setVisibility(startBtn ? View.VISIBLE : View.GONE);
-        loadingProgressBar.setVisibility(loadingPro ? View.VISIBLE : View.GONE);
+        easyLoaddingView.setVisibility(loadingPro ? View.VISIBLE : View.GONE);
         thumbImageView.setVisibility(thumbImg ? View.VISIBLE : View.GONE);
         mRetryLayout.setVisibility(retryLayout ? View.VISIBLE : View.GONE);
         bottomProgressBar.setVisibility(bottomPrp ? View.VISIBLE : View.GONE);
@@ -265,14 +295,12 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     /**
      * 清空全部ui展示
      */
-    @Override
     public void changeUiToClean() {
         hintContainer(true);
         setMinControlsVisiblity(false, false, false, false, false);
     }
 
 
-    @Override
     public boolean containerIsShow() {
         return bottomContainer.getVisibility() == View.VISIBLE || topContainer.getVisibility() == View.VISIBLE;
     }
@@ -280,7 +308,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     /**
      * 开始进度定时器
      */
-    @Override
     public void startProgressSchedule() {
         bottomContainer.startProgressSchedule();
     }
@@ -288,7 +315,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     /**
      * 取消进度定时器
      */
-    @Override
     public void stopProgressSchedule() {
         bottomContainer.stopProgressSchedule();
     }
@@ -299,7 +325,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
      * @param progress          主进度
      * @param secondaryProgress 缓存进度
      */
-    @Override
     public void setProgress(int progress, int secondaryProgress) {
         if (progress >= 0) {
             bottomProgressBar.setProgress(progress);
@@ -310,17 +335,14 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
         bottomContainer.setProgress(progress, secondaryProgress);
     }
 
-    @Override
     public ImageView getThumbImageView() {
         return thumbImageView;
     }
 
-    @Override
     public int getBufferProgress() {
         return bottomContainer.getBufferProgress();
     }
 
-    @Override
     public void setTime(long position, long duration) {
         bottomContainer.setTime(position, duration);
     }
@@ -328,7 +350,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     /**
      * 显示或者隐藏顶部和底部控制器
      */
-    @Override
     public void showControllerViewAnim(@VideoStatus.Code final int currentState, final boolean isShow) {
         if (currentState != VideoStatus.NORMAL
                 && currentState != VideoStatus.ERROR
@@ -375,14 +396,16 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             topContainer.setVisibility(View.GONE);
             bottomContainer.setVisibility(View.GONE);
         } else {
-            animatorSet.cancel();
-            isCurrentAnimHint = true;
-            ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",
-                    0, -topContainer.getHeight());
-            ObjectAnimator animatoBottom = ObjectAnimator.ofFloat(bottomContainer, "translationY",
-                    0, bottomContainer.getHeight());
-            animatorSet.play(animatorTop).with(animatoBottom);
-            animatorSet.start();
+            if (!isCurrentAnimHint) {
+                animatorSet.cancel();
+                isCurrentAnimHint = true;
+                ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",
+                        0, -topContainer.getHeight());
+                ObjectAnimator animatoBottom = ObjectAnimator.ofFloat(bottomContainer, "translationY",
+                        0, bottomContainer.getHeight());
+                animatorSet.play(animatorTop).with(animatoBottom);
+                animatorSet.start();
+            }
         }
     }
 
@@ -395,14 +418,16 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
             }
             bottomContainer.setVisibility(View.VISIBLE);
         } else {
-            animatorSet.cancel();
-            isCurrentAnimHint = false;
-            ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",
-                    -topContainer.getHeight(), 0);
-            ObjectAnimator animatoBottom = ObjectAnimator.ofFloat(bottomContainer, "translationY",
-                    bottomContainer.getHeight(), 0);
-            animatorSet.play(animatorTop).with(animatoBottom);
-            animatorSet.start();
+            if (isCurrentAnimHint) {
+                animatorSet.cancel();
+                isCurrentAnimHint = false;
+                ObjectAnimator animatorTop = ObjectAnimator.ofFloat(topContainer, "translationY",
+                        -topContainer.getHeight(), 0);
+                ObjectAnimator animatoBottom = ObjectAnimator.ofFloat(bottomContainer, "translationY",
+                        bottomContainer.getHeight(), 0);
+                animatorSet.play(animatorTop).with(animatoBottom);
+                animatorSet.start();
+            }
         }
     }
 
@@ -414,4 +439,6 @@ public class EasyControllerViewHolder implements IControllerViewHolder {
     public void setBackGoneLeftSize(int backGoneLeftSize) {
         topContainer.setBackGoneLeftSize(backGoneLeftSize);
     }
+
+
 }

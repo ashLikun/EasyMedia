@@ -17,7 +17,6 @@ import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
 import com.ashlikun.media.video.VideoUtils;
 import com.ashlikun.media.video.controller.EasyVideoController;
-import com.ashlikun.media.video.controller.VideoControllerInterface;
 import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.List;
@@ -71,7 +70,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     /**
      * 播放器控制器
      */
-    protected VideoControllerInterface mediaController;
+    protected EasyVideoController mediaController;
 
     public EasyVideoPlayer(Context context) {
         this(context, null);
@@ -116,7 +115,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      *
      * @return
      */
-    protected VideoControllerInterface createController() {
+    protected EasyVideoController createController() {
         return new EasyVideoController(getContext());
     }
 
@@ -125,7 +124,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      *
      * @return
      */
-    public VideoControllerInterface getMediaController() {
+    public EasyVideoController getMediaController() {
         return mediaController;
     }
 
@@ -151,7 +150,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      *
      * @param controller
      */
-    protected void initController(VideoControllerInterface controller) {
+    protected void initController(EasyVideoController controller) {
         if (mediaController != null) {
             removeView((View) mediaController);
         }
@@ -182,6 +181,17 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean setStatus(int state) {
+        boolean result = super.setStatus(state);
+        if (result) {
+            if (mediaController != null) {
+                mediaController.setCurrentState(currentState);
+            }
+        }
+        return result;
     }
 
     /**
@@ -272,18 +282,14 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStateNormal() {
         super.onStateNormal();
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
+
     }
 
 
     @Override
     protected void onStatePreparing() {
         super.onStatePreparing();
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
+
     }
 
 
@@ -307,9 +313,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStatePlaying() {
         super.onStatePlaying();
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
+
     }
 
     /**
@@ -318,9 +322,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStatePause() {
         super.onStatePause();
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
+
     }
 
     /**
@@ -329,9 +331,15 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     @Override
     protected void onStateError() {
         super.onStateError();
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
+
+    }
+
+    /**
+     * 开始缓冲
+     */
+    @Override
+    protected void onBufferStart() {
+        super.onBufferStart();
     }
 
     /**
@@ -341,7 +349,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
     protected void onStateAutoComplete() {
         super.onStateAutoComplete();
         if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
             mediaController.setMaxProgressAndTime();
         }
     }
@@ -415,6 +422,10 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         }
     }
 
+    @Override
+    public void onInfo(int what, int extra) {
+        super.onInfo(what, extra);
+    }
 
     /**
      * 播放器生命周期,自己主动调用的,还原状态

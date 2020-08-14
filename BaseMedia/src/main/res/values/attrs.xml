@@ -27,4 +27,13 @@
             <enum name="original" value="3" />
         </attr>
     </declare-styleable>
+
+    <declare-styleable name="EasyLoaddingView">
+        <attr name="loadding_line_color" format="color" />
+        <attr name="loadding_bg_line_color" format="color" />
+        <attr name="loadding_text_color" format="color" />
+        <attr name="loadding_line_width" format="dimension" />
+        <attr name="loadding_bg_line_width" format="dimension" />
+        <attr name="loadding_text_size" format="dimension" />
+    </declare-styleable>
 </resources>

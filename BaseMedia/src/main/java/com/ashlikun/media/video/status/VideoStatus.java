@@ -39,9 +39,13 @@ public interface VideoStatus {
      * 错误
      */
     int ERROR = 7;
+    /**
+     * 开始缓冲
+     */
+    int BUFFERING_START = 8;
 
     @IntDef(value = {NORMAL, PREPARING, PLAYING,
-            PAUSE, AUTO_COMPLETE, ERROR})
+            PAUSE, AUTO_COMPLETE, ERROR, BUFFERING_START})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Code {
 

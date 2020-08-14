@@ -3,6 +3,7 @@ package com.ashlikun.media.video.view;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.TypedArray;
+import android.media.MediaPlayer;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -63,6 +64,14 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      * 当前状态
      */
     protected int currentState = VideoStatus.NORMAL;
+    /**
+     * 备份缓存前的播放状态
+     */
+    protected int mBackUpPlayingBufferState = -1;
+    /**
+     * 是否播放过
+     */
+    protected boolean mHadPlay = false;
     /**
      * 数据源，列表
      */
@@ -239,9 +248,9 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     /**
      * 设置当前播放器状态
      */
-    public void setStatus(int state) {
+    public boolean setStatus(int state) {
         if (currentState == state) {
-            return;
+            return false;
         }
         VideoUtils.d(String.valueOf(state));
         switch (state) {
@@ -269,7 +278,12 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                 onStateAutoComplete();
                 onEvent(EasyVideoAction.ON_STATUS_AUTO_COMPLETE);
                 break;
+            case VideoStatus.BUFFERING_START:
+                onBufferStart();
+                onEvent(EasyVideoAction.ON_STATUS_BUFFERING_START);
+                break;
         }
+        return true;
     }
 
     public int getDisplayType() {
@@ -325,6 +339,13 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     protected void onStatePause() {
         currentState = VideoStatus.PAUSE;
         EasyMediaManager.pause();
+    }
+
+    /**
+     * 开始缓冲
+     */
+    protected void onBufferStart() {
+        currentState = VideoStatus.BUFFERING_START;
     }
 
     /**
@@ -397,6 +418,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             EasyMediaManager.seekTo(mSeekOnStart);
             mSeekOnStart = 0;
         }
+        mHadPlay = true;
     }
 
     /**
@@ -407,7 +429,24 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
      */
     @Override
     public void onInfo(int what, int extra) {
+        if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            mBackUpPlayingBufferState = currentState;
+            //避免在onPrepared之前就进入了buffering，导致一只loading
+            if (mHadPlay && currentState != VideoStatus.PREPARING && currentState > 0) {
+                setStatus(VideoStatus.BUFFERING_START);
+            }
 
+        } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            if (mBackUpPlayingBufferState != -1) {
+                if (mBackUpPlayingBufferState == VideoStatus.BUFFERING_START) {
+                    mBackUpPlayingBufferState = PLAYING;
+                }
+                if (mHadPlay && currentState != VideoStatus.PREPARING && currentState > 0) {
+                    setStatus(mBackUpPlayingBufferState);
+                }
+                mBackUpPlayingBufferState = -1;
+            }
+        }
     }
 
     /**

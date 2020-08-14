@@ -1,4 +1,6 @@
 <resources>
     <dimen name="easy_video_start_button_w_h_normal">44dp</dimen>
     <dimen name="easy_video_start_button_w_h_fullscreen">60dp</dimen>
+    <dimen name="easy_video_loadding_line_width">1dp</dimen>
+    <dimen name="easy_video_loadding_bg_line_width">1dp</dimen>
 </resources>

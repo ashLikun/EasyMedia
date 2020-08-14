@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="easy_video_main_color">#ffff3131</color>
+    <color name="easy_video_loadding_line_color">#FFffffff</color>
+    <color name="easy_video_loadding_bg_line_color">#00000000</color>
 </resources>

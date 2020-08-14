@@ -75,7 +75,7 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         statusHeight = getStatusBarHeight();
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(R.drawable.easy_video_click_back_tiny_selector);
-        LayoutParams containerBack = new LayoutParams(dip2px(20), dip2px(20));
+        LayoutParams containerBack = new LayoutParams(VideoUtils.dip2px(context,20), VideoUtils.dip2px(context,20));
         containerBack.gravity = Gravity.TOP | Gravity.RIGHT;
         addView(imageView, containerBack);
         imageView.setOnClickListener(new OnClickListener() {
@@ -229,10 +229,6 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         return super.onTouchEvent(event);
     }
 
-    public int dip2px(float dipValue) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        return (int) (dipValue * scale + 0.5f);
-    }
 
     /**
      * 获取状态栏高度

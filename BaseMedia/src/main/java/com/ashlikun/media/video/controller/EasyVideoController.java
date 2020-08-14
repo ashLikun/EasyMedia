@@ -39,8 +39,7 @@ import static com.ashlikun.media.video.status.VideoStatus.PLAYING;
  * 功能介绍：视频控制器
  */
 
-public class EasyVideoController extends RelativeLayout implements
-        VideoControllerInterface, View.OnClickListener
+public class EasyVideoController extends RelativeLayout implements View.OnClickListener
         , VideoControllerBottom.OnEventListener {
     public static final int THRESHOLD = 80;
 
@@ -48,7 +47,7 @@ public class EasyVideoController extends RelativeLayout implements
     protected EasyOnControllEvent onControllEvent;
     //音频管理器，改变声音大小
     protected AudioManager mAudioManager;
-    protected IControllerViewHolder viewHolder;
+    protected EasyControllerViewHolder viewHolder;
     //是否是全屏播放
     public boolean isFull = false;
     //当前播放状态
@@ -75,16 +74,6 @@ public class EasyVideoController extends RelativeLayout implements
     protected EasyVideoDialogBright mBrightDialog;
 
 
-    @Override
-    public void setOnControllEvent(EasyOnControllEvent onControllEvent) {
-        this.onControllEvent = onControllEvent;
-    }
-
-    @Override
-    public void setControllFullEnable(boolean fullEnable) {
-        viewHolder.setControllFullEnable(fullEnable);
-    }
-
     public EasyVideoController(Context context) {
         this(context, null);
     }
@@ -98,15 +87,30 @@ public class EasyVideoController extends RelativeLayout implements
         initView();
     }
 
-    @Override
+
+    /**
+     * 监听控制器事件
+     */
+    public void setOnControllEvent(EasyOnControllEvent onControllEvent) {
+        this.onControllEvent = onControllEvent;
+    }
+
+    /**
+     * 设置是否可以全屏
+     */
+    public void setControllFullEnable(boolean fullEnable) {
+        viewHolder.setControllFullEnable(fullEnable);
+    }
+
+    /**
+     * 设置数据源
+     */
     public void setDataSource(VideoData mediaData) {
         viewHolder.setDataSource(mediaData);
     }
 
     /**
      * 可以从写
-     *
-     * @return
      */
     public int getLayoutId() {
         return R.layout.easy_video_layout_controller;
@@ -117,7 +121,7 @@ public class EasyVideoController extends RelativeLayout implements
      *
      * @return
      */
-    public IControllerViewHolder getControllerViewHolder() {
+    public EasyControllerViewHolder getControllerViewHolder() {
         return new EasyControllerViewHolder(this, this, this);
     }
 
@@ -132,13 +136,17 @@ public class EasyVideoController extends RelativeLayout implements
         setFull(isFull);
     }
 
-    //开始触摸进度条
+    /**
+     * 开始触摸进度条
+     */
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         cancelDismissControlViewSchedule();
     }
 
-    //结束触摸进度条
+    /**
+     * 结束触摸进度条
+     */
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         onControllEvent.onEvent(EasyVideoAction.ON_SEEK_POSITION);
@@ -155,7 +163,6 @@ public class EasyVideoController extends RelativeLayout implements
         EasyMediaManager.seekTo(time);
         cancelDismissControlViewSchedule();
         if (viewHolder.containerIsShow()) {
-            viewHolder.showControllerViewAnim(currentState, true);
             showControllerFuture = VideoUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
         }
     }
@@ -400,8 +407,9 @@ public class EasyVideoController extends RelativeLayout implements
         return duration;
     }
 
-    //获取当前播放位置
-    @Override
+    /**
+     * 获取当前播放位置
+     */
     public long getCurrentPositionWhenPlaying() {
         long position = 0;
         if (currentState == PLAYING ||
@@ -419,7 +427,6 @@ public class EasyVideoController extends RelativeLayout implements
     /**
      * 点击时候显示控制器（3秒后消失）
      */
-    @Override
     public void startDismissControlViewSchedule() {
         cancelDismissControlViewSchedule();
         if (viewHolder.containerIsShow()) {
@@ -428,14 +435,15 @@ public class EasyVideoController extends RelativeLayout implements
         } else {
             //显示
             viewHolder.showControllerViewAnim(currentState, true);
-            showControllerFuture = VideoUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 3500, TimeUnit.MILLISECONDS);
+            showControllerFuture = VideoUtils.POOL_SCHEDULE().schedule(new DismissControlViewRunnable(), 5000, TimeUnit.MILLISECONDS);
         }
     }
 
-
-    @Override
+    /**
+     * 取消显示控制器的定时器
+     */
     public void cancelDismissControlViewSchedule() {
-        if (showControllerFuture != null && !showControllerFuture.isCancelled()) {
+        if (showControllerFuture != null) {
             showControllerFuture.cancel(true);
         }
         showControllerFuture = null;
@@ -450,7 +458,6 @@ public class EasyVideoController extends RelativeLayout implements
         }
     }
 
-    @Override
     public void setFull(boolean full) {
         isFull = full;
         viewHolder.setFull(full);
@@ -459,12 +466,13 @@ public class EasyVideoController extends RelativeLayout implements
     /**
      * 是否只在全屏的时候显示标题和顶部
      */
-    @Override
     public void setOnlyFullShowTitle(boolean onlyFullShowTitle) {
         viewHolder.setOnlyFullShowTitle(onlyFullShowTitle);
     }
 
-    @Override
+    /**
+     * 设置当前状态
+     */
     public void setCurrentState(@VideoStatus.Code int currentState) {
         this.currentState = currentState;
         //跟新ui
@@ -474,17 +482,13 @@ public class EasyVideoController extends RelativeLayout implements
     /**
      * 设置进度最大
      */
-    @Override
     public void setMaxProgressAndTime() {
         viewHolder.setProgress(100, 100);
     }
 
     /**
      * 设置进度缓存
-     *
-     * @param bufferProgress
      */
-    @Override
     public void setBufferProgress(int bufferProgress) {
         if (bufferProgress >= 0) {
             viewHolder.setProgress(-1, bufferProgress);
@@ -493,23 +497,25 @@ public class EasyVideoController extends RelativeLayout implements
 
     /**
      * 获取进度缓存
-     *
-     * @return
      */
-    @Override
     public int getBufferProgress() {
         return viewHolder.getBufferProgress();
     }
 
-    @Override
+    /**
+     * 当自动完成的时候
+     */
     public void onAutoCompletion() {
         dismissVolumeDialog();
         dismissProgressDialog();
         dismissBrightnessDialog();
     }
 
-    @Override
+    /**
+     * 获取触摸事件
+     */
     public ImageView getThumbImageView() {
         return viewHolder.getThumbImageView();
     }
+
 }
