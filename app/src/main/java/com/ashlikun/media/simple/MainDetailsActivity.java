@@ -21,6 +21,7 @@ public class MainDetailsActivity extends AppCompatActivity {
      */
     VideoData oldPlayData;
     boolean isOnBackPressed = false;
+    boolean isRePlay = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class MainDetailsActivity extends AppCompatActivity {
             if (!VideoScreenUtils.startCacheVideo(mediaPlay, oldPlayData)) {
                 mediaPlay.setDataSource(oldPlayData);
                 mediaPlay.startVideo();
+            } else {
+                isRePlay = true;
             }
         }
     }
@@ -73,7 +76,7 @@ public class MainDetailsActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!isOnBackPressed || oldPlayData == null) {
+        if (!isOnBackPressed || !isRePlay) {
             mediaPlay.onDestroy();
         }
     }

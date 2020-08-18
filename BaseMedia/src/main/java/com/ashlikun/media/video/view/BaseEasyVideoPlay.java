@@ -374,7 +374,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
                         Gravity.CENTER);
         if (EasyMediaManager.getTextureView() == null || EasyMediaManager.getTextureView().getContext() != getContext()) {
             //根据新的newVideoPlay 创建新的EasyTextureView View 防止内存泄漏
-            EasyMediaManager.getInstance().initTextureView(getContext(), getDisplayType());
+            EasyMediaManager.getInstance().initTextureView(getContext(), getDisplayType(), EasyMediaManager.getTextureView());
         }
         if (EasyMediaManager.getTextureView().getParent() != null) {
             ((ViewGroup) (EasyMediaManager.getTextureView().getParent())).removeView(EasyMediaManager.getTextureView());
@@ -706,19 +706,24 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         return position;
     }
 
-    /**
-     * 转到另外一个View播放
-     */
-    public void copyPlay(BaseEasyVideoPlay oldVideo) {
+    public void copyStatus(BaseEasyVideoPlay oldVideo) {
         //复制一些标志位
         mBackUpPlayingBufferState = oldVideo.mBackUpPlayingBufferState;
         mHadPlay = oldVideo.mHadPlay;
         setStatus(oldVideo.getCurrentState());
-        //还原默认的view
-        oldVideo.setStatus(VideoStatus.NORMAL);
+        currentUrlIndex = oldVideo.getCurrentUrlIndex();
+    }
+
+    /**
+     * 转到另外一个View播放
+     */
+    public void copyPlay(BaseEasyVideoPlay oldVideo) {
         if (getMediaData() == null && oldVideo.getMediaData() != null) {
             setDataSource(oldVideo.getMediaData(), oldVideo.getCurrentUrlIndex());
         }
+        copyStatus(oldVideo);
+        //还原默认的view
+        oldVideo.setStatus(VideoStatus.NORMAL);
     }
 
     /**

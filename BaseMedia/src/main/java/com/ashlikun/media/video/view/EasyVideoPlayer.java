@@ -445,8 +445,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         VideoScreenUtils.CLICK_QUIT_FULLSCREEN_TIME = System.currentTimeMillis();
         removeTextureView();
         EasyVideoPlayer fullPlay = new EasyVideoPlayer(getContext());
-        fullPlay.setFullscreenPortrait(mFullscreenPortrait);
-        fullPlay.setStatus(currentState);
+        fullPlay.copyStatus(this);
         fullPlay.addTextureView();
         if (mediaController != null && fullPlay.mediaController != null) {
             fullPlay.mediaController.setBufferProgress(mediaController.getBufferProgress());
@@ -457,29 +456,22 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         if (mediaController != null) {
             mediaController.cancelDismissControlViewSchedule();
         }
-        VideoScreenUtils.startFullscreen(fullPlay, mediaData, currentUrlIndex);
+        VideoScreenUtils.startFullscreen(fullPlay, false, mediaData, currentUrlIndex);
     }
 
     /**
      * 退出全屏和小窗口后调用这个方法 继续播放
      */
     public void playOnThisVideo() {
+        addTextureView();
         //1.清空全屏和小窗的播放器
         if (EasyVideoPlayerManager.getVideoTiny() != null) {
-            currentState = EasyVideoPlayerManager.getVideoTiny().getCurrentState();
-            currentUrlIndex = EasyVideoPlayerManager.getVideoTiny().getCurrentUrlIndex();
+            copyStatus(EasyVideoPlayerManager.getVideoTiny());
             EasyVideoPlayerManager.getVideoTiny().cleanTiny();
         } else if (EasyVideoPlayerManager.getVideoFullscreen() != null) {
-            currentState = EasyVideoPlayerManager.getVideoFullscreen().getCurrentState();
-            currentUrlIndex = EasyVideoPlayerManager.getVideoFullscreen().getCurrentUrlIndex();
+            copyStatus(EasyVideoPlayerManager.getVideoFullscreen());
             VideoScreenUtils.clearFloatScreen(getContext());
         }
-        if (mediaController != null) {
-            mediaController.setCurrentState(currentState);
-        }
-        addTextureView();
-        //2.在本Video上播放
-        setStatus(currentState);
     }
 
 
@@ -532,17 +524,27 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
         }
     }
 
+    @Override
+    public void copyStatus(BaseEasyVideoPlay oldVideo) {
+        if (oldVideo instanceof EasyVideoPlayer) {
+            setFullscreenPortrait(((EasyVideoPlayer) oldVideo).mFullscreenPortrait);
+        }
+        super.copyStatus(oldVideo);
+    }
+
     /**
      * 转到另外一个View播放
      */
     @Override
     public void copyPlay(BaseEasyVideoPlay oldVideo) {
         super.copyPlay(oldVideo);
+
         //复制缓存进度
         if (oldVideo instanceof EasyVideoPlayer) {
             if (((EasyVideoPlayer) oldVideo).getMediaController() != null && getMediaController() != null) {
                 getMediaController().setBufferProgress(((EasyVideoPlayer) oldVideo).getMediaController().getBufferProgress());
             }
+            setFullscreenPortrait(((EasyVideoPlayer) oldVideo).mFullscreenPortrait);
         }
         //取消定时器
         if (oldVideo instanceof EasyVideoPlayer && ((EasyVideoPlayer) oldVideo).getMediaController() != null) {

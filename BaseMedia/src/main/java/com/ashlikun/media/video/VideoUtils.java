@@ -258,7 +258,7 @@ public class VideoUtils {
             return false;
         }
         for (VideoData o : dataSource) {
-            return object == o || object.equals(o);
+            return object == o || object.equalsUrl(o);
         }
         return false;
     }

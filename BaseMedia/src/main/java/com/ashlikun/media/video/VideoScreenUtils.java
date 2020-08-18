@@ -53,7 +53,7 @@ public class VideoScreenUtils {
                 .url(url)
                 .title(title)
                 .builder());
-        startFullscreen(easyVideoPlayer, mediaData, 0);
+        startFullscreen(easyVideoPlayer, true, mediaData, 0);
     }
 
     /**
@@ -64,7 +64,7 @@ public class VideoScreenUtils {
     public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, VideoData data) {
         List<VideoData> mediaData = new ArrayList<>();
         mediaData.add(data);
-        startFullscreen(easyVideoPlayer, mediaData, 0);
+        startFullscreen(easyVideoPlayer, true, mediaData, 0);
     }
 
     /**
@@ -96,11 +96,14 @@ public class VideoScreenUtils {
      * 直接开始全屏播放
      *
      * @param easyVideoPlayer 请实例化一个播放器
+     * @param isFirst         是否第一次播放这个链接
      * @param mediaData       地址  或者 AssetFileDescriptor
      * @param defaultIndex    第几个
      */
-    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, List<VideoData> mediaData, int defaultIndex) {
-        VideoUtils.releaseAllVideos();
+    public static void startFullscreen(EasyVideoPlayer easyVideoPlayer, boolean isFirst, List<VideoData> mediaData, int defaultIndex) {
+        if (isFirst) {
+            VideoUtils.releaseAllVideos();
+        }
         setActivityFullscreen(easyVideoPlayer.getContext(), true);
 
         VideoUtils.setRequestedOrientation(easyVideoPlayer.getContext(), calculateOrientation(easyVideoPlayer.getFullscreenPortrait()));

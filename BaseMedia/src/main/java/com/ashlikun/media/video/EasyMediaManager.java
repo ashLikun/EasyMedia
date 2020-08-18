@@ -139,11 +139,14 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     /**
      * 初始化TextureView
      */
-    public void initTextureView(Context context, @VideoDisplayType.Code int displayType) {
+    public void initTextureView(Context context, @VideoDisplayType.Code int displayType, EasyTextureView old) {
         if (appContext == null) {
             appContext = context.getApplicationContext();
         }
         textureView = new EasyTextureView(context);
+        if (old != null) {
+            textureView.setVideoSize(old.getCurrentVideoWidth(), old.getCurrentVideoHeight());
+        }
         textureView.setDisplayType(displayType);
         textureView.setSurfaceTextureListener(EasyMediaManager.getInstance());
         //用之前已经存在的savedSurfaceTexture，实现无差别播放
