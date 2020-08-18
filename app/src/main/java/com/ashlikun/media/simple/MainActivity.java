@@ -82,10 +82,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.detailsButton) {
             Intent intent = new Intent(this, MainDetailsActivity.class);
-            intent.putExtra("data", new VideoData.Builder()
-                    .title("标题")
-                    .url(VideoUrl.meinv2)
-                    .builder());
+            intent.putExtra("data", mediaPlay.getCurrentData());
             startActivity(intent);
         } else if (v.getId() == R.id.listButton) {
             Intent intent = new Intent(this, HuoSanActivity.class);
@@ -165,6 +162,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (!VideoScreenUtils.startCacheVideo(mediaPlay)) {
             //从其他播放的地方再次播放
             VideoUtils.onResume();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (VideoScreenUtils.backPress()) {
+            super.onBackPressed();
         }
     }
 

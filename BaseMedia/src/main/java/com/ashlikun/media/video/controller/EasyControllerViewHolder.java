@@ -296,7 +296,9 @@ public class EasyControllerViewHolder {
      * 清空全部ui展示
      */
     public void changeUiToClean() {
-        hintContainer(true);
+        if (!animatorSet.isRunning()) {
+            hintContainer(true);
+        }
         setMinControlsVisiblity(false, false, false, false, false);
     }
 

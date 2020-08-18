@@ -45,7 +45,7 @@ public class MainDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (!VideoScreenUtils.backPress()) {
+        if (VideoScreenUtils.backPress()) {
             isOnBackPressed = true;
             super.onBackPressed();
         }
@@ -55,7 +55,7 @@ public class MainDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         //不是返回按下或者之前页面没有有播放的时候  停止
-        if (!isOnBackPressed || oldPlayData == null) {
+        if (!isOnBackPressed || !isRePlay) {
             mediaPlay.onPause();
         }
     }
