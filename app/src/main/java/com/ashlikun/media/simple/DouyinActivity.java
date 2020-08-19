@@ -89,10 +89,9 @@ public class DouyinActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (VideoScreenUtils.backPress()) {
-            return;
+        if (!VideoScreenUtils.backPress()) {
+            super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
     @Override

@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onBackPressed() {
-        if (VideoScreenUtils.backPress()) {
+        if (!VideoScreenUtils.backPress()) {
             super.onBackPressed();
         }
     }
