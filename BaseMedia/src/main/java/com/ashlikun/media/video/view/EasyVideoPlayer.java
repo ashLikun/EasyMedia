@@ -239,7 +239,7 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
      */
     @Override
     public void onRetryClick() {
-        if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
+        if (VideoUtils.videoAllowPlay(this)) {
             onEvent(EasyVideoAction.ON_CLICK_START_ICON);
             return;
         }

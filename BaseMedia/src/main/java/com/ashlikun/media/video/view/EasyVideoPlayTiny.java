@@ -75,7 +75,7 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
         statusHeight = getStatusBarHeight();
         ImageView imageView = new ImageView(getContext());
         imageView.setImageResource(R.drawable.easy_video_click_back_tiny_selector);
-        LayoutParams containerBack = new LayoutParams(VideoUtils.dip2px(context,20), VideoUtils.dip2px(context,20));
+        LayoutParams containerBack = new LayoutParams(VideoUtils.dip2px(context, 20), VideoUtils.dip2px(context, 20));
         containerBack.gravity = Gravity.TOP | Gravity.RIGHT;
         addView(imageView, containerBack);
         imageView.setOnClickListener(new OnClickListener() {
@@ -117,7 +117,7 @@ public class EasyVideoPlayTiny extends BaseEasyVideoPlay implements IEasyVideoPl
             return;
         }
         if (currentState == NORMAL) {
-            if (VideoUtils.showWifiDialog(getContext(), getCurrentData(), this)) {
+            if (VideoUtils.videoAllowPlay(this)) {
                 return;
             }
             startVideo();

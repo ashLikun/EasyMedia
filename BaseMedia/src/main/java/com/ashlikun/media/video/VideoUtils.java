@@ -1,11 +1,9 @@
 package com.ashlikun.media.video;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -18,7 +16,6 @@ import android.view.Window;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ContextThemeWrapper;
 
-import com.ashlikun.media.R;
 import com.ashlikun.media.video.play.EasyVideoIjkplayer;
 import com.ashlikun.media.video.status.VideoDisplayType;
 import com.ashlikun.media.video.view.BaseEasyVideoPlay;
@@ -49,6 +46,14 @@ public class VideoUtils {
     public static boolean isCache = true;
     //缓存目录
     public static String cacheDir;
+    /**
+     * 是否允许过非wifi播放视频,生命周期内，默认只提示一次
+     */
+    public static boolean WIFI_ALLOW_PLAY = false;
+    /**
+     * 是否允许播放
+     */
+    public static OnVideoAllowPlay onVideoAllowPlay = new OnVideoAllowPlay();
 
     public static final String EASY_MEDIA_PROGRESS = "EASY_MEDIA_PROGRESS";
     /**
@@ -66,6 +71,18 @@ public class VideoUtils {
     public static void init(Application context, Class<? extends EasyMediaInterface> mediaPlayClass) {
         VideoUtils.mContext = context;
         VideoUtils.mMediaPlayClass = mediaPlayClass;
+    }
+
+    public static void setWIFI_ALLOW_PLAY(boolean b) {
+        WIFI_ALLOW_PLAY = b;
+    }
+
+    public static OnVideoAllowPlay getOnVideoAllowPlay() {
+        return onVideoAllowPlay;
+    }
+
+    public static void setOnVideoAllowPlay(OnVideoAllowPlay onVideoAllowPlay) {
+        VideoUtils.onVideoAllowPlay = onVideoAllowPlay;
     }
 
     public static void setOnCreateIjkplay(EasyVideoIjkplayer.OnCreateIjkplay onCreateIjkplay) {
@@ -331,45 +348,10 @@ public class VideoUtils {
 
     /**
      * 显示非wifi播放提示
-     *
-     * @param context
-     * @param play
-     * @return 是否弹窗
      */
-    public static boolean showWifiDialog(Context context, VideoData data, final BaseEasyVideoPlay play) {
-        if (!data.isLocal() &&
-                !NetworkUtils.isWifiConnected(context) && !EasyMediaManager.getInstance().WIFI_ALLOW_PLAY) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage(context.getResources().getString(R.string.easy_video_tips_not_wifi));
-            builder.setPositiveButton(context.getResources().getString(R.string.easy_video_tips_not_wifi_confirm), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    EasyMediaManager.getInstance().WIFI_ALLOW_PLAY = true;
-                    dialog.dismiss();
-                    play.onEvent(EasyVideoAction.ON_CLICK_START_NO_WIFI_GOON);
-                    play.startVideo();
-                }
-            });
-            builder.setNegativeButton(context.getResources().getString(R.string.easy_video_tips_not_wifi_cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    if (play.isScreenFull()) {
-                        VideoScreenUtils.clearFullscreenLayout(play.getContext());
-                    }
-                }
-            });
-            builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                @Override
-                public void onCancel(DialogInterface dialog) {
-                    dialog.dismiss();
-                    if (play.isScreenFull()) {
-                        dialog.dismiss();
-                        VideoScreenUtils.clearFullscreenLayout(play.getContext());
-                    }
-                }
-            });
-            builder.create().show();
+    public static boolean videoAllowPlay(BaseEasyVideoPlay play) {
+        if (onVideoAllowPlay.onIsAllow(play)) {
+            onVideoAllowPlay.showWifiDialog(play);
             return true;
         }
         return false;
