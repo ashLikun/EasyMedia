@@ -27,6 +27,9 @@ import com.ashlikun.media.video.view.EasyLoaddingView;
  */
 
 public class EasyControllerViewHolder {
+    public int iconPlay = R.drawable.easy_video_click_play_selector;
+    public int iconReplay = R.drawable.easy_video_click_replay_selector;
+    public int iconPause = R.drawable.easy_video_click_pause_selector;
     ViewGroup viewGroup;
     //开始按钮
     public ImageView startButton;
@@ -71,6 +74,7 @@ public class EasyControllerViewHolder {
         bottomContainer.setOnEventListener(onEventListener);
         viewGroup.findViewById(R.id.retry_btn).setOnClickListener(clickListener);
         changeUiToNormal();
+        updateStartImage(currentState);
         bottomContainer.stopProgressSchedule();
     }
 
@@ -191,7 +195,7 @@ public class EasyControllerViewHolder {
     /**
      * 改变ui到默认状态
      */
-    private void changeUiToNormal() {
+    protected void changeUiToNormal() {
         //这边加动画，在低版本手机会卡顿，主要是列表里每次都会走这个方法
         hintContainer(false);
         setMinControlsVisiblity(true, false, true, false, false);
@@ -203,7 +207,7 @@ public class EasyControllerViewHolder {
     /**
      * 改变ui成完成
      */
-    private void changeUiToComplete() {
+    protected void changeUiToComplete() {
         if (isOnlyFullShowTitle && !isFull) {
             topContainer.setVisibility(View.GONE);
         } else {
@@ -219,7 +223,7 @@ public class EasyControllerViewHolder {
     /**
      * 改变ui错误
      */
-    private void changeUiToError() {
+    protected void changeUiToError() {
         if (isFull) {
             topContainer.setVisibility(View.VISIBLE);
             bottomContainer.setVisibility(View.GONE);
@@ -232,7 +236,7 @@ public class EasyControllerViewHolder {
     /**
      * 播放
      */
-    private void changeUiToPlaying() {
+    protected void changeUiToPlaying() {
         hintContainer(!isBeforeStatePreparing && containerIsShow());
         isBeforeStatePreparing = false;
         setMinControlsVisiblity(false, false, false, true, false);
@@ -244,7 +248,7 @@ public class EasyControllerViewHolder {
     /**
      * 暂停状态
      */
-    private void changeUiToPause() {
+    protected void changeUiToPause() {
         showContainer(!containerIsShow());
         setMinControlsVisiblity(true, false, false, false, false);
         if (easyLoaddingView instanceof EasyLoaddingView) {
@@ -262,8 +266,8 @@ public class EasyControllerViewHolder {
      * @param bottomPrp
      * @param retryLayout
      */
-    private void setMinControlsVisiblity(boolean startBtn, boolean loadingPro,
-                                         boolean thumbImg, boolean bottomPrp, boolean retryLayout) {
+    protected void setMinControlsVisiblity(boolean startBtn, boolean loadingPro,
+                                           boolean thumbImg, boolean bottomPrp, boolean retryLayout) {
         startButton.setVisibility(startBtn ? View.VISIBLE : View.GONE);
         easyLoaddingView.setVisibility(loadingPro ? View.VISIBLE : View.GONE);
         thumbImageView.setVisibility(thumbImg ? View.VISIBLE : View.GONE);
@@ -276,18 +280,18 @@ public class EasyControllerViewHolder {
      *
      * @param currentState
      */
-    private void updateStartImage(@VideoStatus.Code int currentState) {
+    public void updateStartImage(@VideoStatus.Code int currentState) {
         if (currentState == VideoStatus.PLAYING) {
-            startButton.setImageResource(R.drawable.easy_video_click_pause_selector);
+            startButton.setImageResource(iconPause);
             replayTextView.setVisibility(View.GONE);
         } else if (currentState == VideoStatus.ERROR) {
             startButton.setVisibility(View.INVISIBLE);
             replayTextView.setVisibility(View.GONE);
         } else if (currentState == VideoStatus.AUTO_COMPLETE) {
-            startButton.setImageResource(R.drawable.easy_video_click_replay_selector);
+            startButton.setImageResource(iconReplay);
             replayTextView.setVisibility(View.VISIBLE);
         } else {
-            startButton.setImageResource(R.drawable.easy_video_click_play_selector);
+            startButton.setImageResource(iconPlay);
             replayTextView.setVisibility(View.GONE);
         }
     }

@@ -36,6 +36,10 @@ public interface VideoStatus {
      */
     int AUTO_COMPLETE = 6;
     /**
+     * 强制完成
+     */
+    int FORCE_COMPLETE = 9;
+    /**
      * 错误
      */
     int ERROR = 7;

@@ -47,6 +47,7 @@ public class EasyVideoController extends RelativeLayout implements View.OnClickL
     protected EasyOnControllEvent onControllEvent;
     //音频管理器，改变声音大小
     protected AudioManager mAudioManager;
+    //控制页面上的View
     protected EasyControllerViewHolder viewHolder;
     //是否是全屏播放
     public boolean isFull = false;
@@ -518,4 +519,11 @@ public class EasyVideoController extends RelativeLayout implements View.OnClickL
         return viewHolder.getThumbImageView();
     }
 
+    /**
+     * 控制页面上的View
+     * @return
+     */
+    public EasyControllerViewHolder getViewHolder() {
+        return viewHolder;
+    }
 }

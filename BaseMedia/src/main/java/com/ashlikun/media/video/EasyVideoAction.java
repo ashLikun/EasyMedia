@@ -66,6 +66,14 @@ public interface EasyVideoAction {
      */
     int ON_STATUS_AUTO_COMPLETE = 18;
     /**
+     * 其他地方播放视频，当前播放器被强制完成
+     */
+    int ON_STATUS_FORCE_COMPLETE = 20;
+    /**
+     * 完成状态(自动和被动)
+     */
+    int ON_STATUS_COMPLETE = 21;
+    /**
      * 开始缓冲
      */
     int ON_STATUS_BUFFERING_START = 19;

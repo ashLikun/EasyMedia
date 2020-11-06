@@ -277,6 +277,12 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             case VideoStatus.AUTO_COMPLETE:
                 onStateAutoComplete();
                 onEvent(EasyVideoAction.ON_STATUS_AUTO_COMPLETE);
+                onEvent(EasyVideoAction.ON_STATUS_COMPLETE);
+                break;
+            case VideoStatus.FORCE_COMPLETE:
+                onStateNormal();
+                onEvent(EasyVideoAction.ON_STATUS_FORCE_COMPLETE);
+                onEvent(EasyVideoAction.ON_STATUS_COMPLETE);
                 break;
             case VideoStatus.BUFFERING_START:
                 onBufferStart();
@@ -514,7 +520,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
             VideoUtils.saveProgress(getContext(), getCurrentData(), position);
         }
         //还原默认状态
-        setStatus(VideoStatus.NORMAL);
+        setStatus(VideoStatus.FORCE_COMPLETE);
         removeTextureView();
         EasyMediaManager.getInstance().currentVideoWidth = 0;
         EasyMediaManager.getInstance().currentVideoHeight = 0;
