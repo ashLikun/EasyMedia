@@ -293,7 +293,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
                     break;
                 case HANDLER_RELEASE:
                     if (isPlayingNei()) {
-                        stop();
+                        getMediaPlay().stop();
                     }
                     getMediaPlay().release();
                     break;
@@ -363,10 +363,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         getInstance().getMediaPlay().start();
     }
 
-
-    public static void stop() {
-        getInstance().getMediaPlay().stop();
-    }
 
     public static boolean isPlaying() {
         try {
