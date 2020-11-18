@@ -96,8 +96,6 @@ public class EasyVideoSystem extends EasyMediaInterface
                 onError(mediaPlayer, -2, -2);
                 return;
             }
-            //暂停不在同一个管理器的播放器
-            EasyMediaManager.pauseOther(easyMediaManager);
             mediaPlayer.prepareAsync();
         } catch (Exception e) {
             e.printStackTrace();

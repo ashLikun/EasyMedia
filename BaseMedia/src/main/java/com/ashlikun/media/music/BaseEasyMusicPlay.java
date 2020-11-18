@@ -27,13 +27,14 @@ import static com.ashlikun.media.video.status.VideoStatus.PLAYING;
 
 
 /**
- * 作者　　: 李坤
- * 创建时间: 2018/8/20　13:13
+ * @author　　: 李坤
+ * 创建时间: 2020/11/18 19:46
  * 邮箱　　：496546144@qq.com
  * <p>
- * 功能介绍：播放器基础类
- * {@link #setDataSource} 去设置播放的数据源
+ * 功能介绍：音频播放器基础类
+ * * {@link #setDataSource} 去设置播放的数据源
  */
+
 public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayListener {
     /**
      * 当前状态
@@ -168,7 +169,7 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
         EasyMediaManager.getInstanceMusic().releaseMediaPlayer();
         EasyMediaManager.getMusicMediaPlay().setCurrentDataSource(getCurrentData());
         //获取音频焦点
-        MusicUtils.setAudioFocus(getContext(), false);
+        MusicUtils.setAudioFocus(getContext(), true);
         saveMusicPlayView();
         EasyMediaManager.getMusicMediaPlay().prepare();
         setStatus(VideoStatus.PREPARING);
@@ -193,10 +194,10 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
 
     }
 
-
     /**
      * 设置当前播放器状态
      */
+
     public boolean setStatus(int state) {
         if (currentState == state) {
             return false;
@@ -607,6 +608,7 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
     /**
      * 对应activity得生命周期
      */
+    @Override
     public void onPause() {
         if (getCurrentState() == AUTO_COMPLETE ||
                 getCurrentState() == NORMAL) {
@@ -635,6 +637,15 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
         }
     }
 
+    public void play() {
+        if (getCurrentState() != PLAYING) {
+            if (getCurrentState() == PAUSE) {
+                setStatus(VideoStatus.PLAYING);
+            } else {
+                startMusic();
+            }
+        }
+    }
 
     /**
      * 对应activity得生命周期

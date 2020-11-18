@@ -21,6 +21,18 @@ public class HandleMusicPlayEvent implements HandlePlayEvent {
     }
 
     @Override
+    public void onPause() {
+        EasyMediaManager.getInstance(tag).getMediaHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (EasyMusicPlayerManager.getCurrentMusicPlay() != null) {
+                    EasyMusicPlayerManager.getCurrentMusicPlay().onPause();
+                }
+            }
+        });
+    }
+
+    @Override
     public void onPrepared() {
         EasyMediaManager.getInstance(tag).getMediaHandler().post(new Runnable() {
             @Override

@@ -15,6 +15,8 @@ public interface IEasyVideoPlayListener extends EasyVideoAction {
      */
     void onPrepared();
 
+    void onPause();
+
 
     /**
      * 播放信息

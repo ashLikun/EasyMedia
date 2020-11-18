@@ -17,6 +17,18 @@ public class HandleVideoPlayEvent implements HandlePlayEvent {
     }
 
     @Override
+    public void onPause() {
+        EasyMediaManager.getInstance(tag).getMediaHandler().post(new Runnable() {
+            @Override
+            public void run() {
+                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
+                    EasyVideoPlayerManager.getCurrentVideoPlay().onPause();
+                }
+            }
+        });
+    }
+
+    @Override
     public void onPrepared() {
         EasyMediaManager.getInstance(tag).getMediaHandler().post(new Runnable() {
             @Override

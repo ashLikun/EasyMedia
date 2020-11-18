@@ -12,7 +12,7 @@ import com.ashlikun.media.video.EasyMediaManager;
  * <p>
  * 功能介绍：
  */
-class MusicUtils {
+public class MusicUtils {
 
     public static void setAudioFocus(Context context, boolean isFocus) {
         AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);

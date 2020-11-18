@@ -110,12 +110,7 @@ public class EasyVideoExo2 extends EasyMediaInterface
             }
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setScreenOnWhilePlaying(true);
-
-            //暂停不在同一个管理器的播放器
-            EasyMediaManager.pauseOther(easyMediaManager);
-
             mediaPlayer.prepareAsync();
-
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();

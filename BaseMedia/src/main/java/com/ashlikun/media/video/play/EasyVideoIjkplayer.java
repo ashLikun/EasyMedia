@@ -115,8 +115,6 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
             }
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             ijkMediaPlayer.setScreenOnWhilePlaying(true);
-            //暂停不在同一个管理器的播放器
-            EasyMediaManager.pauseOther(easyMediaManager);
             ijkMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();

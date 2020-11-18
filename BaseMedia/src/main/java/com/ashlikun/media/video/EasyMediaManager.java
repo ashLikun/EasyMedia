@@ -198,6 +198,14 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         }
     }
 
+    public boolean isPlayingNei() {
+        try {
+            return getMediaPlay().isPlaying();
+        } catch (IllegalStateException e) {
+        }
+        return false;
+    }
+
     /**
      * 准备播放
      */
@@ -284,7 +292,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
                     }
                     break;
                 case HANDLER_RELEASE:
-                    if (isPlaying()) {
+                    if (isPlayingNei()) {
                         stop();
                     }
                     getMediaPlay().release();
@@ -372,7 +380,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         //暂停其他的
         for (Map.Entry<String, EasyMediaManager> entry : instance.entrySet()) {
             if (entry.getValue() != easyMediaManager) {
-                entry.getValue().getMediaPlay().pause();
+                entry.getValue().getHandlePlayEvent().onPause();
             }
         }
     }

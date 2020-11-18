@@ -23,4 +23,6 @@ public interface HandlePlayEvent {
     public void onSeekComplete();
 
     public void onCompletion(EasyMediaInterface easyMediaInterface);
+
+    void onPause();
 }

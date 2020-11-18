@@ -735,6 +735,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
     /**
      * 对应activity得生命周期
      */
+    @Override
     public void onPause() {
         if (getCurrentState() == AUTO_COMPLETE ||
                 getCurrentState() == NORMAL) {
