@@ -13,6 +13,7 @@ import android.view.Surface;
  */
 public abstract class EasyMediaInterface {
     public Context context;
+    public EasyMediaManager easyMediaManager;
     /**
      * 视频数据
      */
@@ -89,5 +90,9 @@ public abstract class EasyMediaInterface {
 
     public void setContext(Context appContext) {
         context = appContext;
+    }
+
+    public void setEasyMediaManager(EasyMediaManager easyMediaManager) {
+        this.easyMediaManager = easyMediaManager;
     }
 }

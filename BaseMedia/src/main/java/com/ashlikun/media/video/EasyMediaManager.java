@@ -10,9 +10,13 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
 
+import com.ashlikun.media.music.HandleMusicPlayEvent;
 import com.ashlikun.media.video.play.EasyVideoSystem;
 import com.ashlikun.media.video.status.VideoDisplayType;
 import com.ashlikun.media.video.view.EasyTextureView;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author　　: 李坤
@@ -27,10 +31,12 @@ import com.ashlikun.media.video.view.EasyTextureView;
 public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
     /**
-     * 单利模式
+     * 单利模式,存放多个管理器
      */
-    private static volatile EasyMediaManager instance = null;
+    static volatile ConcurrentHashMap<String, EasyMediaManager> instance = new ConcurrentHashMap<>();
 
+    public static final String TAG_VIDEO = "VIDEO";
+    public static final String TAG_MUSIC = "MUSIC";
     public static final String TAG = "EasyMediaManager";
     /**
      * handler标识
@@ -73,6 +79,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      */
     private Handler mainThreadHandler;
     /**
+     * 处理播放器事件
+     */
+    private HandlePlayEvent handlePlayEvent;
+    /**
      * 播放事件的回掉
      */
     public EasyVideoAction MEDIA_EVENT;
@@ -80,27 +90,46 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     //网络状态 准备的时候
     public String mNetSate = "NORMAL";
 
-    public EasyMediaManager() {
+    public EasyMediaManager(String tag) {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
         mMediaHandlerThread.start();
         mediaHandler = new MediaHandler(mMediaHandlerThread.getLooper());
         mainThreadHandler = new Handler(Looper.getMainLooper());
+        handlePlayEvent = tag.equals(TAG_VIDEO) ? new HandleVideoPlayEvent(tag) : new HandleMusicPlayEvent(tag);
+    }
+
+    /**
+     * 获取对应TAG的实例
+     *
+     * @param tag
+     * @return
+     */
+    public static EasyMediaManager getInstance(String tag) {
+        if (instance.containsKey(tag)) {
+            return instance.get(tag);
+        } else {
+            synchronized (EasyMediaManager.class) {
+                if (instance.containsKey(tag)) {
+                    return instance.get(tag);
+                }
+                EasyMediaManager mediaManager = new EasyMediaManager(tag);
+                instance.put(tag, mediaManager);
+                return mediaManager;
+            }
+        }
     }
 
 
     public static EasyMediaManager getInstance() {
-        //双重校验DCL单例模式
-        if (instance == null) {
-            //同步代码块
-            synchronized (EasyMediaManager.class) {
-                if (instance == null) {
-                    //创建一个新的实例
-                    instance = new EasyMediaManager();
-                }
-            }
-        }
-        //返回一个实例
-        return instance;
+        return getInstance(TAG_VIDEO);
+    }
+
+    public static EasyMediaManager getInstanceMusic() {
+        return getInstance(TAG_MUSIC);
+    }
+
+    public static EasyMediaInterface getMusicMediaPlay() {
+        return getInstance(TAG_MUSIC).getMediaPlay();
     }
 
     public static EasyTextureView getTextureView() {
@@ -128,6 +157,7 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         }
         if (mMediaPlay != null) {
             mMediaPlay.setContext(appContext);
+            mMediaPlay.setEasyMediaManager(this);
         }
         //返回一个实例
         return mMediaPlay;
@@ -152,66 +182,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         }
     }
 
-    /**
-     * 正在播放的视频数据
-     *
-     * @return
-     */
-    public static VideoData getCurrentDataSource() {
-        return getInstance().getMediaPlay().getCurrentDataSource();
-    }
-
-    public static void setCurrentDataSource(VideoData currentDataSource) {
-        getInstance().getMediaPlay().setCurrentDataSource(currentDataSource);
-    }
-
-    public static long getCurrentPosition() {
-        if (getInstance().getMediaPlay() == null) {
-            return 0;
-        }
-        return getInstance().getMediaPlay().getCurrentPosition();
-    }
-
-    public static int getBufferedPercentage() {
-        if (getInstance().getMediaPlay() == null) {
-            return 0;
-        }
-        return getInstance().getMediaPlay().getBufferedPercentage();
-    }
-
-    public static long getDuration() {
-        if (getInstance().getMediaPlay() == null) {
-            return 0;
-        }
-        return getInstance().getMediaPlay().getDuration();
-    }
-
-    public static void seekTo(long time) {
-        if (getInstance().getMediaPlay() == null) {
-            return;
-        }
-        getInstance().getMediaPlay().seekTo(time);
-    }
-
-    public static void pause() {
-        getInstance().getMediaPlay().pause();
-    }
-
-    public static void start() {
-        getInstance().getMediaPlay().start();
-    }
-
-    public static void stop() {
-        getInstance().getMediaPlay().stop();
-    }
-
-    public static boolean isPlaying() {
-        try {
-            return getInstance().getMediaPlay().isPlaying();
-        } catch (IllegalStateException e) {
-        }
-        return false;
-    }
 
     /**
      * 释放播放器
@@ -220,6 +190,12 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         Message msg = new Message();
         msg.what = HANDLER_RELEASE;
         mediaHandler.sendMessage(msg);
+    }
+
+    public void setContext(Context context) {
+        if (appContext == null) {
+            appContext = context.getApplicationContext();
+        }
     }
 
     /**
@@ -319,5 +295,85 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
 
     public Handler getMediaHandler() {
         return mainThreadHandler;
+    }
+
+    public HandlePlayEvent getHandlePlayEvent() {
+        return handlePlayEvent;
+    }
+
+
+    /********************************************************************************************
+     *                                           这几个静态方法只适用视频播放
+     ********************************************************************************************/
+
+    /**
+     * 正在播放的视频数据
+     *
+     * @return
+     */
+    public static VideoData getCurrentDataSource() {
+        return getInstance().getMediaPlay().getCurrentDataSource();
+    }
+
+    public static void setCurrentDataSource(VideoData currentDataSource) {
+        getInstance().getMediaPlay().setCurrentDataSource(currentDataSource);
+    }
+
+    public static long getCurrentPosition() {
+        if (getInstance().getMediaPlay() == null) {
+            return 0;
+        }
+        return getInstance().getMediaPlay().getCurrentPosition();
+    }
+
+    public static int getBufferedPercentage() {
+        if (getInstance().getMediaPlay() == null) {
+            return 0;
+        }
+        return getInstance().getMediaPlay().getBufferedPercentage();
+    }
+
+    public static long getDuration() {
+        if (getInstance().getMediaPlay() == null) {
+            return 0;
+        }
+        return getInstance().getMediaPlay().getDuration();
+    }
+
+    public static void seekTo(long time) {
+        if (getInstance().getMediaPlay() == null) {
+            return;
+        }
+        getInstance().getMediaPlay().seekTo(time);
+    }
+
+    public static void pause() {
+        getInstance().getMediaPlay().pause();
+    }
+
+    public static void start() {
+        getInstance().getMediaPlay().start();
+    }
+
+
+    public static void stop() {
+        getInstance().getMediaPlay().stop();
+    }
+
+    public static boolean isPlaying() {
+        try {
+            return getInstance().getMediaPlay().isPlaying();
+        } catch (IllegalStateException e) {
+        }
+        return false;
+    }
+
+    public static void pauseOther(EasyMediaManager easyMediaManager) {
+        //暂停其他的
+        for (Map.Entry<String, EasyMediaManager> entry : instance.entrySet()) {
+            if (entry.getValue() != easyMediaManager) {
+                entry.getValue().getMediaPlay().pause();
+            }
+        }
     }
 }

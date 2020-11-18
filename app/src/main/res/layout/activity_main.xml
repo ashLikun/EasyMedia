@@ -13,6 +13,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+
+            <com.ashlikun.media.simple.music.MusicView
+                android:id="@+id/aaaMusic"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"></com.ashlikun.media.simple.music.MusicView>
+
             <com.ashlikun.media.video.view.EasyVideoPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"

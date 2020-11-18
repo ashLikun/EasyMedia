@@ -2,14 +2,12 @@ package com.ashlikun.media.video.play;
 
 import android.media.AudioManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Surface;
 import android.widget.Toast;
 
 import com.ashlikun.media.R;
 import com.ashlikun.media.video.EasyMediaInterface;
 import com.ashlikun.media.video.EasyMediaManager;
-import com.ashlikun.media.video.EasyVideoPlayerManager;
 import com.ashlikun.media.video.VideoUtils;
 
 import java.io.IOException;
@@ -117,6 +115,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
             }
             ijkMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             ijkMediaPlayer.setScreenOnWhilePlaying(true);
+            //暂停不在同一个管理器的播放器
+            EasyMediaManager.pauseOther(easyMediaManager);
             ijkMediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -127,6 +127,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void start() {
+        //暂停不在同一个管理器的播放器
+        EasyMediaManager.pauseOther(easyMediaManager);
         if (ijkMediaPlayer != null) {
             ijkMediaPlayer.start();
         }
@@ -204,14 +206,8 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
         }
         if (!isPreparedPause) {
             ijkMediaPlayer.start();
-            EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-                @Override
-                public void run() {
-                    if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
-                    }
-                }
-            });
+            if (easyMediaManager.getMediaPlay() == this)
+                easyMediaManager.getHandlePlayEvent().onPrepared();
         } else {
             isPreparedPause = false;
         }
@@ -219,86 +215,40 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int i, int i1, int i2, int i3) {
-        EasyMediaManager.getInstance().currentVideoWidth = iMediaPlayer.getVideoWidth();
-        EasyMediaManager.getInstance().currentVideoHeight = iMediaPlayer.getVideoHeight();
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlay().onVideoSizeChanged();
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().onVideoSizeChanged(ijkMediaPlayer.getVideoWidth(), ijkMediaPlayer.getVideoHeight());
     }
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    if (!EasyVideoPlayerManager.getCurrentVideoPlay().onAutoCompletion()) {
-                        setCurrentDataSource(null);
-                    }
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().onCompletion(this);
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, final int what, final int extra) {
-        Log.e("onError", "what = " + what + "    extra = " + extra);
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlay().onError(what, extra);
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().onError(what, extra);
         return true;
     }
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, final int what, final int extra) {
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    if (what == IMediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
-                        EasyVideoPlayerManager.getCurrentVideoPlay().onPrepared();
-                    } else {
-                        EasyVideoPlayerManager.getCurrentVideoPlay().onInfo(what, extra);
-                    }
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().onInfo(what, extra);
         return false;
     }
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, final int percent) {
-        Log.e("onBufferingUpdate", percent + "");
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlay().setBufferProgress(percent);
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().setBufferProgress(percent);
     }
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-        EasyMediaManager.getInstance().getMediaHandler().post(new Runnable() {
-            @Override
-            public void run() {
-                if (EasyVideoPlayerManager.getCurrentVideoPlay() != null) {
-                    EasyVideoPlayerManager.getCurrentVideoPlay().onSeekComplete();
-                }
-            }
-        });
+        if (easyMediaManager.getMediaPlay() == this)
+            easyMediaManager.getHandlePlayEvent().onSeekComplete();
     }
 
     @Override

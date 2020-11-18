@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.ashlikun.media.simple.music.MusicView;
 import com.ashlikun.media.video.EasyVideoAction;
 import com.ashlikun.media.video.VideoData;
 import com.ashlikun.media.video.VideoScreenUtils;
@@ -27,6 +28,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     EasyVideoPlayer mediaPlay;
+    MusicView musicPlay;
     String[] permissions = new String[]{
             Manifest.permission.SYSTEM_ALERT_WINDOW,
     };
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //        });
         setContentView(R.layout.activity_main);
         mediaPlay = (EasyVideoPlayer) findViewById(R.id.mediaPlay);
+        musicPlay = (MusicView) findViewById(R.id.aaaMusic);
         List<VideoData> datas = new ArrayList<>();
         datas.add(new VideoData.Builder()
                 .title("标题")
@@ -69,6 +72,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         });
+        musicPlay.setDataSource(new VideoData.Builder()
+                .title("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                .url("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                .builder());
+        musicPlay.startMusic();
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
         findViewById(R.id.detailsButton).setOnClickListener(this);
         findViewById(R.id.listButton).setOnClickListener(this);
