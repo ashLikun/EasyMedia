@@ -171,7 +171,7 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
         //获取音频焦点
         MusicUtils.setAudioFocus(getContext(), true);
         saveMusicPlayView();
-        EasyMediaManager.getMusicMediaPlay().prepare();
+        EasyMediaManager.getInstanceMusic().prepare();
         setStatus(VideoStatus.PREPARING);
     }
 
