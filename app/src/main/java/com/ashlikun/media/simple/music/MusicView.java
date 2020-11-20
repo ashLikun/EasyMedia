@@ -2,14 +2,12 @@ package com.ashlikun.media.simple.music;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ashlikun.media.music.BaseEasyMusicPlay;
 import com.ashlikun.media.video.VideoData;
-import com.ashlikun.media.video.status.VideoStatus;
 
 import java.util.List;
 
@@ -37,16 +35,16 @@ public class MusicView extends BaseEasyMusicPlay {
 
     @Override
     public boolean setDataSource(List<VideoData> mediaData, int defaultIndex) {
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getCurrentState() == VideoStatus.PLAYING) {
-                    onPause();
-                } else {
-                    play();
-                }
-            }
-        });
+//        setOnClickListener(new OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (getCurrentState() == VideoStatus.PLAYING) {
+//                    onPause();
+//                } else {
+//                    play();
+//                }
+//            }
+//        });
         return super.setDataSource(mediaData, defaultIndex);
     }
 

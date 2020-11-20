@@ -76,6 +76,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .title("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
                 .url("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
                 .builder());
+        musicPlay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                musicPlay.setDataSource(new VideoData.Builder()
+                        .title("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                        .url("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                        .builder());
+                musicPlay.startMusic();
+            }
+        });
 //        musicPlay.startMusic();
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
         findViewById(R.id.detailsButton).setOnClickListener(this);

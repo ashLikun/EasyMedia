@@ -59,6 +59,13 @@ public class EasyVideoExo2 extends EasyMediaInterface
 
     @Override
     public void prepare() {
+        try {
+            if (isPlaying()) {
+                stop();
+            }
+            release();
+        } catch (Exception e) {
+        }
         mediaPlayer = new IjkExo2MediaPlayer(context);
 
         if (getCurrentDataSource() == null) {

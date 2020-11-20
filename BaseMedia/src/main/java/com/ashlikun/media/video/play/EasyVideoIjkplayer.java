@@ -42,6 +42,10 @@ public class EasyVideoIjkplayer extends EasyMediaInterface implements IMediaPlay
 
     @Override
     public void prepare() {
+        if (isPlaying()) {
+            stop();
+        }
+        release();
         ijkMediaPlayer = new IjkMediaPlayer();
         if (getCurrentDataSource() == null) {
             Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();

@@ -58,6 +58,10 @@ public class EasyVideoSystem extends EasyMediaInterface
     @Override
     public void prepare() {
         try {
+            if (isPlaying()) {
+                stop();
+            }
+            release();
             mediaPlayer = new MediaPlayer();
             if (getCurrentDataSource() == null) {
                 Toast.makeText(context, context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show();
