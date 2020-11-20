@@ -3,7 +3,6 @@ package com.ashlikun.media.exoplay2;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Handler;
 import android.os.Looper;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -50,7 +49,6 @@ import tv.danmaku.ijk.media.player.misc.IjkTrackInfo;
  * Exo
  */
 public class IjkExo2MediaPlayer extends AbstractMediaPlayer implements Player.EventListener, AnalyticsListener {
-
 
 
     public static int ON_POSITION_DISCOUNTINUITY = 2702;
@@ -338,46 +336,39 @@ public class IjkExo2MediaPlayer extends AbstractMediaPlayer implements Player.Ev
     }
 
     protected void prepareAsyncInternal() {
-        new Handler(Looper.getMainLooper()).post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTrackSelector == null) {
-                            mTrackSelector = new DefaultTrackSelector(mAppContext);
-                        }
-                        mEventLogger = new EventLogger(mTrackSelector);
-                        boolean preferExtensionDecoders = true;
-                        boolean useExtensionRenderers = true;//是否开启扩展
-                        @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = useExtensionRenderers
-                                ? (preferExtensionDecoders ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-                                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-                                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
-                        if (mRendererFactory == null) {
-                            mRendererFactory = new DefaultRenderersFactory(mAppContext);
-                            mRendererFactory.setExtensionRendererMode(extensionRendererMode);
-                        }
-                        if (mLoadControl == null) {
-                            mLoadControl = new DefaultLoadControl();
-                        }
-                        mInternalPlayer = new SimpleExoPlayer.Builder(mAppContext, mRendererFactory)
-                                .setLooper(Looper.getMainLooper())
-                                .setTrackSelector(mTrackSelector)
-                                .setLoadControl(mLoadControl).build();
-                        mInternalPlayer.addListener(IjkExo2MediaPlayer.this);
-                        mInternalPlayer.addAnalyticsListener(IjkExo2MediaPlayer.this);
-                        mInternalPlayer.addAnalyticsListener(mEventLogger);
-                        if (mSpeedPlaybackParameters != null) {
-                            mInternalPlayer.setPlaybackParameters(mSpeedPlaybackParameters);
-                        }
-                        if (mSurface != null)
-                            mInternalPlayer.setVideoSurface(mSurface);
-                        if(mMediaSource != null) {
-                            mInternalPlayer.prepare(mMediaSource);
-                        }
-                        mInternalPlayer.setPlayWhenReady(false);
-                    }
-                }
-        );
+        if (mTrackSelector == null) {
+            mTrackSelector = new DefaultTrackSelector(mAppContext);
+        }
+        mEventLogger = new EventLogger(mTrackSelector);
+        boolean preferExtensionDecoders = true;
+        boolean useExtensionRenderers = true;//是否开启扩展
+        @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = useExtensionRenderers
+                ? (preferExtensionDecoders ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+        if (mRendererFactory == null) {
+            mRendererFactory = new DefaultRenderersFactory(mAppContext);
+            mRendererFactory.setExtensionRendererMode(extensionRendererMode);
+        }
+        if (mLoadControl == null) {
+            mLoadControl = new DefaultLoadControl();
+        }
+        mInternalPlayer = new SimpleExoPlayer.Builder(mAppContext, mRendererFactory)
+                .setLooper(Looper.myLooper())
+                .setTrackSelector(mTrackSelector)
+                .setLoadControl(mLoadControl).build();
+        mInternalPlayer.addListener(IjkExo2MediaPlayer.this);
+        mInternalPlayer.addAnalyticsListener(IjkExo2MediaPlayer.this);
+        mInternalPlayer.addAnalyticsListener(mEventLogger);
+        if (mSpeedPlaybackParameters != null) {
+            mInternalPlayer.setPlaybackParameters(mSpeedPlaybackParameters);
+        }
+        if (mSurface != null)
+            mInternalPlayer.setVideoSurface(mSurface);
+        if (mMediaSource != null) {
+            mInternalPlayer.prepare(mMediaSource);
+        }
+        mInternalPlayer.setPlayWhenReady(false);
     }
 
     public String getOverrideExtension() {

@@ -5,7 +5,6 @@ import android.graphics.SurfaceTexture;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Message;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.ViewGroup;
@@ -71,10 +70,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public int currentVideoWidth = 0;
     public int currentVideoHeight = 0;
     /**
-     * 播放器Handler,独立线程
-     */
-    private MediaHandler mediaHandler;
-    /**
      * 主线程的handler
      */
     private Handler mainThreadHandler;
@@ -93,7 +88,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public EasyMediaManager(String tag) {
         HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
         mMediaHandlerThread.start();
-        mediaHandler = new MediaHandler(mMediaHandlerThread.getLooper());
         mainThreadHandler = new Handler(Looper.getMainLooper());
         handlePlayEvent = tag.equals(TAG_VIDEO) ? new HandleVideoPlayEvent(tag) : new HandleMusicPlayEvent(tag);
     }
@@ -187,9 +181,10 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
      * 释放播放器
      */
     public void releaseMediaPlayer() {
-        Message msg = new Message();
-        msg.what = HANDLER_RELEASE;
-        mediaHandler.sendMessage(msg);
+        if (isPlayingNei()) {
+            getMediaPlay().stop();
+        }
+        getMediaPlay().release();
     }
 
     public void setContext(Context context) {
@@ -212,9 +207,16 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public void prepare() {
         releaseMediaPlayer();
         mNetSate = NetworkUtils.getNetWorkTypeName(appContext);
-        Message msg = new Message();
-        msg.what = HANDLER_PREPARE;
-        mediaHandler.sendMessage(msg);
+        currentVideoWidth = 0;
+        currentVideoHeight = 0;
+        getMediaPlay().prepare();
+        if (surface != null) {
+            surface.release();
+        }
+        if (savedSurfaceTexture != null) {
+            surface = new Surface(savedSurfaceTexture);
+            getMediaPlay().setSurface(surface);
+        }
     }
 
     /**
@@ -270,36 +272,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
         EasyMediaManager.getInstance().textureView = null;
     }
 
-    public class MediaHandler extends Handler {
-        public MediaHandler(Looper looper) {
-            super(looper);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case HANDLER_PREPARE:
-                    currentVideoWidth = 0;
-                    currentVideoHeight = 0;
-                    getMediaPlay().prepare();
-                    if (surface != null) {
-                        surface.release();
-                    }
-                    if (savedSurfaceTexture != null) {
-                        surface = new Surface(savedSurfaceTexture);
-                        getMediaPlay().setSurface(surface);
-                    }
-                    break;
-                case HANDLER_RELEASE:
-                    if (isPlayingNei()) {
-                        getMediaPlay().stop();
-                    }
-                    getMediaPlay().release();
-                    break;
-            }
-        }
-    }
 
     public Handler getMediaHandler() {
         return mainThreadHandler;
