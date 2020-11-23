@@ -501,6 +501,7 @@ public abstract class BaseEasyVideoPlay extends FrameLayout implements IEasyVide
         EasyMediaManager.getInstance().releaseMediaPlayer();
         Runtime.getRuntime().gc();
         VideoUtils.saveProgress(getContext(), getCurrentData(), 0);
+        setStatus(VideoStatus.AUTO_COMPLETE);
         //播放下一个
         return switchData(getCurrentUrlIndex() + 1);
     }

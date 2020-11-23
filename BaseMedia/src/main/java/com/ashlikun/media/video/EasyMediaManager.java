@@ -3,7 +3,6 @@ package com.ashlikun.media.video;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
 import android.view.TextureView;
@@ -86,8 +85,6 @@ public class EasyMediaManager implements TextureView.SurfaceTextureListener {
     public String mNetSate = "NORMAL";
 
     public EasyMediaManager(String tag) {
-        HandlerThread mMediaHandlerThread = new HandlerThread(TAG);
-        mMediaHandlerThread.start();
         mainThreadHandler = new Handler(Looper.getMainLooper());
         handlePlayEvent = tag.equals(TAG_VIDEO) ? new HandleVideoPlayEvent(tag) : new HandleMusicPlayEvent(tag);
     }

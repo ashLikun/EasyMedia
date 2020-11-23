@@ -73,15 +73,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         musicPlay.setDataSource(new VideoData.Builder()
-                .title("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
-                .url("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                .title("aaaaa")
+                .url("https:\\/\\/sipapp.510gow.com\\/k2ysbn_1606113268.mp3")
                 .builder());
         musicPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 musicPlay.setDataSource(new VideoData.Builder()
-                        .title("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
-                        .url("https://sipapp.510gow.com/hzq2l7_1605687443.mp3")
+                        .title("aaaaa")
+                        .url("https:\\/\\/sipapp.510gow.com\\/k2ysbn_1606113268.mp3")
                         .builder());
                 musicPlay.startMusic();
             }

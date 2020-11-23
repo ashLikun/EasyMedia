@@ -2,11 +2,13 @@ package com.ashlikun.media.simple.music;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.ashlikun.media.music.BaseEasyMusicPlay;
+import com.ashlikun.media.video.EasyMediaManager;
 import com.ashlikun.media.video.VideoData;
 
 import java.util.List;
@@ -48,4 +50,21 @@ public class MusicView extends BaseEasyMusicPlay {
         return super.setDataSource(mediaData, defaultIndex);
     }
 
+    @Override
+    protected void onStatePlaying() {
+        super.onStatePlaying();
+        EasyMediaManager.getMusicMediaPlay().seekTo(70);
+    }
+
+    @Override
+    protected void onStateAutoComplete() {
+        super.onStateAutoComplete();
+        Log.e("aaaaaaa","cccccccc");
+    }
+
+    @Override
+    public boolean onAutoCompletion() {
+        Log.e("aaaaaaa","bbbbbbbbbbbb");
+        return super.onAutoCompletion();
+    }
 }

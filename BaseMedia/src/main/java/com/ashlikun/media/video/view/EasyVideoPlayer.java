@@ -401,7 +401,6 @@ public class EasyVideoPlayer extends BaseEasyVideoPlay
             if (mediaController != null) {
                 mediaController.onAutoCompletion();
             }
-            setStatus(VideoStatus.AUTO_COMPLETE);
             if (isScreenFull()) {
                 VideoScreenUtils.backPress();
             }

@@ -404,6 +404,7 @@ public class BaseEasyMusicPlay extends FrameLayout implements IEasyVideoPlayList
         onEvent(EasyVideoAction.ON_AUTO_COMPLETE);
         EasyMediaManager.getInstanceMusic().releaseMediaPlayer();
         Runtime.getRuntime().gc();
+        setStatus(VideoStatus.AUTO_COMPLETE);
         //播放下一个
         return switchData(getCurrentUrlIndex() + 1);
     }
