@@ -1,4 +1,5 @@
 *.iml
+*.hprof
 .gradle
 /local.properties
 .idea
@@ -6,3 +7,4 @@
 /build
 /captures
 .externalNativeBuild
+java_pid7504.hprof
