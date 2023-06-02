@@ -36,3 +36,4 @@ android {
 dependencies {
 
 }
+apply from: '../maven.gradle'

@@ -36,7 +36,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly rootProject.ext.appcompat
+    implementation rootProject.ext.appcompat
     //ijkplay-java
     api 'com.github.CarGuo:GSYIjkJava:1.0.0'
 }
+apply from: '../maven.gradle'

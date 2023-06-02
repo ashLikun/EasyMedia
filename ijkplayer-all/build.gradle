@@ -37,3 +37,4 @@ dependencies {
     api project(":ijkplayer-x86")
     api project(":ijkplayer-x86_64")
 }
+apply from: '../maven.gradle'

@@ -51,3 +51,4 @@ dependencies {
     compileOnly "androidx.media3:media3-datasource-rtmp:$rootProject.ext.media3"
 
 }
+apply from: '../maven.gradle'

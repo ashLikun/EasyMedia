@@ -43,3 +43,4 @@ dependencies {
     compileOnly 'com.google.android.exoplayer:exoplayer-rtsp:2.18.7'
 
 }
+apply from: '../maven.gradle'
