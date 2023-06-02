@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+// 使用Kotlin插件
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        multiDexEnabled = true
+    }
+    buildFeatures {
+        viewBinding = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly rootProject.ext.appcompat
+    api project(":BaseMedia")
+    //Exo3
+    api "androidx.media3:media3-common:$rootProject.ext.media3"
+    api "androidx.media3:media3-exoplayer:$rootProject.ext.media3"
+    //下面是各种MediaSource ，按需引用
+    //使用ExoPlayer支持行车记录仪播放
+    compileOnly "androidx.media3:media3-exoplayer-dash:$rootProject.ext.media3"
+    // 使用ExoPlayer支持HLS播放
+    compileOnly "androidx.media3:media3-exoplayer-hls:$rootProject.ext.media3"
+    //SsMediaSource
+    compileOnly "androidx.media3:media3-exoplayer-smoothstreaming:$rootProject.ext.media3"
+    compileOnly "androidx.media3:media3-exoplayer-rtsp:$rootProject.ext.media3"
+    compileOnly "androidx.media3:media3-datasource-rtmp:$rootProject.ext.media3"
+
+}

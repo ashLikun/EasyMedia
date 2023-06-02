@@ -9,7 +9,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape>
-                <solid android:color="@color/easy_video_main_color" />
+                <solid android:color="?attr/colorPrimary" />
                 <corners android:radius="2dp" />
             </shape>
         </clip>

@@ -208,7 +208,6 @@ public class NetworkUtils {
      * 获取当前的网络类型(WIFI,2G,3G,4G)
      * <p>依赖上面的方法</p>
      *
-     * @param context 上下文
      * @return 网络类型名称
      * <ul>
      * <li>NETWORK_WIFI   </li>
@@ -219,8 +218,8 @@ public class NetworkUtils {
      * <li>NETWORK_NO     </li>
      * </ul>
      */
-    public static String getNetWorkTypeName(Context context) {
-        switch (getNetWorkType(context)) {
+    public static String getNetWorkTypeName() {
+        switch (getNetWorkType(VideoUtils.context)) {
             case NETWORK_WIFI:
                 return "NETWORK_WIFI";
             case NETWORK_4G:

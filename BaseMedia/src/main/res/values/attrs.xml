@@ -16,6 +16,7 @@
     </declare-styleable>
     <declare-styleable name="BaseEasyVideoPlay">
         <attr name="android:background"></attr>
+        <attr name="video_manage_tag" format="string"></attr>
         <attr name="video_display_type">
             <!--Video大小适配视频-->
             <enum name="adapter" value="0" />
@@ -26,6 +27,9 @@
             <!--原始大小-->
             <enum name="original" value="3" />
         </attr>
+    </declare-styleable>
+    <declare-styleable name="BaseEasyMusicPlay">
+        <attr name="music_manage_tag" format="string"></attr>
     </declare-styleable>
 
     <declare-styleable name="EasyLoaddingView">

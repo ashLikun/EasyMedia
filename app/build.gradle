@@ -1,5 +1,5 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'kotlin-android'
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -9,34 +9,37 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode rootProject.ext.versionCode
         versionName rootProject.ext.versionName
-        multiDexEnabled false
-
-        ndk {
-            abiFilters "armeabi-v7a"
-        }
+        multiDexEnabled = true
+    }
+    buildFeatures {
+        viewBinding = true
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    //java8
     compileOptions {
-        //定义生成的META-INF/library_release文件名 More than one file was found with OS independent path 'META-INF/library_release.kotlin_module'
-//        kotlinOptions.freeCompilerArgs += ['-module-name', 'com.ashlikun.utils']
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation rootProject.ext.designVersion
+    implementation rootProject.ext.appcompat
+    implementation project(":BaseMedia")
     implementation project(":ExoPlay2")
+    implementation project(":ExoPlay3")
     implementation 'com.github.ashLikun:CommonAdapter:3.0.6'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutine_version"
     //okhttp
-    implementation 'com.squareup.okhttp3:okhttp:3.+'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.ashLikun:MultiTypeGson:2.0.1'
     implementation 'com.github.ashLikun:OkHttpUtils:+'
@@ -46,11 +49,32 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     implementation 'jp.wasabeef:glide-transformations:3.3.0'
     implementation 'com.github.ashLikun.frame:glideutils:2.7.4'
-    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
-    implementation 'com.shuyu:gsyVideoPlayer-ex_so:7.1.4'
+//    implementation 'com.shuyu:gsyVideoPlayer-ex_so:7.1.4'
 //    compile 'com.github.ashLikun.ijkplayer:lite:0.0.1'
-//    implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.8'
-    api 'com.google.android.exoplayer:exoplayer:2.11.7'
-//    implementation 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.8'
+
+    //Ijkplay
+    implementation 'com.github.CarGuo:GSYIjkJava:1.0.0'
+    implementation project(":ijkplayer-ex_so")
+
+//    Google Exo2
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
+    //下面两个根据需求
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.18.7'
+    implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.18.7'
+
+
+    //Exo3
+    implementation "androidx.media3:media3-common:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-exoplayer:$rootProject.ext.media3"
+    //下面是各种MediaSource ，按需引用
+    //使用ExoPlayer支持行车记录仪播放
+    implementation "androidx.media3:media3-exoplayer-dash:$rootProject.ext.media3"
+    // 使用ExoPlayer支持HLS播放
+    implementation "androidx.media3:media3-exoplayer-hls:$rootProject.ext.media3"
+    //SsMediaSource
+    implementation "androidx.media3:media3-exoplayer-smoothstreaming:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-exoplayer-rtsp:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-datasource-rtmp:$rootProject.ext.media3"
+
 
 }

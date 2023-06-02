@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:parentTag="android.widget.RelativeLayout">
 
     <ImageView
         android:id="@+id/thumb"
@@ -17,19 +19,19 @@
         android:id="@+id/controllerBottom"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_alignParentBottom="true"></com.ashlikun.media.video.controller.VideoControllerBottom>
+        android:layout_alignParentBottom="true" />
 
     <com.ashlikun.media.video.controller.VideoControllerTop
         android:id="@+id/controllerTop"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:layout_alignParentTop="true"></com.ashlikun.media.video.controller.VideoControllerTop>
+        android:layout_alignParentTop="true" />
 
 
-    <com.ashlikun.media.video.view.EasyLoaddingView
+    <com.ashlikun.media.video.view.other.EasyLoaddingView
         android:id="@+id/loading"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/easy_video_loadding_size"
+        android:layout_height="@dimen/easy_video_loadding_size"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:indeterminateDrawable="@drawable/easy_video_loading"
@@ -45,8 +47,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:minWidth="@dimen/easy_video_start_button_w_h_normal"
-        android:minHeight="@dimen/easy_video_start_button_w_h_normal"
+        android:minWidth="@dimen/easy_video_start_size"
+        android:minHeight="@dimen/easy_video_start_size"
         android:padding="6dp"
         android:src="@drawable/easy_video_click_play_selector" />
 
@@ -60,7 +62,7 @@
         android:layout_marginTop="6dp"
         android:text="@string/easy_video_replay"
         android:textColor="#ffffff"
-        android:textSize="12sp"
+        android:textSize="12dp"
         android:visibility="gone" />
 
     <LinearLayout
@@ -75,7 +77,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="视频加载失败"
+            android:text="@string/easy_video_error"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -83,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:text="点击重试"
+            android:text="@string/easy_video_retry"
             android:textColor="@android:color/white" />
     </LinearLayout>
 

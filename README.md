@@ -1,8 +1,7 @@
 [![Release](https://jitpack.io/v/ashLikun/EasyMedia.svg)](https://jitpack.io/#ashLikun/EasyMedia)
 
+EasyMedia项目简介 视频播放
 
-EasyMedia项目简介
-        视频播放
 ## 使用方法
 
 build.gradle文件中添加:
@@ -14,6 +13,7 @@ allprojects {
     }
 }
 ```
+
 并且:
 
 ```gradle
@@ -21,25 +21,44 @@ dependencies {
     //核心库
     implementation 'com.github.ashLikun:EasyMedia:{latest version}'
     //使用Ijkplay
-    implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+    implementation 'com.github.CarGuo:GSYIjkJava:1.0.0'
     //so文件  后缀带  https 表示支持https  如lite_https
     implementation 'com.github.ashLikun.ijkplayer:lite:1.0.0'//最小库
     implementation 'com.github.ashLikun.ijkplayer:lite_hevc:1.0.0'//最小库（带hevc）
     implementation 'com.github.ashLikun.ijkplayer:default:1.0.0'//最大库（支持格式多）
 
+    //Ijkplay
+    implementation 'com.github.CarGuo:GSYIjkJava:1.0.0'
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-ex_so:+'
 
-
-    //使用Exo2Play,这个依赖于ijkplayer-java
+    //使用Exo2Play,这个依赖于ijkplayer-java  com.github.CarGuo:GSYIjkJava:1.0.0
     // VideoUtils.init(this, EasyVideoExo2.class);
-     implementation 'com.google.android.exoplayer:exoplayer:2.11.7'
-     implementation 'com.google.android.exoplayer:extension-rtmp:2.11.7'
-     implementation 'tv.danmaku.ijk.media:ijkplayer-java:0.8.8'
+      implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
+    //下面两个根据需求
+     implementation 'com.google.android.exoplayer:extension-rtmp:2.18.7'
+     implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.18.7'
+     
+     
+     
+      //Media3
+    implementation "androidx.media3:media3-common:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-exoplayer:$rootProject.ext.media3"
+    //下面是各种MediaSource ，按需引用
+    //使用ExoPlayer支持行车记录仪播放
+    implementation "androidx.media3:media3-exoplayer-dash:$rootProject.ext.media3"
+    // 使用ExoPlayer支持HLS播放
+    implementation "androidx.media3:media3-exoplayer-hls:$rootProject.ext.media3"
+    //SsMediaSource
+    implementation "androidx.media3:media3-exoplayer-smoothstreaming:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-exoplayer-rtsp:$rootProject.ext.media3"
+    implementation "androidx.media3:media3-datasource-rtmp:$rootProject.ext.media3"
 }
 ```
-        
+
 ## 详细介绍
 
 ## 截图
+
 ![image1](photo/photo1.png) ![image2](photo/photo2.png)
 
 ![image3](photo/photo3.png)![image4](photo/photo4.png)
@@ -47,19 +66,24 @@ dependencies {
 ![image5](photo/photo5.png) ![image6](photo/photo6.png)
 
 ## 使用
-####    权限
+
+#### 权限
+
           <uses-permission android:name="android.permission.INTERNET" />
               <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
               <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
               <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
               <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-####    引用View
+
+#### 引用View
+
              <com.ashlikun.media.EasyVideoPlayer
                           android:id="@+id/mediaPlay"
                           android:layout_width="match_parent"
                           android:layout_height="250dp"
                           app:video_full_screen_enable="false"></com.ashlikun.media.EasyVideoPlayer>
-####    Java代码
+
+#### Java代码
 
         //全局初始化（applicable）
         MediaUtils.init(getApplicationContext());

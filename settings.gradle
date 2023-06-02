@@ -1,2 +1,2 @@
-include ':ExoPlay2'
-include ':app', ':BaseMedia'
+include ':app', ':BaseMedia', ':ExoPlay2', ':ExoPlay3', ':ijkplayer-armv5', ':ijkplayer-armv7a', ':ijkplayer-armv64', ':ijkplayer-x86',
+        ':ijkplayer-x86_64', ':ijkplayer-all', ':ijkplayer-ex_so'

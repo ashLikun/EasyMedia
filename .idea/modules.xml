@@ -4,8 +4,49 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/EasyMedia.iml" filepath="$PROJECT_DIR$/EasyMedia.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.main.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/BaseMedia/EasyMedia.BaseMedia.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay2/EasyMedia.ExoPlay2.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ExoPlay3/EasyMedia.ExoPlay3.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/EasyMedia.app.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-all/EasyMedia.ijkplayer-all.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv5/EasyMedia.ijkplayer-armv5.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv64/EasyMedia.ijkplayer-armv64.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86/EasyMedia.ijkplayer-x86.unitTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-x86_64/EasyMedia.ijkplayer-x86_64.unitTest.iml" />
     </modules>
   </component>
 </project>

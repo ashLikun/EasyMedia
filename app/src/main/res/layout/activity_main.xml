@@ -19,13 +19,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"></com.ashlikun.media.simple.music.MusicView>
 
-            <com.ashlikun.media.video.view.EasyVideoPlayer
+            <com.ashlikun.media.video.view.EasyMediaPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 app:video_display_type="adapter"
                 app:video_full_screen_enable="true"
-                app:video_full_screen_portrait="auto"></com.ashlikun.media.video.view.EasyVideoPlayer>
+                app:video_full_screen_portrait="auto" />
+
+            <com.ashlikun.media.video.view.EasyLiveMediaPlay
+                android:id="@+id/mediaPlay2"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                app:video_display_type="adapter"
+                app:video_full_screen_enable="true"
+                app:video_full_screen_portrait="auto" />
 
             <Button
                 android:id="@+id/detailsButton"

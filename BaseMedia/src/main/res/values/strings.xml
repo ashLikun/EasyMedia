@@ -5,4 +5,6 @@
     <string name="easy_video_tips_not_wifi_cancel">停止播放</string>
     <string name="easy_video_no_url">播放地址无效</string>
     <string name="easy_video_replay">重播</string>
+    <string name="easy_video_retry">点击重试</string>
+    <string name="easy_video_error">视频加载失败</string>
 </resources>

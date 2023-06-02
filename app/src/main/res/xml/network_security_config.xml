@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--  表示支持Http-->
+    <base-config cleartextTrafficPermitted="true">
+
+        <!--表示在Debug 模式下才信任用户证书-->
+        <!--        <debug-overrides>-->
+        <!--            &lt;!&ndash;src=“user"表示信任用户导入的CA证书&ndash;&gt;-->
+        <!--            <certificates-->
+        <!--                overridePins="true"-->
+        <!--                src="user" />-->
+        <!--        </debug-overrides>-->
+        <trust-anchors>
+            <!--certificates说明的src=“system"表示信任系统的CA证书-->
+            <certificates
+                overridePins="true"
+                src="system" />
+            <!--src=“user"表示信任用户导入的CA证书-->
+            <certificates
+                overridePins="true"
+                src="user" />
+        </trust-anchors>
+
+    </base-config>
+</network-security-config>

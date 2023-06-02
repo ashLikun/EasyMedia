@@ -13,13 +13,13 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <com.ashlikun.media.video.view.EasyVideoPlayer
+            <com.ashlikun.media.video.view.EasyMediaPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 app:video_display_type="adapter"
                 app:video_full_screen_enable="true"
-                app:video_full_screen_portrait="auto"></com.ashlikun.media.video.view.EasyVideoPlayer>
+                app:video_full_screen_portrait="auto"></com.ashlikun.media.video.view.EasyMediaPlayer>
 
             <TextView
                 android:layout_width="match_parent"

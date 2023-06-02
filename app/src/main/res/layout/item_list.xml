@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.ashlikun.media.video.view.EasyVideoPlayer
+    <com.ashlikun.media.video.view.EasyMediaPlayer
         android:id="@+id/videoPlay"
         android:layout_width="match_parent"
-        android:layout_height="200dp"></com.ashlikun.media.video.view.EasyVideoPlayer>
+        android:layout_height="200dp"></com.ashlikun.media.video.view.EasyMediaPlayer>
 </LinearLayout>

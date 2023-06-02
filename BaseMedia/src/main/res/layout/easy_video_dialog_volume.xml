@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/easy_video_dialog_progress_bg"
+    android:background="@drawable/easy_video_dialog_bg"
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="155dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/easy_video_volume_width"
+        android:layout_height="@dimen/easy_video_volume_height"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
@@ -19,13 +20,12 @@
 
         <TextView
             android:id="@+id/tv_volume"
+            style="@style/easy_video_dialog_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
-            android:gravity="center_horizontal"
-            android:textColor="#ffffffff"
-            android:textSize="16sp" />
+            android:gravity="center_horizontal" />
 
         <ProgressBar
             android:id="@+id/volume_progressbar"
@@ -33,10 +33,10 @@
             android:layout_width="fill_parent"
             android:layout_height="3dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="20dp"
             android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
             android:layout_marginTop="8dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginBottom="20dp"
             android:max="100"
             android:progressDrawable="@drawable/easy_video_dialog_progress" />
     </LinearLayout>

@@ -4,19 +4,26 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="testRunner" value="PLATFORM" />
+        <option name="testRunner" value="GRADLE" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="Embedded JDK" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/BaseMedia" />
             <option value="$PROJECT_DIR$/ExoPlay2" />
+            <option value="$PROJECT_DIR$/ExoPlay3" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/ijkplayer-all" />
+            <option value="$PROJECT_DIR$/ijkplayer-armv5" />
+            <option value="$PROJECT_DIR$/ijkplayer-armv64" />
+            <option value="$PROJECT_DIR$/ijkplayer-armv7a" />
+            <option value="$PROJECT_DIR$/ijkplayer-ex_so" />
+            <option value="$PROJECT_DIR$/ijkplayer-x86" />
+            <option value="$PROJECT_DIR$/ijkplayer-x86_64" />
           </set>
         </option>
-        <option name="resolveModulePerSourceSet" value="false" />
-        <option name="useQualifiedModuleNames" value="true" />
       </GradleProjectSettings>
     </option>
   </component>

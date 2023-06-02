@@ -1,6 +1,13 @@
 <resources>
-    <dimen name="easy_video_start_button_w_h_normal">44dp</dimen>
+    <dimen name="easy_video_start_size">44dp</dimen>
     <dimen name="easy_video_start_button_w_h_fullscreen">60dp</dimen>
+    <dimen name="easy_video_loadding_size">28dp</dimen>
     <dimen name="easy_video_loadding_line_width">1dp</dimen>
     <dimen name="easy_video_loadding_bg_line_width">1dp</dimen>
+    <dimen name="easy_video_bright_width">155dp</dimen>
+    <dimen name="easy_video_bright_height">120dp</dimen>
+    <dimen name="easy_video_progress_width">155dp</dimen>
+    <dimen name="easy_video_progress_height">120dp</dimen>
+    <dimen name="easy_video_volume_width">155dp</dimen>
+    <dimen name="easy_video_volume_height">120dp</dimen>
 </resources>
