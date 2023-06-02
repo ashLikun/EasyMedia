@@ -128,6 +128,7 @@ class EasyControllerViewHolder(val videoController: EasyVideoController, val cli
             VideoStatus.PLAYING -> {
                 changeUiToPlaying()
                 startProgressSchedule()
+                //开始倒计时消失控制器
                 videoController.startDismissControlViewSchedule(false)
             }
 
