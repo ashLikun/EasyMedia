@@ -22,7 +22,10 @@
             <com.ashlikun.media.video.view.EasyMediaPlayer
                 android:id="@+id/mediaPlay"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="200dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="30dp"
                 app:video_display_type="adapter"
                 app:video_full_screen_enable="true"
                 app:video_full_screen_portrait="auto" />
@@ -30,7 +33,10 @@
             <com.ashlikun.media.video.view.EasyLiveMediaPlay
                 android:id="@+id/mediaPlay2"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="200dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginRight="30dp"
                 app:video_display_type="adapter"
                 app:video_full_screen_enable="true"
                 app:video_full_screen_portrait="auto" />

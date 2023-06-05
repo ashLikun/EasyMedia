@@ -36,7 +36,7 @@ open class EasyLiveMediaPlay @JvmOverloads constructor(context: Context, overrid
         ImageView(context).also {
             it.setImageResource(R.drawable.easy_video_enlarge)
             val dp10 = VideoUtils.dip2px(context, 10f)
-            setPadding(dp10, dp10, dp10, dp10)
+            it.setPadding(dp10, dp10, dp10, dp10)
             addView(it, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).also { p ->
                 p.gravity = Gravity.RIGHT or Gravity.BOTTOM
                 p.rightMargin = dp10
@@ -48,7 +48,7 @@ open class EasyLiveMediaPlay @JvmOverloads constructor(context: Context, overrid
         ImageView(context).also {
             it.setImageResource(R.drawable.easy_video_back_normal)
             val dp10 = VideoUtils.dip2px(context, 10f)
-            setPadding(dp10, dp10, dp10, dp10)
+            it.setPadding(dp10, dp10, dp10, dp10)
             addView(it, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).also { p ->
                 p.gravity = Gravity.LEFT or Gravity.TOP
                 p.leftMargin = dp10

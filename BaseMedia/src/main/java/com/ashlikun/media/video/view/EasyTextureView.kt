@@ -18,6 +18,11 @@ import com.ashlikun.media.video.status.VideoDisplayType
  * 为了解决这个问题 Android 4.0中引入了TextureView。只能在具有硬件加速的设备中，就是gup
  */
 class EasyTextureView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : TextureView(context, attrs) {
+
+    companion object {
+        protected const val TAG = "EasyTextureView"
+    }
+
     var currentVideoWidth = 0
         private set
     var currentVideoHeight = 0
@@ -159,7 +164,4 @@ class EasyTextureView @JvmOverloads constructor(context: Context, attrs: Attribu
         setMeasuredDimension(width.toInt(), height.toInt())
     }
 
-    companion object {
-        protected const val TAG = "JZResizeTextureView"
-    }
 }

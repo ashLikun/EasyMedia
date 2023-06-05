@@ -93,7 +93,9 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
      * 播放视频的渲染控件，一般为TextureView
      */
 
-    open var textureViewContainer = FrameLayout(getContext())
+    open val textureViewContainer by lazy {
+        FrameLayout(getContext())
+    }
     open var onSizeChange: MediaSizeChangeCall? = null
     open var onBufferProgressCall: MediaBufferProgressCall? = null
     open var onSeekCompleteCall: MediaSeekCompleteCall? = null

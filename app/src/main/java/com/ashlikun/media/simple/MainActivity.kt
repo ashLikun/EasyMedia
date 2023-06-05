@@ -65,17 +65,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 player.liveConfig()
             }
         }
-        mediaPlay.setDataSource(listOf(VideoData("rtsp://192.168.69.85:8086", "标题")))
-//        mediaPlay.setDataSource(listOf(VideoData(VideoUrl.meinv5, "标题")))
+//        mediaPlay.setDataSource(listOf(VideoData("rtsp://192.168.69.85:8086", "标题")))
+        mediaPlay.setDataSource(listOf(VideoData(VideoUrl.meinv5, "标题")))
         mediaPlay.addEvent { type ->
             if (type == EasyMediaEvent.ON_STATUS_PREPARING) {
 //                    VideoUtils.onPause();
             }
         }
-        mediaPlay2.setDataSource(VideoUrl.meinv5)
-//        mediaPlay2.startVideo()
-        mediaPlay2.onSizeChange = { width, height ->
-            Log.e("aaaaaa", "width = $width , height = ${height}")
+        mediaPlay2.setDataSource("rtsp://192.168.69.85:8086")
+        mediaPlay2.postDelayed({
+            mediaPlay2.startVideo()
+        }, 2000)
+        mediaPlay2.onSizeChange = { w, h ->
+            Log.e("aaaaaa", "width = $w , height = ${h}")
+            mediaPlay2.layoutParams.also {
+                val height = mediaPlay2.height
+                val width = mediaPlay2.width
+                val hei = width * (h / (w * 1f))
+                it.height = hei.toInt()
+                Log.e("aaaaaa22", "width = $width , height = ${hei}")
+                mediaPlay2.layoutParams = it
+                mediaPlay2.requestLayout()
+            }
         }
         musicPlay.setDataSource(
             VideoData("https:\\/\\/sipapp.510gow.com\\/k2ysbn_1606113268.mp3", "1111111")
