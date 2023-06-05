@@ -2,6 +2,7 @@ package com.ashlikun.media.video
 
 import android.content.Context
 import android.view.Surface
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 /**
  * 作者　　: 李坤
@@ -12,6 +13,14 @@ import android.view.Surface
  * 功能介绍：播放引擎
  * 抽象出来的公共接口，自定义播放器要实现这个接口
  */
+/**
+ * 当内部的播放器创建的时候
+ * @param media 当前对象
+ * @param data 即将准备的数据
+ * @param player 具体播放器 ， ijkplay：[IjkMediaPlayer], exo2：[IjkExo2MediaPlayer], exo3：[IjkExo3MediaPlayer]
+ */
+typealias OnPlayerCreate = (media: EasyMediaInterface, data: VideoData, player: Any) -> Unit
+
 abstract class EasyMediaInterface(open val manager: EasyMediaManager) {
     /**
      * 视频数据

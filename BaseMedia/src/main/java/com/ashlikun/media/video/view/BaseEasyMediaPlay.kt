@@ -16,6 +16,7 @@ import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.EasyMediaManager
 import com.ashlikun.media.video.EasyVideoViewManager
 import com.ashlikun.media.video.NetworkUtils
+import com.ashlikun.media.video.OnPlayerCreate
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils.backPress
 import com.ashlikun.media.video.VideoScreenUtils.clearFullscreenLayout
@@ -52,6 +53,11 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         private set
 
     /**
+     * 当内部的播放器创建的时候
+     */
+    open var onPlayerCreate: OnPlayerCreate? = null
+
+    /**
      * 当前状态
      */
     open var currentState = VideoStatus.NORMAL
@@ -65,6 +71,11 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
      * 是否播放过
      */
     open protected var mHadPlay = false
+
+    /***
+     * 是否保存进度
+     */
+    open var isSaveProgress = true
 
     /**
      * 数据源，列表
@@ -187,9 +198,11 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         }
         if (isCurrentVideoPlay && VideoUtils.isContainsUri(mediaData, mediaManager.currentDataSource)) {
             //当前View正在播放视频  保存进度
-            var position = runCatching { mediaManager.currentPosition }.getOrNull() ?: 0L
-            if (position != 0L) {
-                mediaManager.currentDataSource?.let { VideoUtils.saveProgress(context, it, position) }
+            if (isSaveProgress) {
+                var position = runCatching { mediaManager.currentPosition }.getOrNull() ?: 0L
+                if (position != 0L) {
+                    mediaManager.currentDataSource?.let { VideoUtils.saveProgress(context, it, position) }
+                }
             }
             mediaManager.releaseMediaPlayer()
         } else if (!isCurrentVideoPlay && VideoUtils.isContainsUri(mediaData, mediaManager.currentDataSource)) {
@@ -505,7 +518,9 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         onEvent(EasyMediaEvent.ON_AUTO_COMPLETE)
         mediaManager.releaseMediaPlayer()
         Runtime.getRuntime().gc()
-        currentData?.let { VideoUtils.saveProgress(context, it, 0) }
+        if (isSaveProgress) {
+            currentData?.let { VideoUtils.saveProgress(context, it, 0) }
+        }
         setStatus(VideoStatus.AUTO_COMPLETE)
         //播放下一个
         return switchData(currentUrlIndex + 1)
@@ -516,13 +531,15 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
      */
     override fun onForceCompletionTo() {
         if (currentState == VideoStatus.PLAYING || currentState == VideoStatus.PAUSE) {
-            var position: Long = 0
-            try {
-                position = mediaManager.currentPosition
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
+            if (isSaveProgress) {
+                var position: Long = 0
+                try {
+                    position = mediaManager.currentPosition
+                } catch (e: IllegalStateException) {
+                    e.printStackTrace()
+                }
+                currentData?.let { VideoUtils.saveProgress(context, it, position) }
             }
-            currentData?.let { VideoUtils.saveProgress(context, it, position) }
         }
         //还原默认状态
         setStatus(VideoStatus.FORCE_COMPLETE)
@@ -685,6 +702,8 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     fun onDestroy() {
         VideoUtils.onDestroy()
     }
+
+    fun getSavedProgress() = if (isSaveProgress) VideoUtils.getSavedProgress(context, currentData!!) else 0
 
     companion object {
         /**

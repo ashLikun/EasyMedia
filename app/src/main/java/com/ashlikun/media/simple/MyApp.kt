@@ -1,7 +1,7 @@
 package com.ashlikun.media.simple
 
 import android.app.Application
-import com.ashlikun.media.exoplay2.play.EasyVideoExo2
+import com.ashlikun.media.exoplay3.ExoSourceManager
 import com.ashlikun.media.exoplay3.play.EasyVideoExo3
 import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.okhttputils.http.OkHttpManage
@@ -25,7 +25,12 @@ class MyApp : Application() {
 //        VideoUtils.init(this, EasyVideoExo2::class.java)
         VideoUtils.init(this, EasyVideoExo3::class.java)
         VideoUtils.setIsDebug(true)
-        VideoUtils.onCreateIjkplay = { data, ijkMediaPlayer ->
+        ExoSourceManager.setForceRtspTcp(false)
+        com.ashlikun.media.exoplay2.ExoSourceManager.setForceRtspTcp(false)
+
+        VideoUtils.onPlayerCreate = { media, data, player ->
+
+
 //        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 0);
 //        ijkMediaPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32);
 //        //跳帧处理,放CPU处理较慢时，进行跳帧处理，保证播放流程，画面和声音同步

@@ -37,6 +37,7 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource;
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter;
 import androidx.media3.extractor.DefaultExtractorsFactory;
 
+import com.ashlikun.media.video.VideoUtils;
 import com.google.common.base.Ascii;
 
 import java.io.File;
@@ -124,12 +125,7 @@ public class ExoSourceManager {
             } catch (RawResourceDataSource.RawResourceDataSourceException e) {
                 e.printStackTrace();
             }
-            DataSource.Factory factory = new DataSource.Factory() {
-                @Override
-                public DataSource createDataSource() {
-                    return rawResourceDataSource;
-                }
-            };
+            DataSource.Factory factory = () -> rawResourceDataSource;
             return new ProgressiveMediaSource.Factory(factory).createMediaSource(mediaItem);
 
         } else if ("assets".equals(contentUri.getScheme())) {
@@ -159,6 +155,7 @@ public class ExoSourceManager {
                 if (sHttpConnectTimeout > 0) {
                     rtspFactory.setTimeoutMs(sHttpConnectTimeout);
                 }
+                rtspFactory.setDebugLoggingEnabled(VideoUtils.INSTANCE.isDebug());
                 rtspFactory.setForceUseRtpTcp(isForceRtspTcp);
                 mediaSource = rtspFactory.createMediaSource(mediaItem);
                 break;

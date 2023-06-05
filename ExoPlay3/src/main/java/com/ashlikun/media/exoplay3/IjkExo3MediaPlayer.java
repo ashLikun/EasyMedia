@@ -367,46 +367,43 @@ public class IjkExo3MediaPlayer extends AbstractMediaPlayer implements Player.Li
 
     protected void prepareAsyncInternal() {
         new Handler(Looper.myLooper()).post(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mTrackSelector == null) {
-                            mTrackSelector = new DefaultTrackSelector(mAppContext);
-                        }
-                        mEventLogger = new EventLogger(mTrackSelector);
-                        boolean preferExtensionDecoders = true;
-                        boolean useExtensionRenderers = true;//是否开启扩展
-                        @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = useExtensionRenderers
-                                ? (preferExtensionDecoders ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-                                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
-                                : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
-                        if (mRendererFactory == null) {
-                            mRendererFactory = new DefaultRenderersFactory(mAppContext);
-                            mRendererFactory.setExtensionRendererMode(extensionRendererMode);
-                        }
-                        if (mLoadControl == null) {
-                            mLoadControl = new DefaultLoadControl();
-                        }
-                        mInternalPlayer = new ExoPlayer.Builder(mAppContext, mRendererFactory)
-                                .setLooper(Looper.myLooper())
-                                .setTrackSelector(mTrackSelector)
-                                .setLoadControl(mLoadControl).build();
-                        mInternalPlayer.addListener(IjkExo3MediaPlayer.this);
-                        mInternalPlayer.addAnalyticsListener(IjkExo3MediaPlayer.this);
-                        mInternalPlayer.addListener(mEventLogger);
-                        if (mSpeedPlaybackParameters != null) {
-                            mInternalPlayer.setPlaybackParameters(mSpeedPlaybackParameters);
-                        }
-                        if (isLooping) {
-                            mInternalPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-                        }
-                        if (mSurface != null) {
-                            mInternalPlayer.setVideoSurface(mSurface);
-                        }
-                        mInternalPlayer.setMediaSource(mMediaSource);
-                        mInternalPlayer.prepare();
-                        mInternalPlayer.setPlayWhenReady(false);
+                () -> {
+                    if (mTrackSelector == null) {
+                        mTrackSelector = new DefaultTrackSelector(mAppContext);
                     }
+                    mEventLogger = new EventLogger(mTrackSelector);
+                    boolean preferExtensionDecoders = true;
+                    boolean useExtensionRenderers = true;//是否开启扩展
+                    @DefaultRenderersFactory.ExtensionRendererMode int extensionRendererMode = useExtensionRenderers
+                            ? (preferExtensionDecoders ? DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
+                            : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
+                            : DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
+                    if (mRendererFactory == null) {
+                        mRendererFactory = new DefaultRenderersFactory(mAppContext);
+                        mRendererFactory.setExtensionRendererMode(extensionRendererMode);
+                    }
+                    if (mLoadControl == null) {
+                        mLoadControl = new DefaultLoadControl();
+                    }
+                    mInternalPlayer = new ExoPlayer.Builder(mAppContext, mRendererFactory)
+                            .setLooper(Looper.myLooper())
+                            .setTrackSelector(mTrackSelector)
+                            .setLoadControl(mLoadControl).build();
+                    mInternalPlayer.addListener(IjkExo3MediaPlayer.this);
+                    mInternalPlayer.addAnalyticsListener(IjkExo3MediaPlayer.this);
+                    mInternalPlayer.addListener(mEventLogger);
+                    if (mSpeedPlaybackParameters != null) {
+                        mInternalPlayer.setPlaybackParameters(mSpeedPlaybackParameters);
+                    }
+                    if (isLooping) {
+                        mInternalPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+                    }
+                    if (mSurface != null) {
+                        mInternalPlayer.setVideoSurface(mSurface);
+                    }
+                    mInternalPlayer.setMediaSource(mMediaSource);
+                    mInternalPlayer.prepare();
+                    mInternalPlayer.setPlayWhenReady(false);
                 }
         );
     }

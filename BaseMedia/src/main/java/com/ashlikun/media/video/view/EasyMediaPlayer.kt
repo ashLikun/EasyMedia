@@ -9,12 +9,7 @@ import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.EasyVideoViewManager
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils
-import com.ashlikun.media.video.VideoScreenUtils.backPress
-import com.ashlikun.media.video.VideoScreenUtils.clearFloatScreen
-import com.ashlikun.media.video.VideoScreenUtils.startFullscreen
-import com.ashlikun.media.video.VideoUtils.getActivity
-import com.ashlikun.media.video.VideoUtils.getSavedProgress
-import com.ashlikun.media.video.VideoUtils.videoAllowPlay
+import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.controller.EasyVideoController
 import com.ashlikun.media.video.status.VideoStatus
 
@@ -77,7 +72,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         createMiddleView()
         initController(createController())
         if (isCurrentPlay) {
-            getActivity(context)?.requestedOrientation?.also {
+            VideoUtils.getActivity(context)?.requestedOrientation?.also {
                 ORIENTATION_NORMAL = it
             }
         }
@@ -178,7 +173,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
      * 当控制器从新播放点击
      */
     override fun onRetryClick() {
-        if (videoAllowPlay(this)) {
+        if (VideoUtils.videoAllowPlay(this)) {
             onEvent(EasyMediaEvent.ON_CLICK_START_ICON)
             return
         }
@@ -195,7 +190,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         }
         if (isFull) {
             //退出全屏
-            backPress()
+            VideoScreenUtils.backPress()
         } else {
             onEvent(EasyMediaEvent.ON_ENTER_FULLSCREEN)
             startWindowFullscreen()
@@ -227,8 +222,8 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
             mediaManager.seekTo(seekToInAdvance.toLong())
             seekToInAdvance = 0
         } else {
-            val position = getSavedProgress(context, currentData!!)
-            if (position != 0L) {
+            val position = getSavedProgress()
+            if (position > 0L) {
                 mediaManager.seekTo(position)
             }
         }
@@ -317,7 +312,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
                 mediaController!!.onAutoCompletion()
             }
             if (isFull) {
-                backPress()
+                VideoScreenUtils.backPress()
             }
         }
         return res
@@ -363,7 +358,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         setStatus(VideoStatus.NORMAL)
         //取消定时器
         mediaController?.cancelDismissControlViewSchedule()
-        startFullscreen(fullPlay, false, mediaData, currentUrlIndex)
+        VideoScreenUtils.startFullscreen(fullPlay, false, mediaData, currentUrlIndex)
     }
 
     /**
@@ -382,7 +377,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
             mediaManager.viewManager.videoTiny!!.cleanTiny()
         } else if (mediaManager.viewManager.videoFullscreen != null) {
             copyStatus(mediaManager.viewManager.videoFullscreen!!)
-            clearFloatScreen(context, mediaManager)
+            VideoScreenUtils.clearFloatScreen(context, mediaManager)
         }
     }
 

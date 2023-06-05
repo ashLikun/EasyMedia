@@ -4,6 +4,8 @@ import android.media.AudioManager
 import android.net.Uri
 import android.view.Surface
 import android.widget.Toast
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.upstream.DefaultAllocator
 import com.ashlikun.media.R
 import com.ashlikun.media.exoplay3.IjkExo3MediaPlayer
 import com.ashlikun.media.video.EasyMediaInterface
@@ -11,6 +13,18 @@ import com.ashlikun.media.video.EasyMediaManager
 import com.ashlikun.media.video.VideoUtils
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import java.io.File
+
+/**
+ * 直播低延迟
+ */
+inline fun IjkExo3MediaPlayer.liveConfig() {
+    loadControl = DefaultLoadControl.Builder()
+        .setBufferDurationsMs(50, 2500, 50, 50)
+        .setTargetBufferBytes(13107200)
+        .setPrioritizeTimeOverSizeThresholds(true)
+        .setAllocator(DefaultAllocator(true, 16))
+        .build()
+}
 
 /**
  * 作者　　: 李坤
@@ -64,13 +78,16 @@ class EasyVideoExo3(override val manager: EasyMediaManager) : EasyMediaInterface
         mediaPlayer!!.setOnVideoSizeChangedListener(this@EasyVideoExo3)
         mediaPlayer!!.setOnSeekCompleteListener(this)
         mediaPlayer!!.isLooping = currentDataSource!!.isLooping
-
         //通过自己的内部缓存机制
         mediaPlayer!!.isCache = currentDataSource!!.isCache
         if (currentDataSource!!.cacheDir.isNotEmpty()) {
             mediaPlayer!!.cacheDir = File(currentDataSource!!.cacheDir)
         }
         mediaPlayer!!.overrideExtension = currentDataSource!!.overrideExtension
+        //全局配置
+        VideoUtils.onPlayerCreate?.invoke(this, currentDataSource!!, mediaPlayer!!)
+        //回调出去
+        manager.viewManager?.currentVideoPlay?.onPlayerCreate?.invoke(this, currentDataSource!!, mediaPlayer!!)
         try {
             if (currentDataSource!!.url.isNotEmpty()) {
                 if (currentDataSource!!.headers != null) {
@@ -166,4 +183,5 @@ class EasyVideoExo3(override val manager: EasyMediaManager) : EasyMediaInterface
     override fun onSeekComplete(mp: IMediaPlayer) {
         if (manager.mediaPlay === this) manager.handlePlayEvent.onSeekComplete()
     }
+
 }

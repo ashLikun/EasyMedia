@@ -28,19 +28,35 @@ dependencies {
     implementation 'com.github.ashLikun.ijkplayer:default:1.0.0'//最大库（支持格式多）
 
     //Ijkplay
-    implementation 'com.github.CarGuo:GSYIjkJava:1.0.0'
+    implementation  'com.github.ashLikun.EasyMedia:BaseMedia:2.6.1'
+    //普通的全部架构
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-all:2.6.1'
+    //armv5
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-armv5:2.6.1'
+    //armv7a
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-armv7a:2.6.1'
+    //armv64
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-armv64:2.6.1'
+    //x86
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-x86:2.6.1'
+    //x86_64
+    implementation 'com.github.ashLikun.EasyMedia:ijkplayer-x86_64:2.6.1'
+    
+    //支持其他格式协议的（mpeg，rtsp, concat、crypto协议）
     implementation 'com.github.ashLikun.EasyMedia:ijkplayer-ex_so:+'
 
-    //使用Exo2Play,这个依赖于ijkplayer-java  com.github.CarGuo:GSYIjkJava:1.0.0
-    // VideoUtils.init(this, EasyVideoExo2.class);
-      implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
+    //使用Exo2Play
+    implementation  'com.github.ashLikun.EasyMedia:BaseMedia:2.6.1'
+    implementation  'com.github.ashLikun.EasyMedia:ExoPlay2:2.6.1'
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
     //下面两个根据需求
-     implementation 'com.google.android.exoplayer:extension-rtmp:2.18.7'
-     implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.18.7'
+    implementation 'com.google.android.exoplayer:extension-rtmp:2.18.7'
+    implementation 'com.google.android.exoplayer:exoplayer-rtsp:2.18.7'
      
      
-     
-      //Media3
+    //Media3
+    implementation  'com.github.ashLikun.EasyMedia:BaseMedia:2.6.1'
+    implementation  'com.github.ashLikun.EasyMedia:ExoPlay3:2.6.1'
     implementation "androidx.media3:media3-common:$rootProject.ext.media3"
     implementation "androidx.media3:media3-exoplayer:$rootProject.ext.media3"
     //下面是各种MediaSource ，按需引用
@@ -86,9 +102,9 @@ dependencies {
 #### Java代码
 
         //全局初始化（applicable）
-        MediaUtils.init(getApplicationContext());
-        MediaUtils.setMediaInterface(new EasyMediaIjkplayer());//使用ijkplay播放需要引入库
-        MediaUtils.setMediaInterface(new EasyMediaSystem());//使用原生播放器
+        VideoUtils.init(this, EasyVideoExo2.class);
+        VideoUtils.setMediaInterface(new EasyMediaIjkplayer());//使用ijkplay播放需要引入库
+        VideoUtils.setMediaInterface(new EasyMediaSystem());//使用原生播放器
         也可以自己实现播放器，只需实现EasyMediaInterface接口，然后设置给EasyMedia
 
         //最简单的
@@ -100,12 +116,12 @@ dependencies {
         videoPlayer.setVideoRatio(s.getWidth(), s.getHeigth());
 
         //直接全屏
-         MediaUtils.startFullscreen(new EasyVideoPlayer(this), videoUrl, "标题");
+         VideoUtils.startFullscreen(new EasyVideoPlayer(this), videoUrl, "标题");
 
         //直接全屏 不可竖屏
          EasyVideoPlayer easyVideoPlayer = new EasyVideoPlayer(this);
          easyVideoPlayer.setFullscreenPortrait(false);
-         MediaUtils.startFullscreen(easyVideoPlayer, videoUrl, "标题");
+         VideoUtils.startFullscreen(easyVideoPlayer, videoUrl, "标题");
 
          //RecyclerView列表
          videoPlayer.setVideoRatio(s.getWidth(), s.getHeigth());
@@ -117,22 +133,22 @@ dependencies {
                      @Override
                      public void onChildViewAttachedToWindow(View view) {
                          EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                         MediaUtils.onRecyclerAutoTiny(videoPlayer, false);
+                         VideoUtils.onRecyclerAutoTiny(videoPlayer, false);
                      }
 
                      @Override
                      public void onChildViewDetachedFromWindow(View view) {
                          EasyVideoPlayer videoPlayer = view.findViewById(R.id.videoPlay);
-                         MediaUtils.onRecyclerAutoTiny(videoPlayer, true);
+                         VideoUtils.onRecyclerAutoTiny(videoPlayer, true);
                      }
                  });
 
          //RecyclerView Item不可见时候自动销毁
-         MediaUtils.onRecyclerRelease(videoPlayer);
+         VideoUtils.onRecyclerRelease(videoPlayer);
 
          //listView  列表滚动时候
-         MediaUtilsd onScrollReleaseAllVideos(int currentPlayPosition, int firstVisibleItem, int visibleItemCount)
-         MediaUtilsd onScrollAutoTiny(int currentPlayPosition, int firstVisibleItem, int visibleItemCount)
+         VideoUtilsd onScrollReleaseAllVideos(int currentPlayPosition, int firstVisibleItem, int visibleItemCount)
+         VideoUtilsd onScrollAutoTiny(int currentPlayPosition, int firstVisibleItem, int visibleItemCount)
 
          //显示占位图
           GlideUtils.show(videoPlayer.getThumbImageView(), "http://p3.pstatp.com/" + s.getImageUrl());

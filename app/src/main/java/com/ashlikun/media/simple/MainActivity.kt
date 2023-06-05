@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.ashlikun.media.exoplay3.IjkExo3MediaPlayer
+import com.ashlikun.media.exoplay3.play.liveConfig
 import com.ashlikun.media.simple.music.MusicView
 import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.VideoData
@@ -20,7 +22,6 @@ import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.view.EasyLiveMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayer
-import com.ashlikun.media.video.view.other.EasyVideoVolumeDialog
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     val mediaPlay by lazy {
@@ -58,8 +59,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            }
 //        });
         setContentView(R.layout.activity_main)
-//        mediaPlay.setDataSource(listOf(VideoData("rtsp://192.168.196.85:8086", "标题")))
-        mediaPlay.setDataSource(listOf(VideoData(VideoUrl.meinv5, "标题")))
+        mediaPlay.isSaveProgress = false
+        mediaPlay.onPlayerCreate = { media, data, player ->
+            if (player is IjkExo3MediaPlayer) {
+                player.liveConfig()
+            }
+        }
+        mediaPlay.setDataSource(listOf(VideoData("rtsp://192.168.69.85:8086", "标题")))
+//        mediaPlay.setDataSource(listOf(VideoData(VideoUrl.meinv5, "标题")))
         mediaPlay.addEvent { type ->
             if (type == EasyMediaEvent.ON_STATUS_PREPARING) {
 //                    VideoUtils.onPause();

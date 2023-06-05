@@ -26,8 +26,6 @@ import java.io.IOException
 /**
  * 对IjkPlayer的一些其他配置
  */
-typealias OnCreateIjkplay = (currentDataSource: VideoData, ijkMediaPlayer: IjkMediaPlayer) -> Unit
-
 class EasyVideoIjkplayer(override val manager: EasyMediaManager) : EasyMediaInterface(manager), IMediaPlayer.OnPreparedListener,
     IMediaPlayer.OnVideoSizeChangedListener,
     IMediaPlayer.OnCompletionListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener, IMediaPlayer.OnBufferingUpdateListener,
@@ -70,9 +68,12 @@ class EasyVideoIjkplayer(override val manager: EasyMediaManager) : EasyMediaInte
         ijkMediaPlayer.setOnSeekCompleteListener(this@EasyVideoIjkplayer)
         ijkMediaPlayer.setOnTimedTextListener(this@EasyVideoIjkplayer)
         ijkMediaPlayer.setLogEnabled(VideoUtils.isDebug)
-        //全局的配置
-        VideoUtils.onCreateIjkplay?.invoke(currentDataSource!!, ijkMediaPlayer)
         ijkMediaPlayer.isLooping = currentDataSource!!.isLooping
+
+        //全局配置
+        VideoUtils.onPlayerCreate?.invoke(this, currentDataSource!!, ijkMediaPlayer!!)
+        //回调出去
+        manager.viewManager?.currentVideoPlay?.onPlayerCreate?.invoke(this, currentDataSource!!, ijkMediaPlayer!!)
         try {
             if (!TextUtils.isEmpty(currentDataSource!!.url)) {
                 if (currentDataSource!!.headers != null) {

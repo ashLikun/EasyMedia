@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import com.ashlikun.media.video.VideoUtils;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.database.DatabaseProvider;
@@ -124,12 +125,7 @@ public class ExoSourceManager {
             } catch (RawResourceDataSource.RawResourceDataSourceException e) {
                 e.printStackTrace();
             }
-            DataSource.Factory factory = new DataSource.Factory() {
-                @Override
-                public DataSource createDataSource() {
-                    return rawResourceDataSource;
-                }
-            };
+            DataSource.Factory factory = () -> rawResourceDataSource;
             return new ProgressiveMediaSource.Factory(factory).createMediaSource(mediaItem);
 
         } else if ("assets".equals(contentUri.getScheme())) {
@@ -164,6 +160,7 @@ public class ExoSourceManager {
                 if (sHttpConnectTimeout > 0) {
                     rtspFactory.setTimeoutMs(sHttpConnectTimeout);
                 }
+                rtspFactory.setDebugLoggingEnabled(VideoUtils.INSTANCE.isDebug());
                 rtspFactory.setForceUseRtpTcp(isForceRtspTcp);
                 mediaSource = rtspFactory.createMediaSource(mediaItem);
                 break;

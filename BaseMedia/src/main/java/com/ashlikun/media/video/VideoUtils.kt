@@ -17,7 +17,6 @@ import androidx.appcompat.view.ContextThemeWrapper
 import com.ashlikun.media.video.VideoScreenUtils.isBackOk
 import com.ashlikun.media.video.listener.MediaEventCall
 import com.ashlikun.media.video.play.EasyVideoIjkplayer
-import com.ashlikun.media.video.play.OnCreateIjkplay
 import com.ashlikun.media.video.view.BaseEasyMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayer
 import java.util.Formatter
@@ -45,7 +44,10 @@ object VideoUtils {
     lateinit var mediaPlayClass: Class<out EasyMediaInterface>
 
 
-    var onCreateIjkplay: OnCreateIjkplay? = null
+    /**
+     * 当内部的播放器创建的时候
+     */
+    var onPlayerCreate: OnPlayerCreate? = null
 
     //是否循环
     var isLooping = false
@@ -182,7 +184,6 @@ object VideoUtils {
      */
     fun saveProgress(context: Context, url: VideoData, progress: Long) {
         var progress = progress
-        if (!EasyMediaPlayer.SAVE_PROGRESS) return
         if (progress < 5000) {
             progress = 0
         }
@@ -197,7 +198,6 @@ object VideoUtils {
      */
 
     fun getSavedProgress(context: Context, url: Any): Long {
-        if (!EasyMediaPlayer.SAVE_PROGRESS) return 0
         val spn = context.getSharedPreferences(EASY_MEDIA_PROGRESS, Context.MODE_PRIVATE)
         return spn.getLong(url.toString(), 0)
     }

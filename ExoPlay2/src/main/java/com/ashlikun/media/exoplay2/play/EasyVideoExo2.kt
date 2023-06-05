@@ -9,6 +9,8 @@ import com.ashlikun.media.exoplay2.IjkExo2MediaPlayer
 import com.ashlikun.media.video.EasyMediaInterface
 import com.ashlikun.media.video.EasyMediaManager
 import com.ashlikun.media.video.VideoUtils
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.upstream.DefaultAllocator
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import java.io.File
 
@@ -19,6 +21,18 @@ import java.io.File
  *
  * 功能介绍：实现Exo3的播放引擎
  */
+/**
+ * 直播低延迟
+ */
+inline fun IjkExo2MediaPlayer.liveConfig() {
+    loadControl = DefaultLoadControl.Builder()
+        .setBufferDurationsMs(50, 2500, 50, 50)
+        .setTargetBufferBytes(13107200)
+        .setPrioritizeTimeOverSizeThresholds(true)
+        .setAllocator(DefaultAllocator(true, 16))
+        .build()
+}
+
 class EasyVideoExo2(override val manager: EasyMediaManager) : EasyMediaInterface(manager), IMediaPlayer.OnPreparedListener,
     IMediaPlayer.OnCompletionListener,
     IMediaPlayer.OnBufferingUpdateListener, IMediaPlayer.OnErrorListener, IMediaPlayer.OnInfoListener, IMediaPlayer.OnSeekCompleteListener,
@@ -69,6 +83,11 @@ class EasyVideoExo2(override val manager: EasyMediaManager) : EasyMediaInterface
             mediaPlayer!!.cacheDir = File(currentDataSource!!.cacheDir)
         }
         mediaPlayer!!.overrideExtension = currentDataSource!!.overrideExtension
+
+        //全局配置
+        VideoUtils.onPlayerCreate?.invoke(this, currentDataSource!!, mediaPlayer!!)
+        //回调出去
+        manager.viewManager?.currentVideoPlay?.onPlayerCreate?.invoke(this, currentDataSource!!, mediaPlayer!!)
         try {
             if (currentDataSource!!.url.isNotEmpty()) {
                 if (currentDataSource!!.headers != null) {

@@ -9,12 +9,9 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import com.ashlikun.media.R
-import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.EasyVideoViewManager
 import com.ashlikun.media.video.VideoScreenUtils.backPress
-import com.ashlikun.media.video.VideoUtils.dip2px
-import com.ashlikun.media.video.VideoUtils.getSavedProgress
-import com.ashlikun.media.video.VideoUtils.videoAllowPlay
+import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.status.VideoStatus
 
 /**
@@ -49,7 +46,7 @@ open class EasyMediaPlayTiny @JvmOverloads constructor(context: Context, attrs: 
         statusHeight = statusBarHeight
         val imageView = ImageView(getContext())
         imageView.setImageResource(R.drawable.easy_video_click_back_tiny_selector)
-        val containerBack = LayoutParams(dip2px(context!!, 20f), dip2px(context, 20f))
+        val containerBack = LayoutParams(VideoUtils.dip2px(context!!, 20f), VideoUtils.dip2px(context, 20f))
         containerBack.gravity = Gravity.TOP or Gravity.RIGHT
         addView(imageView, containerBack)
         imageView.setOnClickListener { backPress() }
@@ -66,8 +63,8 @@ open class EasyMediaPlayTiny @JvmOverloads constructor(context: Context, attrs: 
     public override fun onStatePrepared() {
         super.onStatePrepared()
         //因为这个紧接着就会进入播放状态，所以不设置state
-        val position = getSavedProgress(context, currentData!!)
-        if (position != 0L) {
+        val position = getSavedProgress()
+        if (position > 0L) {
             mediaManager.seekTo(position)
         }
     }
@@ -78,7 +75,7 @@ open class EasyMediaPlayTiny @JvmOverloads constructor(context: Context, attrs: 
             return
         }
         if (currentState === VideoStatus.NORMAL) {
-            if (videoAllowPlay(this)) {
+            if (VideoUtils.videoAllowPlay(this)) {
                 return
             }
         }
