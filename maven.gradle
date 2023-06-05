@@ -1,6 +1,4 @@
 apply plugin: 'maven-publish'
-// GitHub账户名
-group = 'com.github.ashLikun'
 
 task androidSourcesJar(type: Jar) {
     classifier 'sources'
