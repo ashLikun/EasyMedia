@@ -17,6 +17,8 @@
     <declare-styleable name="BaseEasyVideoPlay">
         <attr name="android:background"></attr>
         <attr name="video_manage_tag" format="string"></attr>
+        <!--是否缓存进度-->
+        <attr name="video_is_save_progress" format="boolean"></attr>
         <attr name="video_display_type">
             <!--Video大小适配视频-->
             <enum name="adapter" value="0" />

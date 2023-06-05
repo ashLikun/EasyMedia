@@ -155,6 +155,9 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         if (a.hasValue(R.styleable.BaseEasyVideoPlay_video_manage_tag)) {
             mediaManageTag = a.getString(R.styleable.BaseEasyVideoPlay_video_manage_tag) ?: mediaManageTag
         }
+        if (a.hasValue(R.styleable.BaseEasyVideoPlay_video_is_save_progress)) {
+            isSaveProgress = a.getBoolean(R.styleable.BaseEasyVideoPlay_video_is_save_progress, isSaveProgress)
+        }
         addView(textureViewContainer, LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
     }
 

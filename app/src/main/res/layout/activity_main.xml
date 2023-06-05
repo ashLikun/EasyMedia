@@ -39,7 +39,8 @@
                 android:layout_marginRight="30dp"
                 app:video_display_type="adapter"
                 app:video_full_screen_enable="true"
-                app:video_full_screen_portrait="auto" />
+                app:video_full_screen_portrait="auto"
+                app:video_is_save_progress="false" />
 
             <Button
                 android:id="@+id/detailsButton"

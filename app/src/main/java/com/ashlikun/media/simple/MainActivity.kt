@@ -59,7 +59,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //            }
 //        });
         setContentView(R.layout.activity_main)
-        mediaPlay.isSaveProgress = false
         mediaPlay.onPlayerCreate = { media, data, player ->
             if (player is IjkExo3MediaPlayer) {
                 player.liveConfig()
@@ -70,6 +69,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mediaPlay.addEvent { type ->
             if (type == EasyMediaEvent.ON_STATUS_PREPARING) {
 //                    VideoUtils.onPause();
+            }
+        }
+
+        mediaPlay2.onPlayerCreate = { media, data, player ->
+            if (player is IjkExo3MediaPlayer) {
+                player.liveConfig()
             }
         }
         mediaPlay2.setDataSource("rtsp://192.168.69.85:8086")
