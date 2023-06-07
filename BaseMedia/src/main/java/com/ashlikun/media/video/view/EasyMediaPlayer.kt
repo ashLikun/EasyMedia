@@ -3,7 +3,6 @@ package com.ashlikun.media.video.view
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.widget.ImageView
 import com.ashlikun.media.R
 import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.EasyVideoViewManager
@@ -190,7 +189,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         }
         if (isFull) {
             //退出全屏
-            VideoScreenUtils.backPress()
+            VideoScreenUtils.onBackPressed()
         } else {
             onEvent(EasyMediaEvent.ON_ENTER_FULLSCREEN)
             startWindowFullscreen()
@@ -312,7 +311,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
                 mediaController!!.onAutoCompletion()
             }
             if (isFull) {
-                VideoScreenUtils.backPress()
+                VideoScreenUtils.onBackPressed()
             }
         }
         return res

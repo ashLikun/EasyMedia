@@ -10,7 +10,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.ashlikun.media.R
 import com.ashlikun.media.video.EasyVideoViewManager
-import com.ashlikun.media.video.VideoScreenUtils.backPress
+import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.status.VideoStatus
 
@@ -49,7 +49,7 @@ open class EasyMediaPlayTiny @JvmOverloads constructor(context: Context, attrs: 
         val containerBack = LayoutParams(VideoUtils.dip2px(context!!, 20f), VideoUtils.dip2px(context, 20f))
         containerBack.gravity = Gravity.TOP or Gravity.RIGHT
         addView(imageView, containerBack)
-        imageView.setOnClickListener { backPress() }
+        imageView.setOnClickListener { VideoScreenUtils.onBackPressed() }
     }
 
     /**

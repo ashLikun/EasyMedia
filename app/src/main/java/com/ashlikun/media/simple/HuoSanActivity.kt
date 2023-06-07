@@ -67,7 +67,7 @@ class HuoSanActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (VideoScreenUtils.backPress()) {
+        if (VideoScreenUtils.onBackPressed()) {
             return
         }
         super.onBackPressed()

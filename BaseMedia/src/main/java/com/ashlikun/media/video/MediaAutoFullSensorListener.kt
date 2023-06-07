@@ -5,7 +5,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import com.ashlikun.media.video.VideoScreenUtils.backPress
+import com.ashlikun.media.video.VideoScreenUtils.onBackPressed
 import com.ashlikun.media.video.VideoUtils.setRequestedOrientation
 import com.ashlikun.media.video.status.VideoStatus
 import com.ashlikun.media.video.view.EasyMediaPlayer
@@ -44,7 +44,7 @@ class MediaAutoFullSensorListener(var mediaManager: EasyMediaManager) : SensorEv
         if (play != null) {
             if (System.currentTimeMillis() - lastAutoFullscreenTime > 2000 && play.isCurrentPlay && play.currentState === VideoStatus.PLAYING && play.isFull) {
                 lastAutoFullscreenTime = System.currentTimeMillis()
-                backPress(mediaManager)
+                onBackPressed(mediaManager)
             }
         }
     }

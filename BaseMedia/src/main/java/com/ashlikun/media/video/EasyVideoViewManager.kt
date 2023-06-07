@@ -1,9 +1,8 @@
 package com.ashlikun.media.video
 
-import com.ashlikun.media.video.VideoScreenUtils.backPress
+import com.ashlikun.media.video.VideoScreenUtils.onBackPressed
 import com.ashlikun.media.video.view.BaseEasyMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayTiny
-import com.ashlikun.media.video.view.EasyMediaPlayer
 
 /**
  * 作者　　: 李坤
@@ -34,7 +33,7 @@ class EasyVideoViewManager internal constructor(var mediaManager: EasyMediaManag
         get() = firstView
         set(videoPlayer) {
             if (videoPlayer != null && (videoFullscreen != null || secondView != null)) {
-                backPress(videoPlayer.mediaManager)
+                onBackPressed(videoPlayer.mediaManager)
             }
             firstView = videoPlayer
         }
@@ -42,7 +41,7 @@ class EasyVideoViewManager internal constructor(var mediaManager: EasyMediaManag
 
     fun setVideoFullscreen(videoPlayer: BaseEasyMediaPlay?) {
         if (videoPlayer != null && videoFullscreen != null) {
-            backPress(videoPlayer.mediaManager)
+            onBackPressed(videoPlayer.mediaManager)
         }
         videoFullscreen = videoPlayer
     }
@@ -54,7 +53,7 @@ class EasyVideoViewManager internal constructor(var mediaManager: EasyMediaManag
         get() = secondView
         set(videoPlayer) {
             if (videoPlayer != null && secondView != null) {
-                backPress(videoPlayer.mediaManager)
+                onBackPressed(videoPlayer.mediaManager)
             }
             secondView = videoPlayer
         }

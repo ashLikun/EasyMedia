@@ -553,7 +553,7 @@ open class BaseEasyMusicPlay @JvmOverloads constructor(context: Context, attrs: 
     /**
      * 对应activity得生命周期
      */
-    fun onResume() {
+    override fun onResume() {
         if (currentState == VideoStatus.PAUSE && ONRESUME_TO_PLAY) {
             setStatus(VideoStatus.PLAYING)
         }
@@ -572,7 +572,7 @@ open class BaseEasyMusicPlay @JvmOverloads constructor(context: Context, attrs: 
     /**
      * 对应activity得生命周期
      */
-    fun onDestroy() {
+    override  fun onDestroy() {
         MusicUtils.onDestroy()
     }
 }

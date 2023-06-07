@@ -208,7 +208,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onBackPressed() {
-        if (!VideoScreenUtils.backPress()) {
+        if (!VideoScreenUtils.onBackPressed()) {
             super.onBackPressed()
         }
     }

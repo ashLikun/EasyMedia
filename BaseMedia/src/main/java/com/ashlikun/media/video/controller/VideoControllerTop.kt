@@ -13,7 +13,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.ashlikun.media.R
 import com.ashlikun.media.video.VideoData
-import com.ashlikun.media.video.VideoScreenUtils.backPress
+import com.ashlikun.media.video.VideoScreenUtils.onBackPressed
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -149,7 +149,7 @@ class VideoControllerTop @JvmOverloads constructor(context: Context?, attrs: Att
     override fun onClick(v: View) {
         val i = v.id
         if (i == R.id.back) {
-            backPress()
+            onBackPressed()
         }
     }
 }

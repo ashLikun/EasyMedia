@@ -201,8 +201,7 @@ object VideoScreenUtils {
      *
      * @return
      */
-
-    fun backPress(mediaManager: EasyMediaManager = EasyMediaManager.getVideoDefault()): Boolean {
+    fun onBackPressed(mediaManager: EasyMediaManager = EasyMediaManager.getVideoDefault()): Boolean {
         if (!isBackOk) {
             return false
         }

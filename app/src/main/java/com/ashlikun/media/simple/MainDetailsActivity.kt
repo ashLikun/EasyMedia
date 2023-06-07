@@ -36,7 +36,7 @@ class MainDetailsActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (!VideoScreenUtils.backPress()) {
+        if (!VideoScreenUtils.onBackPressed()) {
             isOnBackPressed = true
             super.onBackPressed()
         }

@@ -15,7 +15,26 @@ interface IEasyMediaPlayListener : EasyMediaEvent {
      * 准备播放
      */
     fun onPrepared()
+
+    /**
+     * 对应activity得生命周期
+     */
     fun onPause()
+
+    /**
+     * 对应activity得生命周期
+     */
+    fun onBackPressed() = false
+
+    /**
+     * 对应activity得生命周期
+     */
+    fun onResume()
+
+    /**
+     * 对应activity得生命周期
+     */
+    fun onDestroy()
 
     /**
      * 播放信息
@@ -53,7 +72,7 @@ interface IEasyMediaPlayListener : EasyMediaEvent {
     /**
      * 播放器大小改变
      */
-    fun onVideoSizeChanged(width:Int,height:Int)
+    fun onVideoSizeChanged(width: Int, height: Int)
 
     /**
      * 缓存进度更新

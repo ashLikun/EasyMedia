@@ -18,8 +18,7 @@ import com.ashlikun.media.video.EasyVideoViewManager
 import com.ashlikun.media.video.NetworkUtils
 import com.ashlikun.media.video.OnPlayerCreate
 import com.ashlikun.media.video.VideoData
-import com.ashlikun.media.video.VideoScreenUtils.backPress
-import com.ashlikun.media.video.VideoScreenUtils.clearFullscreenLayout
+import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.listener.MediaBufferProgressCall
 import com.ashlikun.media.video.listener.MediaErrorCall
@@ -428,7 +427,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         if (currentData != null && currentData == mediaManager.currentDataSource) {
             //在非全屏的情况下只能backPress()
             if (isFull) {
-                backPress(mediaManager)
+                VideoScreenUtils.onBackPressed(mediaManager)
             } else {
                 VideoUtils.releaseAll(mediaManageTag)
             }
@@ -557,7 +556,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         VideoUtils.getActivity(context)?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         //如果是全屏播放就清楚全屏的view
         if (isFull) {
-            clearFullscreenLayout(context)
+            VideoScreenUtils.clearFullscreenLayout(context)
             VideoUtils.setRequestedOrientation(context, ORIENTATION_NORMAL)
         }
         //释放渲染器和保存的SurfaceTexture，textureView
@@ -679,6 +678,11 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     /**
      * 对应activity得生命周期
      */
+    override fun onBackPressed() = VideoScreenUtils.onBackPressed(mediaManager)
+
+    /**
+     * 对应activity得生命周期
+     */
     override fun onPause() {
         if (currentState == VideoStatus.AUTO_COMPLETE || currentState == VideoStatus.NORMAL) {
             VideoUtils.releaseAll(mediaManageTag)
@@ -695,7 +699,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     /**
      * 对应activity得生命周期
      */
-    fun onResume() {
+    override fun onResume() {
         if (currentState == VideoStatus.PAUSE && ONRESUME_TO_PLAY) {
             setStatus(VideoStatus.PLAYING)
         }
@@ -704,8 +708,8 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     /**
      * 对应activity得生命周期
      */
-    fun onDestroy() {
-        VideoUtils.onDestroy()
+    override fun onDestroy() {
+        mediaManager.onDestroy()
     }
 
     fun getSavedProgress() = if (isSaveProgress) VideoUtils.getSavedProgress(context, currentData!!) else 0

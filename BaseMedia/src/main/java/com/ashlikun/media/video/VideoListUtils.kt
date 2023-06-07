@@ -1,7 +1,7 @@
 package com.ashlikun.media.video
 
 import android.view.View
-import com.ashlikun.media.video.VideoScreenUtils.backPress
+import com.ashlikun.media.video.VideoScreenUtils.onBackPressed
 import com.ashlikun.media.video.VideoScreenUtils.startWindowTiny
 import com.ashlikun.media.video.VideoUtils.isContainsUri
 import com.ashlikun.media.video.VideoUtils.releaseAll
@@ -26,7 +26,7 @@ object VideoListUtils {
         val videoPlayer = view.findViewById<EasyMediaPlayer>(vidoPlayId) ?: return
         if (videoPlayer.mediaManager.viewManager.videoTiny != null) {
             if (videoPlayer.mediaData.getOrNull(videoPlayer.currentUrlIndex)?.equals(videoPlayer.mediaManager.currentDataSource) == true) {
-                backPress(videoPlayer.mediaManager)
+                onBackPressed(videoPlayer.mediaManager)
             }
         }
     }
@@ -73,7 +73,7 @@ object VideoListUtils {
                 }
             } else {
                 if (mediaManager.viewManager.videoTiny != null) {
-                    backPress(mediaManager)
+                    onBackPressed(mediaManager)
                 }
             }
         }
@@ -122,7 +122,7 @@ object VideoListUtils {
         } else if (mediaManager.viewManager.videoTiny != null) {
             //回来的时候再把这个保存,对应于上面的设为null
             videoPlayer.saveVideoPlayView()
-            backPress(mediaManager)
+            onBackPressed(mediaManager)
         }
     }
 

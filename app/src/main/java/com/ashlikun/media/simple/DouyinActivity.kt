@@ -7,20 +7,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.ashlikun.adapter.ViewHolder
 import com.ashlikun.adapter.recyclerview.CommonAdapter
-import com.ashlikun.glideutils.GlideUtils
 import com.ashlikun.media.simple.data.DouyingData
-import com.ashlikun.media.simple.data.DouyingData.AwemeListData
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
-import com.ashlikun.media.video.view.EasyMediaPlayer
 import com.ashlikun.media.video.view.MiniMediaPlay
 import com.ashlikun.okhttputils.http.OkHttpManage
 import com.ashlikun.okhttputils.http.callback.AbsCallback
-import com.ashlikun.okhttputils.http.request.HttpRequest
 import com.ashlikun.xlayoutmanage.viewpager.OnViewPagerListener
 import com.ashlikun.xlayoutmanage.viewpager.ViewPagerLayoutManager
-import okhttp3.Response
 
 /**
  * @author　　: 李坤
@@ -101,7 +96,7 @@ class DouyinActivity : AppCompatActivity() {
 
 
     override fun onBackPressed() {
-        if (!VideoScreenUtils.backPress()) {
+        if (!VideoScreenUtils.onBackPressed()) {
             super.onBackPressed()
         }
     }

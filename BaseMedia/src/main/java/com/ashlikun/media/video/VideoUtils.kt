@@ -293,9 +293,7 @@ object VideoUtils {
             }
         } else {
             EasyMediaManager.getTag(*tag).forEach { itt ->
-                itt.value.also {
-                    it.onDestroy()
-                }
+                itt.value.onDestroy()
             }
         }
     }
