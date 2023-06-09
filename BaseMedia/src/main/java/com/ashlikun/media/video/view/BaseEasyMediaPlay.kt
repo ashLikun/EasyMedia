@@ -251,6 +251,17 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     }
 
     /**
+     * 重新准备，用于刷新，不能频繁调用
+     */
+    open fun refresh() {
+        if (currentState != VideoStatus.PREPARING) {
+            onEvent(EasyMediaEvent.ON_REFRESH)
+            setStatus(VideoStatus.PREPARING)
+            mediaManager.refresh()
+        }
+    }
+
+    /**
      * 开始播放 必须在设置完数据源后
      */
     open fun startVideo() {
@@ -262,7 +273,8 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         addTextureView()
 
 //        VideoUtils.setAudioFocus(getContext(), true);
-//        VideoUtils.getActivity(getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        //保持屏幕常量
+        VideoUtils.getActivity(context)?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mediaManager.currentDataSource = currentData
         saveVideoPlayView()
         setStatus(VideoStatus.PREPARING)

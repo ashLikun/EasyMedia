@@ -345,7 +345,7 @@ open class BaseEasyMusicPlay @JvmOverloads constructor(context: Context, attrs: 
         onInfoCall?.invoke(what, extra)
         if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
             mBackUpPlayingBufferState = currentState
-            //避免在onPrepared之前就进入了buffering，导致一只loading
+            //避免在onPrepared之前就进入了buffering，导致一直loading
             if (mHadPlay && currentState != VideoStatus.PREPARING && currentState != VideoStatus.NORMAL) {
                 setStatus(VideoStatus.BUFFERING_START)
             }

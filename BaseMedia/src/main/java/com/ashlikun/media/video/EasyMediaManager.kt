@@ -169,11 +169,21 @@ class EasyMediaManager(val tag: String) : SurfaceTextureListener {
         currentVideoWidth = 0
         currentVideoHeight = 0
         mediaPlay.prepare()
-        if (surface != null) {
-            surface!!.release()
-        }
+        surface?.release()
         if (savedSurfaceTexture != null) {
             surface = Surface(savedSurfaceTexture)
+            mediaPlay.setSurface(surface!!)
+        }
+    }
+
+    /**
+     * 重新准备，用于刷新数据流
+     */
+    public fun refresh() {
+        if (surface == null || savedSurfaceTexture == null) {
+            prepare()
+        } else {
+            mediaPlay.prepare()
             mediaPlay.setSurface(surface!!)
         }
     }

@@ -61,7 +61,7 @@ class EasyVideoExo3(override val manager: EasyMediaManager) : EasyMediaInterface
         runCatching {
             if (isPlaying) stop()
             release()
-        }
+        }.onFailure { it.printStackTrace() }
         mediaPlayer = IjkExo3MediaPlayer(VideoUtils.context)
         if (currentDataSource == null) {
             Toast.makeText(VideoUtils.context, VideoUtils.context.getText(R.string.easy_video_no_url), Toast.LENGTH_SHORT).show()

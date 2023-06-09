@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 player.liveConfig()
             }
         }
-        mediaPlay2.setDataSource("rtsp://192.168.69.85:8086")
+        mediaPlay2.setDataSource("rtsp://192.168.43.212:8086")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
         }, 2000)
@@ -105,6 +105,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //        musicPlay.startMusic();
         //  MediaUtils.startFullscreen(new EasyVideoPlayer(this), VideoUrl.videoUrls[0][0], "李坤李坤李坤");
         findViewById<View>(R.id.detailsButton).setOnClickListener(this)
+        findViewById<View>(R.id.refreshView).setOnClickListener(this)
         findViewById<View>(R.id.listButton).setOnClickListener(this)
         findViewById<View>(R.id.fullScreenButton).setOnClickListener(this)
         findViewById<View>(R.id.fullScreenButton2).setOnClickListener(this)
@@ -114,6 +115,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
+            R.id.refreshView -> {
+                mediaPlay2.refresh()
+            }
+
             R.id.detailsButton -> {
                 val intent = Intent(this, MainDetailsActivity::class.java)
                 intent.putExtra("data", mediaPlay.currentData)

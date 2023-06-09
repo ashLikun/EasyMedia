@@ -98,5 +98,10 @@ interface EasyMediaEvent {
          * 没有无线网络时候点击继续播放
          */
         const val ON_CLICK_START_NO_WIFI_GOON = 101
+
+        /**
+         * 调用刷新从新加载
+         */
+        const val ON_REFRESH = 20
     }
 }

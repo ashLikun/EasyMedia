@@ -43,6 +43,13 @@
                 app:video_is_save_progress="false" />
 
             <Button
+                android:id="@+id/refreshView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="刷新" />
+
+            <Button
                 android:id="@+id/detailsButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
