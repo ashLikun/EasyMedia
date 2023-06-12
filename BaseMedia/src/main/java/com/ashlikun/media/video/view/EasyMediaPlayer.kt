@@ -430,8 +430,8 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
     }
 
 
-    override fun release() {
-        super.release()
+    override fun releaseOrFull() {
+        super.releaseOrFull()
         if (mediaController != null) {
             mediaController!!.cancelDismissControlViewSchedule()
         }

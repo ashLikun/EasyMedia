@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 player.liveConfig()
             }
         }
-        mediaPlay2.setDataSource("rtsp://192.168.43.212:8086")
+        mediaPlay2.setDataSource("rtsp://192.168.130.85:8086")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
         }, 2000)

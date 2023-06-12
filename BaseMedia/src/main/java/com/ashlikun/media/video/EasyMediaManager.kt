@@ -150,15 +150,12 @@ class EasyMediaManager(val tag: String) : SurfaceTextureListener {
         if (isCompleteAll) {
             viewManager.completeAll()
         }
-        if (isPlayingNei) {
+        if (isPlaying) {
             mediaPlay.stop()
         }
         mediaPlay.release()
     }
 
-
-    private val isPlayingNei: Boolean
-        get() = runCatching { mediaPlay.isPlaying }.getOrNull() ?: false
 
     /**
      * 准备播放

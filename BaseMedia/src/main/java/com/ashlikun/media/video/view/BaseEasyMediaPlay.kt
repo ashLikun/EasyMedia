@@ -251,6 +251,14 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     }
 
     /**
+     * 这里只是释放播放器，具体的渲染器还在，等待下次调用[refresh]恢复
+     */
+    open fun release() {
+        mediaManager.releaseMediaPlayer()
+        setStatus(VideoStatus.FORCE_COMPLETE)
+    }
+
+    /**
      * 重新准备，用于刷新，不能频繁调用
      */
     open fun refresh() {
@@ -435,7 +443,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
     /**
      * 释放播放器,全屏下不能释放,先退出全屏再释放
      */
-    open fun release() {
+    open fun releaseOrFull() {
         if (currentData != null && currentData == mediaManager.currentDataSource) {
             //在非全屏的情况下只能backPress()
             if (isFull) {
