@@ -2,6 +2,7 @@ package com.ashlikun.media.exoplay2.play
 
 import android.media.AudioManager
 import android.net.Uri
+import android.util.Log
 import android.view.Surface
 import android.widget.Toast
 import com.ashlikun.media.R
@@ -177,7 +178,11 @@ class EasyVideoExo2(override val manager: EasyMediaManager) : EasyMediaInterface
     }
 
     override fun onVideoSizeChanged(mediaPlayer: IMediaPlayer, width: Int, height: Int, sar_num: Int, sar_den: Int) {
-        if (manager.mediaPlay === this) manager.handlePlayEvent.onVideoSizeChanged(width, height)
+        if (width > 0 && height > 0) {
+            if (manager.mediaPlay === this) manager.handlePlayEvent.onVideoSizeChanged(width, height)
+        } else {
+            Log.d("EasyVideo", "width || height is 0   height = $height   width = $width")
+        }
     }
 
     override fun onSeekComplete(mp: IMediaPlayer) {

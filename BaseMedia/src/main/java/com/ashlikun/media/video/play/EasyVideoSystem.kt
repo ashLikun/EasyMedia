@@ -3,6 +3,7 @@ package com.ashlikun.media.video.play
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.text.TextUtils
+import android.util.Log
 import android.view.Surface
 import android.widget.Toast
 import com.ashlikun.media.R
@@ -160,7 +161,11 @@ class EasyVideoSystem(override val manager: EasyMediaManager) : EasyMediaInterfa
     }
 
     override fun onVideoSizeChanged(mediaPlayer: MediaPlayer, width: Int, height: Int) {
-        if (manager.mediaPlay === this) manager.handlePlayEvent.onVideoSizeChanged(width, height)
+        if (width > 0 && height > 0) {
+            if (manager.mediaPlay === this) manager.handlePlayEvent.onVideoSizeChanged(width, height)
+        }else {
+            Log.d("EasyVideo", "width || height is 0   height = $height   width = $width")
+        }
     }
 
     override fun onSeekComplete(mp: MediaPlayer) {
