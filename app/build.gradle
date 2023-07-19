@@ -42,7 +42,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.ashLikun:MultiTypeGson:2.0.1'
-    implementation 'com.github.ashLikun:OkHttpUtils:+'
+    implementation 'com.github.ashLikun:OkHttpUtils:3.4.3'
     implementation 'com.github.ashLikun:LiteOrm:2.0.1'
     implementation 'com.github.ashLikun:XLayoutManager:1.0.2'
     //图片加载

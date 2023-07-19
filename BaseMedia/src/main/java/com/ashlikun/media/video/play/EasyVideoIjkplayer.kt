@@ -25,6 +25,48 @@ import java.io.IOException
  * 功能介绍：实现Ijkplayer的播放引擎
  */
 /**
+ * RTSP 直播流低延迟
+ */
+inline fun IjkMediaPlayer.liveConfig() {
+    val player = this
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32.toLong())
+    // 设置播放前的最大探测时间 （100未测试是否是最佳值）
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L)
+    //每处理一个packet之后刷新io上下文
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L)
+    //丢帧阈值 视频帧处理不过来的时候丢弃一些帧达到同步的效果
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1L)
+    //视频帧率
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "fps", 30)
+    //环路滤波 是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验, 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48)
+    //设置无packet缓存
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "fflags", "nobuffer")
+    //不限制拉流缓存大小
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "infbuf", 1)
+    //设置最大缓存数量
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max-buffer-size", 1024)
+    //设置最小解码帧数
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "min-frames", 10)
+    //启动预加载
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
+    //设置探测包Size，默认是1M, 改小一点会出画面更快
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024L)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0)
+
+    //设置播放前的探测时间 1,达到首屏秒开效果
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1)
+    //ijkPlayer默认使用udp拉流，因为速度比较快。如果需要可靠且减少丢包，可以改为tcp协议：
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp")
+
+    //硬解码，如果打开硬解码失败，再自动切换到软解码
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1)
+}
+
+/**
  * 对IjkPlayer的一些其他配置
  */
 class EasyVideoIjkplayer(override val manager: EasyMediaManager) : EasyMediaInterface(manager), IMediaPlayer.OnPreparedListener,

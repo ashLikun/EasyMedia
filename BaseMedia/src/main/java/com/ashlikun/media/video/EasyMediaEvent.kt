@@ -80,6 +80,11 @@ interface EasyMediaEvent {
         const val ON_STATUS_AUTO_COMPLETE = 18
 
         /**
+         * 开始缓冲
+         */
+        const val ON_STATUS_BUFFERING_START = 19
+
+        /**
          * 其他地方播放视频，当前播放器被强制完成
          */
         const val ON_STATUS_FORCE_COMPLETE = 20
@@ -90,18 +95,14 @@ interface EasyMediaEvent {
         const val ON_STATUS_COMPLETE = 21
 
         /**
-         * 开始缓冲
+         * 调用刷新从新加载
          */
-        const val ON_STATUS_BUFFERING_START = 19
+        const val ON_REFRESH = 22
 
         /**
          * 没有无线网络时候点击继续播放
          */
         const val ON_CLICK_START_NO_WIFI_GOON = 101
 
-        /**
-         * 调用刷新从新加载
-         */
-        const val ON_REFRESH = 20
     }
 }

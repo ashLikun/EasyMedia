@@ -20,8 +20,8 @@ import java.io.File
  */
 inline fun IjkExo3MediaPlayer.liveConfig() {
     loadControl = DefaultLoadControl.Builder()
-        .setBufferDurationsMs(50, 2500, 50, 50)
-        .setTargetBufferBytes(13107200)
+        .setBufferDurationsMs(50, 2500, 10, 10)
+        .setTargetBufferBytes(1200 * 1024 * 1024)
         .setPrioritizeTimeOverSizeThresholds(true)
         .setAllocator(DefaultAllocator(true, 16))
         .build()

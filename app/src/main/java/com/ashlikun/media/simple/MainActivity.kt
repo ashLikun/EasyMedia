@@ -13,6 +13,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import com.ashlikun.media.exoplay2.IjkExo2MediaPlayer
+import com.ashlikun.media.exoplay2.play.liveConfig
 import com.ashlikun.media.exoplay3.IjkExo3MediaPlayer
 import com.ashlikun.media.exoplay3.play.liveConfig
 import com.ashlikun.media.simple.music.MusicView
@@ -20,8 +22,10 @@ import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
+import com.ashlikun.media.video.play.liveConfig
 import com.ashlikun.media.video.view.EasyLiveMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayer
+import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
     val mediaPlay by lazy {
@@ -75,9 +79,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         mediaPlay2.onPlayerCreate = { media, data, player ->
             if (player is IjkExo3MediaPlayer) {
                 player.liveConfig()
+            } else if (player is IjkExo2MediaPlayer) {
+                player.liveConfig()
+            } else if (player is IjkMediaPlayer) {
+                player.liveConfig()
             }
         }
-        mediaPlay2.setDataSource("rtsp://192.168.130.85:8086")
+        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
         }, 2000)
@@ -116,7 +124,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     override fun onClick(v: View) {
         when (v.id) {
             R.id.refreshView -> {
+
                 mediaPlay2.refresh()
+//                mediaPlay2.postDelayed({ mediaPlay2.refresh() }, 10000)
             }
 
             R.id.detailsButton -> {

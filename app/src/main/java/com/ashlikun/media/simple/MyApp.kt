@@ -4,6 +4,7 @@ import android.app.Application
 import com.ashlikun.media.exoplay3.ExoSourceManager
 import com.ashlikun.media.exoplay3.play.EasyVideoExo3
 import com.ashlikun.media.video.VideoUtils
+import com.ashlikun.media.video.play.EasyVideoIjkplayer
 import com.ashlikun.okhttputils.http.OkHttpManage
 import com.ashlikun.orm.LiteOrmUtil
 
@@ -21,9 +22,9 @@ class MyApp : Application() {
         //数据库
         LiteOrmUtil.init(this)
         OkHttpManage.init(this, null)
-//        VideoUtils.init(this, EasyVideoIjkplayer::class.java)
+        VideoUtils.init(this, EasyVideoIjkplayer::class.java)
 //        VideoUtils.init(this, EasyVideoExo2::class.java)
-        VideoUtils.init(this, EasyVideoExo3::class.java)
+//        VideoUtils.init(this, EasyVideoExo3::class.java)
         VideoUtils.setIsDebug(true)
         ExoSourceManager.setForceRtspTcp(false)
         com.ashlikun.media.exoplay2.ExoSourceManager.setForceRtspTcp(false)
