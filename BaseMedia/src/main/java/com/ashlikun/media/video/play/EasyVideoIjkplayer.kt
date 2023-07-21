@@ -29,15 +29,14 @@ import java.io.IOException
  */
 inline fun IjkMediaPlayer.liveConfig() {
     val player = this
-//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "overlay-format", IjkMediaPlayer.SDL_FCC_RV32.toLong())
-    // 设置播放前的最大探测时间 （100未测试是否是最佳值）
+// 设置播放前的最大探测时间 （100未测试是否是最佳值）
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L)
     //每处理一个packet之后刷新io上下文
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L)
     //丢帧阈值 视频帧处理不过来的时候丢弃一些帧达到同步的效果
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 1L)
-    //视频帧率
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "fps", 30)
+    //在fps大于最大fps的视频中丢弃帧
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-fps", 31)
     //环路滤波 是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验, 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48)
     //设置无packet缓存
@@ -50,20 +49,24 @@ inline fun IjkMediaPlayer.liveConfig() {
     //设置最小解码帧数
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "min-frames", 10)
     //启动预加载
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
-    //设置探测包Size，默认是1M, 改小一点会出画面更快
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024L)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0)
+    //设置探测包Size，默认是1M, 改小一点会出画面更快,这个会导致videoSize 使用上次的
+    //player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024)
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0)
 
-    //设置播放前的探测时间 1,达到首屏秒开效果
+    //设置播放前的探测时间 1,达到首屏秒开效果 videoSize 使用上次的
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 1)
     //ijkPlayer默认使用udp拉流，因为速度比较快。如果需要可靠且减少丢包，可以改为tcp协议：
-//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp")
-
+    //    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp")
+    //OpenSL ES：启用
+//                player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
     //硬解码，如果打开硬解码失败，再自动切换到软解码
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 0)
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1)
+    //使用消息队列进行同步
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-sync", 1)
 }
 
 /**

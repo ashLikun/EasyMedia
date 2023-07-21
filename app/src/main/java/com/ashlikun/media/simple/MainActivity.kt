@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.media3.exoplayer.rtsp.RtpPacket
 import com.ashlikun.media.exoplay2.IjkExo2MediaPlayer
 import com.ashlikun.media.exoplay2.play.liveConfig
 import com.ashlikun.media.exoplay3.IjkExo3MediaPlayer
@@ -25,6 +26,7 @@ import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.play.liveConfig
 import com.ashlikun.media.video.view.EasyLiveMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayer
+import com.ashlikun.okhttputils.http.ClassUtils
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -85,6 +87,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 player.liveConfig()
             }
         }
+        runCatching {
+            val f = RtpPacket::class.java.getDeclaredField("MAX_SIZE")
+            f.isAccessible = true
+            f.set(null, 1024)
+            Log.e("aaaaaa", RtpPacket.MAX_SIZE.toString())
+        }.onFailure { it.printStackTrace() }
         mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
