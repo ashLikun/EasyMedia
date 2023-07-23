@@ -93,7 +93,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             f.set(null, 1024)
             Log.e("aaaaaa", RtpPacket.MAX_SIZE.toString())
         }.onFailure { it.printStackTrace() }
-        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
+//        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
+        mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
         }, 2000)
@@ -104,7 +105,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 val width = mediaPlay2.width
                 val hei = width * (h / (w * 1f))
                 it.height = hei.toInt()
-                Log.e("aaaaaa22", "width = $width , height = ${hei}")
+//                Log.e("aaaaaa22", "width = $width , height = ${hei}")
                 mediaPlay2.layoutParams = it
                 mediaPlay2.requestLayout()
             }
@@ -138,9 +139,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.detailsButton -> {
-                val intent = Intent(this, MainDetailsActivity::class.java)
-                intent.putExtra("data", mediaPlay.currentData)
-                startActivity(intent)
+                mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
+                mediaPlay2.startVideo()
+//                val intent = Intent(this, MainDetailsActivity::class.java)
+//                intent.putExtra("data", mediaPlay.currentData)
+//                startActivity(intent)
             }
 
             R.id.listButton -> {
