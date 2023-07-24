@@ -27,50 +27,61 @@ import java.io.IOException
 /**
  * RTSP 直播流低延迟
  * https://github.com/CarGuo/GSYVideoPlayer/blob/master/doc/DECODERS.md
+ * @param isAn 禁用音频
+ * @param isVn 禁用视频
  */
-inline fun IjkMediaPlayer.liveConfig() {
+inline fun IjkMediaPlayer.liveConfig(isAn: Boolean = false, isVn: Boolean = false) {
     val player = this
-    //强制低延迟
+    //强制低延迟,有效解决解码时候的延迟
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "flags", "low_delay")
     //环路滤波 是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验, 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "skip_loop_filter", 48)
 
-
-    // 设置播放前的最大探测时间 （100未测试是否是最佳值）
+    //设置播放前的最大探测时间,指定分析多少微秒来探测输入
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzemaxduration", 100L)
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "analyzeduration", 100L)
-    //每处理一个packet之后刷新io上下文
+    //每处理一个packet之后刷新io上下文 , 启用在每个数据包之后刷新IO上下文
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "flush_packets", 1L)
-    //设置无packet缓存  //discardcorrupt 丢弃损坏的帧
+    //设置无packet缓存  //discardcorrupt 丢弃损坏的帧 -nobuffer-discardcorrupt
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "fflags", "nobuffer")
-    //设置探测包Size，默认是5000000, 32-IntMax, 改小一点会出画面更快,这个会导致videoSize 使用上次的
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "nobuffer", 1)
+    //设置探测包Size，默认是5000000, 32-IntMax, 改小一点会出画面更快,这个会导致videoSize 使用上次的()
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024)
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "http-detect-range-support", 0)
     //ijkPlayer默认使用udp拉流，因为速度比较快。如果需要可靠且减少丢包，可以改为tcp协议：
 //        player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp")
     //以微秒为单位的最大复用或解复用延迟
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max_delay", 100)
-//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "packetsize", 1)
 //    //交织的最大缓冲持续时间
 //    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max_interleave_delta", 1)
 
     //丢帧阈值 视频帧处理不过来的时候丢弃一些帧达到同步的效果 -1, 120
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 120L)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 10)
     //在fps大于最大fps的视频中丢弃帧
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-fps", 31)
-    //设置无packet缓存
+    //设置无packet缓存,暂停输出，直到在停止后读取了足够的数据包
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "packet-buffering", 0)
-    //不限制拉流缓存大小
+    //不限制输入缓冲区大小（对于实时流很有用）
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "infbuf", 1)
-    //应预先读取最大缓冲区大小
+    //应预先读取最大缓冲区大小   默认 15*1024*1024
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-buffer-size", 1024)
-    //设置最小解码帧数
+    //停止预读的最小帧
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "min-frames", 10)
-    //启动预加载
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 0)
+    //准备好后自动开始播放
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
     //最大图片队列帧数3-16 ,3
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "video-pictq-size", 3)
-
+    //读取并解码流以用启发式方法填充缺失的信息，减小延迟，解决直播视频自动旋转
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "find_stream_info", 0)
+    //异步创建解码器
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "async-init-decoder", 1)
+    //等待开始之后才绘制
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "render-wait-start", 1)
+    //禁用音频
+    if (isAn)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "an", if (isAn) 1 else 0)
+    //禁用视频
+    if (isVn)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "vn", if (isVn) 1 else 0)
     //OpenSL ES：启用
     //player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
     //硬解码，如果打开硬解码失败，再自动切换到软解码

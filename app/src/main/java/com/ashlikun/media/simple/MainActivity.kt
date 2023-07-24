@@ -94,7 +94,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             Log.e("aaaaaa", RtpPacket.MAX_SIZE.toString())
         }.onFailure { it.printStackTrace() }
 //        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
-        mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
+        mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+//        mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
         }, 2000)
@@ -139,7 +140,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.detailsButton -> {
-                mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
+                mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+//                mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
                 mediaPlay2.startVideo()
 //                val intent = Intent(this, MainDetailsActivity::class.java)
 //                intent.putExtra("data", mediaPlay.currentData)
