@@ -54,7 +54,8 @@ dependencies {
 
     //Ijkplay
     implementation 'com.github.CarGuo:GSYIjkJava:1.0.0'
-    implementation project(":ijkplayer-ex_so")
+//    implementation project(":ijkplayer-ex_so")
+    implementation project(":ijkplayer-ex_so-live")
 
 //    Google Exo2
     implementation 'com.google.android.exoplayer:exoplayer:2.18.7'

@@ -206,6 +206,12 @@ static const AVOption ffp_context_options[] = {
         OPTION_OFFSET(ijkmeta_delay_init),      OPTION_INT(0, 0, 1) },
     { "render-wait-start",          "等待开始之后才绘制",
         OPTION_OFFSET(render_wait_start),      OPTION_INT(0, 0, 1) },
+    { "sync_audio_video_disable",          "等待开始之后才绘制",
+        OPTION_OFFSET(render_wait_start),      OPTION_INT(0, 0, 1) },
+    { "live-real-time",                       "live real-time playback, reduce latency",
+            OPTION_OFFSET(live_real_time),        OPTION_INT(0, 0, 1) },
+    { "sync-audio-video-disable",                       "Disable audio and video synchronization",
+        OPTION_OFFSET(sync_audio_video_disable),        OPTION_INT(0, 0, 1) },
 
     { NULL }
 };

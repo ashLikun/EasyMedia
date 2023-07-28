@@ -26,7 +26,6 @@ import com.ashlikun.media.video.VideoUtils
 import com.ashlikun.media.video.play.liveConfig
 import com.ashlikun.media.video.view.EasyLiveMediaPlay
 import com.ashlikun.media.video.view.EasyMediaPlayer
-import com.ashlikun.okhttputils.http.ClassUtils
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
@@ -84,17 +83,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             } else if (player is IjkExo2MediaPlayer) {
                 player.liveConfig()
             } else if (player is IjkMediaPlayer) {
-                player.liveConfig()
+                player.liveConfig(isAnDisable = true, mediacodecSizeCall = true, syncAudioVideoDisable = true)
             }
         }
-        runCatching {
-            val f = RtpPacket::class.java.getDeclaredField("MAX_SIZE")
-            f.isAccessible = true
-            f.set(null, 1024)
-            Log.e("aaaaaa", RtpPacket.MAX_SIZE.toString())
-        }.onFailure { it.printStackTrace() }
 //        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
-        mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+//        mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+        mediaPlay2.setDataSource("rtsp://192.168.137.156:8086")
+//        mediaPlay2.setDataSource("rtsp://172.16.15.45:554/live")
 //        mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
         mediaPlay2.postDelayed({
             mediaPlay2.startVideo()
@@ -140,7 +135,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             R.id.detailsButton -> {
-                mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+//                mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
+                mediaPlay2.setDataSource("rtsp://172.16.15.45:554/live")
 //                mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
                 mediaPlay2.startVideo()
 //                val intent = Intent(this, MainDetailsActivity::class.java)

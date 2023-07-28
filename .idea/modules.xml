@@ -36,6 +36,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-armv7a/EasyMedia.ijkplayer-armv7a.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so-live/EasyMedia.ijkplayer-ex_so-live.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.androidTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/ijkplayer-ex_so/EasyMedia.ijkplayer-ex_so.unitTest.iml" />

@@ -9,7 +9,6 @@ import com.ashlikun.media.R
 import com.ashlikun.media.video.EasyMediaInterface
 import com.ashlikun.media.video.EasyMediaManager
 import com.ashlikun.media.video.EasyMediaManager.Companion.pauseOther
-import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoUtils
 import tv.danmaku.ijk.media.player.IMediaPlayer
 import tv.danmaku.ijk.media.player.IjkMediaPlayer
@@ -27,11 +26,17 @@ import java.io.IOException
 /**
  * RTSP 直播流低延迟
  * https://github.com/CarGuo/GSYVideoPlayer/blob/master/doc/DECODERS.md
- * @param isAn 禁用音频
- * @param isVn 禁用视频
+ * @param isAnDisable 禁用音频
+ * @param isVnDisable 禁用视频
  */
-inline fun IjkMediaPlayer.liveConfig(isAn: Boolean = false, isVn: Boolean = false) {
+inline fun IjkMediaPlayer.liveConfig(
+    isAnDisable: Boolean = false, isVnDisable: Boolean = false,
+    mediacodecSizeCall: Boolean = false, syncAudioVideoDisable: Boolean = false,
+    bufferSize: Int? = 1024000, isMediacodec: Boolean = true,
+) {
     val player = this
+    //强制低延迟,有效解决解码时候的延迟
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "err_detect", "aggressive")
     //强制低延迟,有效解决解码时候的延迟
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_CODEC, "flags", "low_delay")
     //环路滤波 是否开启预缓冲，一般直播项目会开启，达到秒开的效果，不过带来了播放丢帧卡顿的体验, 0开启，画面质量高，解码开销大，48关闭，画面质量差点，解码开销小
@@ -50,12 +55,16 @@ inline fun IjkMediaPlayer.liveConfig(isAn: Boolean = false, isVn: Boolean = fals
     //ijkPlayer默认使用udp拉流，因为速度比较快。如果需要可靠且减少丢包，可以改为tcp协议：
 //        player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "rtsp_transport", "tcp")
     //以微秒为单位的最大复用或解复用延迟
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max_delay", 100)
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max_delay", 100)
+    //UDP的 buffer_size，有效解决花屏  我们默认是使用udp去拉流，在udp.c文件定义缓冲区大小为UDP_MAX_PKT_SIZE，默认值是65536。在这里，我们把它扩大10倍，改为65536*10。这样能够更大程度保证，在高分辨率时，拉流缓冲区不溢出。
+    if (bufferSize != null)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "buffer_size", bufferSize.toLong())
+
 //    //交织的最大缓冲持续时间
 //    player.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "max_interleave_delta", 1)
 
     //丢帧阈值 视频帧处理不过来的时候丢弃一些帧达到同步的效果 -1, 120
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 10)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "framedrop", 120)
     //在fps大于最大fps的视频中丢弃帧
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "max-fps", 31)
     //设置无packet缓存,暂停输出，直到在停止后读取了足够的数据包
@@ -70,25 +79,31 @@ inline fun IjkMediaPlayer.liveConfig(isAn: Boolean = false, isVn: Boolean = fals
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "start-on-prepared", 1)
     //最大图片队列帧数3-16 ,3
     player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "video-pictq-size", 3)
-    //读取并解码流以用启发式方法填充缺失的信息，减小延迟，解决直播视频自动旋转
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "find_stream_info", 0)
-    //异步创建解码器
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "async-init-decoder", 1)
-    //等待开始之后才绘制
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "render-wait-start", 1)
+    //读取并解码流以用启发式方法填充缺失的信息，减小延迟，解决直播视频自动旋转,这个会造成无法获取到解码格式
+//    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "find_stream_info", 0)
+    //等待开始之后才绘制, 20ms延迟
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "render-wait-start", 0)
+    //关闭音视频同步，降低延迟
+    if (syncAudioVideoDisable)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "sync-audio-video-disable", 1)
+    //硬解码宽高改变的时候直接回调
+    if (mediacodecSizeCall)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-size-call", 1)
     //禁用音频
-    if (isAn)
-        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "an", if (isAn) 1 else 0)
+    if (isAnDisable)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "an", 1)
     //禁用视频
-    if (isVn)
-        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "vn", if (isVn) 1 else 0)
+    if (isVnDisable)
+        player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "vn", 1)
     //OpenSL ES：启用
     //player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "opensles", 1)
     //硬解码，如果打开硬解码失败，再自动切换到软解码
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", 1)
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", 1)
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", 1)
-    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", 1)
+
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec", if (isMediacodec) 1 else 0)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-all-videos", if (isMediacodec) 1 else 0)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-auto-rotate", if (isMediacodec) 1 else 0)
+    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-handle-resolution-change", if (isMediacodec) 1 else 0)
+
     //使用消息队列进行同步
 //    player.setOption(IjkMediaPlayer.OPT_CATEGORY_PLAYER, "mediacodec-sync", 1)
 }
