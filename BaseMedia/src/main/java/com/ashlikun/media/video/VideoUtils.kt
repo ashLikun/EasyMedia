@@ -156,8 +156,9 @@ object VideoUtils {
     }
 
 
-    fun setRequestedOrientation(context: Context?, orientation: Int) {
-        getActivity(context)!!.requestedOrientation = orientation
+    fun setRequestedOrientation(context: Context?, orientation: Int?) {
+        if (orientation != null)
+            getActivity(context)?.requestedOrientation = orientation
     }
 
 

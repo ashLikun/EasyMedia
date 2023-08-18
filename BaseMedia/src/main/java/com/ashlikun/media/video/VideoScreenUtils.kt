@@ -61,11 +61,9 @@ object VideoScreenUtils {
      * 0:自动判断(宽高比是否可以竖屏)
      * 1:可以竖屏(2个横屏，一个竖屏)
      * 2:不可以竖屏(2个横屏)
-     *
-     * @return
      */
-    fun calculateOrientation(mediaManager: EasyMediaManager, fullscreenPortrait: Int): Int {
-        var orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR
+    fun calculateOrientation(mediaManager: EasyMediaManager, fullscreenPortrait: Int): Int? {
+        var orientation: Int? = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR
         if (fullscreenPortrait == 0) {
             if (mediaManager.textureView != null && mediaManager.textureView?.isSizeOk == true) {
                 orientation =
@@ -77,6 +75,8 @@ object VideoScreenUtils {
             orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE
         } else if (fullscreenPortrait == 3) {
             orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_LANDSCAPE
+        } else if (fullscreenPortrait == 4) {
+            orientation = null
         }
         return orientation
     }
@@ -95,8 +95,7 @@ object VideoScreenUtils {
         }
         setActivityFullscreen(easyVideoPlayer.context, true)
         VideoUtils.setRequestedOrientation(
-            easyVideoPlayer.context,
-            calculateOrientation(easyVideoPlayer.mediaManager, easyVideoPlayer.fullscreenPortrait)
+            easyVideoPlayer.context, calculateOrientation(easyVideoPlayer.mediaManager, easyVideoPlayer.fullscreenPortrait)
         )
         val vp = VideoUtils.getDecorView(easyVideoPlayer.context)
         val old = vp.findViewById<View>(R.id.easy_video_fullscreen_id)
@@ -142,9 +141,11 @@ object VideoScreenUtils {
      * 清空全屏
      */
     fun clearFloatScreen(context: Context?, mediaManager: EasyMediaManager) {
-        VideoUtils.setRequestedOrientation(context, BaseEasyMediaPlay.ORIENTATION_NORMAL)
-        setActivityFullscreen(context, false)
         val currentPlay = mediaManager.viewManager.videoFullscreen
+        if (currentPlay?.fullscreenPortrait != 4) {
+            VideoUtils.setRequestedOrientation(context, BaseEasyMediaPlay.ORIENTATION_NORMAL)
+        }
+        setActivityFullscreen(context, false)
         if (currentPlay != null) {
             currentPlay.removeTextureView()
             if (currentPlay is View) {

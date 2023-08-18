@@ -140,6 +140,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
      * 1:可以竖屏(2个横屏，一个竖屏)
      * 2:不可以竖屏(2个横屏)
      * 3:只能单一横屏
+     * 4:不设置
      */
     var fullscreenPortrait = 0
 
@@ -577,7 +578,9 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         //如果是全屏播放就清楚全屏的view
         if (isFull) {
             VideoScreenUtils.clearFullscreenLayout(context)
-            VideoUtils.setRequestedOrientation(context, ORIENTATION_NORMAL)
+            if (fullscreenPortrait != 4) {
+                VideoUtils.setRequestedOrientation(context, ORIENTATION_NORMAL)
+            }
         }
         //释放渲染器和保存的SurfaceTexture，textureView
         mediaManager.releaseAllSufaceView()
@@ -746,13 +749,14 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         const val ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 
         /**
-         * 默认的activty的方向 Flag(竖屏)
-         */
-        var ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-        /**
          * Activity 竖屏Flag(1个横屏)
          */
         const val ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+
+        /**
+         * 默认的activty的方向 Flag(竖屏)，初始化的时候自动获取
+         */
+        var ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
     }
 }
