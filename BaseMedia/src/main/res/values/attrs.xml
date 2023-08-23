@@ -12,8 +12,6 @@
             <enum name="no" value="2" />
             <!--只能单一横屏 -->
             <enum name="only" value="3" />
-            <!-- 不设置           -->
-            <enum name="no_set" value="4" />
         </attr>
     </declare-styleable>
     <declare-styleable name="BaseEasyVideoPlay">

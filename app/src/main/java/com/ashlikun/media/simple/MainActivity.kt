@@ -3,7 +3,9 @@ package com.ashlikun.media.simple
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -42,10 +44,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         Manifest.permission.SYSTEM_ALERT_WINDOW
     )
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        Log.e("bbbbb", "onConfigurationChanged     ${newConfig?.orientation}")
+//        requestedOrientation = newConfig.orientation
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        VideoScreenUtils.startAutoScreenOrientation(this).isConfigSystem = false
         quanxian()
-
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
 //        GlideUtils.init(new GlideUtils.OnNeedListener() {
 //            @Override
@@ -88,12 +97,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
 //        mediaPlay2.setDataSource("rtsp://192.168.69.100:8086")
 //        mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
-        mediaPlay2.setDataSource("rtsp://192.168.137.156:8086")
+        mediaPlay2.setDataSource("rtsp://192.168.50.100:8086")
 //        mediaPlay2.setDataSource("rtsp://172.16.15.45:554/live")
 //        mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
-        mediaPlay2.postDelayed({
-            mediaPlay2.startVideo()
-        }, 2000)
+//        mediaPlay2.postDelayed({
+//            mediaPlay2.startVideo()
+//        }, 2000)
         mediaPlay2.onSizeChange = { w, h ->
             Log.e("aaaaaa", "width = $w , height = ${h}")
             mediaPlay2.layoutParams.also {
@@ -136,7 +145,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.detailsButton -> {
 //                mediaPlay2.setDataSource("rtsp://192.168.43.154:8086")
-                mediaPlay2.setDataSource("rtsp://172.16.15.45:554/live")
+                mediaPlay2.setDataSource("rtsp://192.168.50.100:8086")
 //                mediaPlay2.setDataSource("rtsp://10.0.0.2:554/live")
                 mediaPlay2.startVideo()
 //                val intent = Intent(this, MainDetailsActivity::class.java)
@@ -160,7 +169,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             R.id.fullScreenButton2 -> {
                 val easyVideoPlayer = EasyMediaPlayer(this)
-                easyVideoPlayer.fullscreenPortrait = 2
                 VideoScreenUtils.startFullscreen(easyVideoPlayer, VideoUrl.meinv2, "标题")
             }
 

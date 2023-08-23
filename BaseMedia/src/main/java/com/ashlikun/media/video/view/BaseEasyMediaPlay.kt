@@ -1,7 +1,6 @@
 package com.ashlikun.media.video.view
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.media.MediaPlayer
 import android.text.TextUtils
 import android.util.AttributeSet
@@ -17,6 +16,7 @@ import com.ashlikun.media.video.EasyMediaManager
 import com.ashlikun.media.video.EasyVideoViewManager
 import com.ashlikun.media.video.NetworkUtils
 import com.ashlikun.media.video.OnPlayerCreate
+import com.ashlikun.media.video.ScreenOrientationSwitcher
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
@@ -113,6 +113,15 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         }
 
     /**
+     * 全屏后是否可以竖屏，默认动态计算，当视频是竖屏的时候  可以竖屏
+     * 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     * 3:只能单一横屏
+     */
+    var fullscreenPortrait = 0
+
+    /**
      * 播放事件的回掉
      */
     private val videoEvents by lazy {
@@ -133,16 +142,6 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
      * 是否全屏播放
      */
     open var isFull = false
-
-    /**
-     * 全屏后是否可以竖屏，默认动态计算，当视频是竖屏的时候  可以竖屏
-     * 0:自动判断(宽高比是否可以竖屏)
-     * 1:可以竖屏(2个横屏，一个竖屏)
-     * 2:不可以竖屏(2个横屏)
-     * 3:只能单一横屏
-     * 4:不设置
-     */
-    var fullscreenPortrait = 0
 
     init {
         val a = context.obtainStyledAttributes(attrs, R.styleable.BaseEasyVideoPlay)
@@ -578,9 +577,7 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
         //如果是全屏播放就清楚全屏的view
         if (isFull) {
             VideoScreenUtils.clearFullscreenLayout(context)
-            if (fullscreenPortrait != 4) {
-                VideoUtils.setRequestedOrientation(context, ORIENTATION_NORMAL)
-            }
+            VideoScreenUtils.exitFullscreenOrientation(this)
         }
         //释放渲染器和保存的SurfaceTexture，textureView
         mediaManager.releaseAllSufaceView()
@@ -737,26 +734,4 @@ abstract class BaseEasyMediaPlay @JvmOverloads constructor(context: Context, att
 
     fun getSavedProgress() = if (isSaveProgress) VideoUtils.getSavedProgress(context, currentData!!) else 0
 
-    companion object {
-        /**
-         * Activity 全屏Flag，重力感应(2个横屏，一个竖屏)
-         */
-        const val ORIENTATION_FULLSCREEN_SENSOR = ActivityInfo.SCREEN_ORIENTATION_SENSOR
-
-        /**
-         * Activity 全屏Flag，重力感应(2个横屏)
-         */
-        const val ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-
-        /**
-         * Activity 竖屏Flag(1个横屏)
-         */
-        const val ORIENTATION_FULLSCREEN_LANDSCAPE = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-
-        /**
-         * 默认的activty的方向 Flag(竖屏)，初始化的时候自动获取
-         */
-        var ORIENTATION_NORMAL = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-    }
 }

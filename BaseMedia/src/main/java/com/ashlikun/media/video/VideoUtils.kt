@@ -8,6 +8,8 @@ import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
+import android.provider.Settings.SettingNotFoundException
 import android.text.TextUtils
 import android.util.Log
 import android.view.ViewGroup
@@ -18,7 +20,6 @@ import com.ashlikun.media.video.VideoScreenUtils.isBackOk
 import com.ashlikun.media.video.listener.MediaEventCall
 import com.ashlikun.media.video.play.EasyVideoIjkplayer
 import com.ashlikun.media.video.view.BaseEasyMediaPlay
-import com.ashlikun.media.video.view.EasyMediaPlayer
 import java.util.Formatter
 import java.util.Locale
 import java.util.concurrent.ScheduledThreadPoolExecutor
@@ -161,6 +162,18 @@ object VideoUtils {
             getActivity(context)?.requestedOrientation = orientation
     }
 
+    /**
+     * 判断是否开启了 “屏幕自动旋转”
+     */
+    fun isScreenAutoRotate(context: Context): Boolean {
+        var gravity = 0
+        try {
+            gravity = Settings.System.getInt(context.contentResolver, Settings.System.ACCELEROMETER_ROTATION)
+        } catch (e: SettingNotFoundException) {
+            e.printStackTrace()
+        }
+        return gravity == 1
+    }
 
     fun getWindow(context: Context?): Window {
         return if (getAppCompActivity(context) != null) {

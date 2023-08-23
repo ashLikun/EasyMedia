@@ -1,6 +1,7 @@
 package com.ashlikun.media.video
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -57,29 +58,9 @@ object VideoScreenUtils {
     }
 
     /**
-     * 计算全屏方向
-     * 0:自动判断(宽高比是否可以竖屏)
-     * 1:可以竖屏(2个横屏，一个竖屏)
-     * 2:不可以竖屏(2个横屏)
+     * 开启自动横竖屏
      */
-    fun calculateOrientation(mediaManager: EasyMediaManager, fullscreenPortrait: Int): Int? {
-        var orientation: Int? = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR
-        if (fullscreenPortrait == 0) {
-            if (mediaManager.textureView != null && mediaManager.textureView?.isSizeOk == true) {
-                orientation =
-                    if (mediaManager.textureView?.isPortrait == true) BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR else BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE
-            }
-        } else if (fullscreenPortrait == 1) {
-            orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR
-        } else if (fullscreenPortrait == 2) {
-            orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_SENSOR_LANDSCAPE
-        } else if (fullscreenPortrait == 3) {
-            orientation = BaseEasyMediaPlay.ORIENTATION_FULLSCREEN_LANDSCAPE
-        } else if (fullscreenPortrait == 4) {
-            orientation = null
-        }
-        return orientation
-    }
+    fun startAutoScreenOrientation(context: Context) = ScreenOrientationSwitcher(context).also { it.enable() }
 
     /**
      * 直接开始全屏播放
@@ -94,9 +75,8 @@ object VideoScreenUtils {
             VideoUtils.releaseAll(easyVideoPlayer.mediaManageTag)
         }
         setActivityFullscreen(easyVideoPlayer.context, true)
-        VideoUtils.setRequestedOrientation(
-            easyVideoPlayer.context, calculateOrientation(easyVideoPlayer.mediaManager, easyVideoPlayer.fullscreenPortrait)
-        )
+        startFullscreenOrientation(easyVideoPlayer)
+
         val vp = VideoUtils.getDecorView(easyVideoPlayer.context)
         val old = vp.findViewById<View>(R.id.easy_video_fullscreen_id)
         if (old != null) {
@@ -142,8 +122,8 @@ object VideoScreenUtils {
      */
     fun clearFloatScreen(context: Context?, mediaManager: EasyMediaManager) {
         val currentPlay = mediaManager.viewManager.videoFullscreen
-        if (currentPlay?.fullscreenPortrait != 4) {
-            VideoUtils.setRequestedOrientation(context, BaseEasyMediaPlay.ORIENTATION_NORMAL)
+        if (currentPlay != null) {
+            exitFullscreenOrientation(currentPlay)
         }
         setActivityFullscreen(context, false)
         if (currentPlay != null) {
@@ -267,5 +247,45 @@ object VideoScreenUtils {
             return true
         }
         return false
+    }
+
+
+    /**
+     * 退出全屏
+     */
+    fun exitFullscreenOrientation(videoPlayer: BaseEasyMediaPlay) {
+        VideoUtils.setRequestedOrientation(videoPlayer.context, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    }
+
+    /**
+     * 进入全屏
+     */
+    fun startFullscreenOrientation(videoPlayer: BaseEasyMediaPlay) {
+        VideoUtils.setRequestedOrientation(
+            videoPlayer.context, calculateOrientation(videoPlayer.mediaManager, videoPlayer.fullscreenPortrait)
+        )
+    }
+
+    /**
+     * 计算全屏方向
+     * 0:自动判断(宽高比是否可以竖屏)
+     * 1:可以竖屏(2个横屏，一个竖屏)
+     * 2:不可以竖屏(2个横屏)
+     */
+    fun calculateOrientation(mediaManager: EasyMediaManager, fullscreenPortrait: Int): Int {
+        var orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        if (fullscreenPortrait == 0) {
+            if (mediaManager.textureView != null && mediaManager.textureView?.isSizeOk == true) {
+                orientation =
+                    if (mediaManager.textureView?.isPortrait == true) ActivityInfo.SCREEN_ORIENTATION_SENSOR else ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            }
+        } else if (fullscreenPortrait == 1) {
+            orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+        } else if (fullscreenPortrait == 2) {
+            orientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else if (fullscreenPortrait == 3) {
+            orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        }
+        return orientation
     }
 }

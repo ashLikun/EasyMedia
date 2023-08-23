@@ -1,11 +1,15 @@
 package com.ashlikun.media.video.view
 
 import android.content.Context
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.ashlikun.media.R
 import com.ashlikun.media.video.EasyMediaEvent
 import com.ashlikun.media.video.EasyVideoViewManager
+import com.ashlikun.media.video.ScreenOrientationSwitcher
 import com.ashlikun.media.video.VideoData
 import com.ashlikun.media.video.VideoScreenUtils
 import com.ashlikun.media.video.VideoUtils
@@ -58,6 +62,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
     val thumbImageView
         get() = mediaController?.thumbImageView
 
+
     init {
         initView(context, attrs)
     }
@@ -70,9 +75,22 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         a.recycle()
         createMiddleView()
         initController(createController())
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
         if (isCurrentPlay) {
-            VideoUtils.getActivity(context)?.requestedOrientation?.also {
-                ORIENTATION_NORMAL = it
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                //横屏
+                if (!isFull) {
+                    onEvent(EasyMediaEvent.ON_ENTER_FULLSCREEN)
+                    startWindowFullscreen()
+                }
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                //竖屏
+                if (isFull) {
+                    VideoScreenUtils.onBackPressed()
+                }
             }
         }
     }
@@ -179,6 +197,7 @@ open class EasyMediaPlayer @JvmOverloads constructor(context: Context, open val 
         startVideo()
         onEvent(EasyMediaEvent.ON_CLICK_START_ERROR)
     }
+
 
     /**
      * 控制器全屏点击
