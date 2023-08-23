@@ -27,14 +27,12 @@ constructor(context: Context, rate: Int = SensorManager.SENSOR_DELAY_NORMAL) :
 
     }
 
-
     private val contextRef: WeakReference<Context> by lazy {
         WeakReference(context)
     }
     private var isSupportGravity = false
     var currOrientation = ORIENTATION_UNKNOWN
         private set
-
 
     var lastCheckTimestamp: Long = 0
 
@@ -43,9 +41,13 @@ constructor(context: Context, rate: Int = SensorManager.SENSOR_DELAY_NORMAL) :
 
     var changeListener: ((requestedOrientation: Int) -> Unit)? = null
 
+    init {
+        VideoUtils.getActivity(context)?.requestedOrientation?.also {
+            currOrientation = it
+        }
+    }
 
     override fun onOrientationChanged(orientation: Int) {
-        Log.e("onOrientationChanged", orientation.toString())
         val context = contextRef.get()
         if (context == null || context !is Activity) {
             return
